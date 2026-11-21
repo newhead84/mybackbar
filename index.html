@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#0a0807">
 <meta property="og:type" content="website">
 <meta property="og:title" content="위스키 백바">
-<meta property="og:description" content="국내 위스키바 선반에서 자주 보는 위스키 100여 병. 맛·도수·숙성 통과 비슷한 병을 한눈에.">
+<meta property="og:description" content="국내 위스키바 선반에서 자주 보는 위스키 130여 병. 맛·병 소매가·도수·숙성 통과 비슷한 병을 한눈에.">
 <meta property="og:url" content="https://newhead84.github.io/whisky-backbar/">
 <meta property="og:image" content="https://newhead84.github.io/whisky-backbar/og.jpg">
 <meta property="og:image:width" content="1200">
@@ -248,6 +248,25 @@ body.has-tray footer.site{padding-bottom:120px}
   .cmp-img,.cmp-img img,.cmp-img .svgb{height:120px}
   .cmp-v{font-size:13px}
 }
+/* 상세 위쪽 요약·가격 */
+.d-key{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:12px;background:var(--amber-soft);border:1px solid rgba(242,170,76,.28)}
+.d-key b{font-size:16px;font-weight:700;color:var(--ink);word-break:keep-all}
+.d-key span{font-size:13px;color:var(--ink-2);word-break:keep-all}
+.price{margin:0}
+.price b{font-family:var(--f-body);font-weight:800;font-size:20px;color:var(--ink)}
+.price small{color:var(--ink-3);font-size:12.5px;margin-left:4px}
+.price-note{margin-top:6px !important;font-size:12.5px;color:var(--ink-3) !important;line-height:1.6}
+.bt .why{display:block;margin-top:-2px;font-size:10.5px;line-height:1.3;color:var(--amber);text-align:center;word-break:keep-all}
+.cmp-more{margin-top:-8px}
+.cmp-more summary{cursor:pointer;color:var(--ink-2);font-size:13.5px;padding:10px 0}
+.cg-label{align-self:center;font-size:12px;color:var(--ink-3);margin-right:2px}
+/* 걸려 있는 조건 */
+.active{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.active[hidden]{display:none}
+.achip{height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--amber);background:var(--amber-soft);color:var(--ink);font-size:12.5px;cursor:pointer;white-space:nowrap}
+.areset{height:28px;padding:0 10px;border:0;background:none;color:var(--ink-2);font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:12px}
+.empty p{margin:0}
 @media (prefers-reduced-motion:reduce){.bt img,.bt .svgb,.sheet,.scrim,.bt .stand::before{transition:none}}
 </style>
 </head>
@@ -269,10 +288,12 @@ body.has-tray footer.site{padding-bottom:120px}
     <div class="filters">
       <label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="이름·맛 찾기 (예: 셰리)" aria-label="위스키 찾기"></label>
       <button class="chip ftoggle" id="ftoggle" aria-expanded="false" aria-controls="chipbox">필터<b id="fcount"></b></button>
-      <span class="count" id="count"></span>
+      <span class="count" id="count" role="status" aria-live="polite"></span>
+      <div class="active" id="active" hidden></div>
       <div class="chipbox" id="chipbox">
         <div class="cgroup" id="nations" role="group" aria-label="나라로 고르기"></div>
         <div class="cgroup" id="flavs" role="group" aria-label="맛·내 표시로 고르기"></div>
+        <div class="cgroup" id="bands" role="group" aria-label="병 가격대로 고르기"></div>
       </div>
     </div>
   </div>
@@ -306,12 +327,15 @@ const B = [
 // 스페이사이드
 {id:'glenfiddich-12',c:'speyside',n:'글렌피딕 12',e:'Glenfiddich 12 Year Old',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드 · 더프타운',abv:40,age:'12년',cask:'버번·셰리 통',p:0,b:2,s:4,sy:1,nose:'배, 풋사과, 꽃',pal:'꿀, 바닐라, 은은한 오크',fin:'짧고 깔끔함',drink:'니트, 하이볼',design:'세 모서리가 있는 삼각기둥 병과 초록빛 유리. 라벨 위에 사슴이 그려져 있습니다.',fact:'1887년 세워져 지금도 가족이 운영합니다. 세계에서 가장 많이 팔리는 싱글 몰트 중 하나라 바마다 거의 있습니다.',sh:'tri',g:'green',l:'#efe6d2',cap:'#1f2a22',lb:'12'},
 {id:'glenfiddich-15',c:'speyside',n:'글렌피딕 15',e:'Glenfiddich 15 Year Old',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'15년',cask:'버번·셰리·새 오크 → 솔레라 통',p:0,b:3,s:4,sy:2,nose:'꿀, 건포도, 계피',pal:'말린 과일, 토피',fin:'중간, 달콤함',drink:'니트, 물 몇 방울',design:'지금 병은 12년과 같은 삼각기둥 병에 짙은 적갈색 라벨. 예전에는 둥근 병이었습니다.',fact:'커다란 나무 통에 원액을 섞어 두고 절반만 덜어 병입한 뒤 다시 채우는 솔레라 방식을 씁니다. 12년과 나란히 마셔 보면 숙성의 차이가 잘 보입니다.',sh:'tri',g:'green',l:'#5b2a2a',cap:'#2a1a14',lb:'15'},
+{id:'glenfiddich-18',c:'speyside',n:'글렌피딕 18',e:'Glenfiddich 18 Year Old',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'18년',cask:'버번·셰리 오크',p:0,b:3,s:4,sy:2,nose:'사과, 오크',pal:'말린 과일, 꿀',fin:'따뜻하고 길게',drink:'니트',design:'삼각형 병에 사슴 문장.',fact:'글렌피딕의 고숙성 정규 제품이다. 숙성 후 원액을 섞어 다시 잠시 재운다.',sh:'tri',g:'clear',l:'#2a1a1a',cap:'#2a1a1a',lb:'18'},
 {id:'glenlivet-12',c:'speyside',n:'글렌리벳 12',e:'The Glenlivet 12',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'12년',cask:'버번 통 위주',p:0,b:2,s:3,sy:0,nose:'꽃, 파인애플, 배',pal:'바닐라, 꿀',fin:'짧고 산뜻함',drink:'니트, 하이볼',design:'투명한 병에 이름 앞 \'The\'가 크게 들어간 라벨.',fact:'1824년 스페이사이드에서 처음으로 정부 허가를 받은 증류소입니다. 다른 증류소들이 이름 뒤에 \'글렌리벳\'을 붙일 만큼 유명해져서 \'The\'를 앞에 붙였습니다.',sh:'std',g:'clear',l:'#f4efe4',cap:'#20314a',lb:'12'},
+{id:'glenlivet-18',c:'speyside',n:'글렌리벳 18',e:'The Glenlivet 18',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'18년',cask:'버번·셰리 오크',p:0,b:3,s:4,sy:1,nose:'오렌지, 꿀',pal:'토피, 과일',fin:'부드럽고 길게',drink:'니트',design:'짙은 색 병에 단정한 라벨.',fact:'스페이사이드 대표 증류소의 18년 숙성 제품이다. 균형 잡힌 맛으로 알려져 있다.',sh:'std',g:'dark',l:'#e9dcc0',cap:'#1a1a1a',lb:'18'},
 {id:'macallan-12-sherry',c:'speyside',n:'맥캘란 12 셰리 오크',e:'The Macallan 12 Sherry Oak',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'12년',cask:'스페인 셰리 시즈닝 오크 100%',p:0,b:4,s:4,sy:3,nose:'건포도, 말린 무화과, 생강',pal:'말린 과일, 나무, 향신료',fin:'길고 따뜻함',drink:'니트',design:'어깨가 넓은 투명 병. 라벨 위쪽에 증류소의 저택 그림이 작게 있습니다.',fact:'스페이사이드에서 손꼽히게 작은 증류기를 써서 기름지고 묵직한 원액을 얻습니다. 셰리 통 위스키의 대명사입니다.',sh:'square',g:'clear',l:'#f3ede0',cap:'#6b1d1d',lb:'12'},
 {id:'macallan-12-double',c:'speyside',n:'맥캘란 12 더블 캐스크',e:'The Macallan 12 Double Cask',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'12년',cask:'미국·유럽산 셰리 시즈닝 오크',p:0,b:3,s:4,sy:2,nose:'꿀, 바닐라, 시트러스',pal:'토피, 말린 과일, 생강',fin:'중간, 부드러움',drink:'니트, 온더록',design:'셰리 오크와 같은 병에 파란 띠 라벨.',fact:'셰리 오크보다 미국산 통 비중이 있어 바닐라가 더 나고 조금 가볍습니다.',sh:'square',g:'clear',l:'#f3ede0',cap:'#2a3f6b',lb:'12'},
 {id:'macallan-18-sherry',c:'speyside',n:'맥캘란 18 셰리 오크',e:'The Macallan 18 Sherry Oak',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:43,age:'18년',cask:'스페인 셰리 시즈닝 오크 통',p:0,b:5,s:4,sy:3,nose:'말린 과일, 생강, 오렌지',pal:'진한 셰리, 시나몬, 나무',fin:'길고 따뜻함',drink:'니트',design:'12년과 같은 어깨 넓은 병, 크림색 라벨에 진한 글씨.',fact:'맥캘란 셰리 오크의 대표 고연산입니다. 한 잔 값이 높은 편이라 특별한 날 고르는 병입니다.',sh:'std',g:'clear',l:'#efe4cc',cap:'#2a1a12',lb:'18'},
 {id:'balvenie-12',c:'speyside',n:'발베니 12 더블우드',e:'The Balvenie 12 DoubleWood',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드 · 더프타운',abv:40,age:'12년',cask:'버번 통 → 셰리 통 마무리',p:0,b:3,s:4,sy:2,nose:'꿀, 바닐라, 견과',pal:'계피, 셰리의 단맛',fin:'길고 부드러움',drink:'니트',design:'배가 볼록한 병에 양피지 느낌의 라벨.',fact:'두 통을 이어 쓰는 \'마무리(피니시)\' 방식을 일찍 알린 위스키입니다. 지금도 바닥 몰팅과 통 만드는 일을 직접 합니다.',sh:'round',g:'clear',l:'#ead9b6',cap:'#3a2316',lb:'12'},
 {id:'balvenie-14',c:'speyside',n:'발베니 14 캐리비안 캐스크',e:'The Balvenie 14 Caribbean Cask',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:43,age:'14년',cask:'버번 통 → 럼 통 마무리',p:0,b:3,s:5,sy:0,nose:'토피, 열대과일, 바닐라',pal:'흑설탕, 망고',fin:'달콤하고 따뜻함',drink:'니트',design:'더블우드와 같은 배불뚝 병, 푸른 라벨.',fact:'럼을 담았던 통에서 마무리해 단맛이 두드러집니다. 달콤한 맛을 좋아하는 사람에게 인기입니다.',sh:'round',g:'clear',l:'#2f6f78',cap:'#3a2316',lb:'14'},
+{id:'balvenie-21-pw',c:'speyside',n:'발베니 21 포트우드',e:'The Balvenie 21 PortWood',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'21년',cask:'포트 와인 캐스크 피니시',p:0,b:4,s:5,sy:1,nose:'건과일, 꿀',pal:'베리, 견과',fin:'길고 부드러움',drink:'니트',design:'짙은 붉은빛 상자와 둥근 병.',fact:'21년 숙성 원액을 포트 와인 통에서 마무리한다. 발베니 고숙성 제품 중 많이 알려졌다.',sh:'round',g:'clear',l:'#efe4cc',cap:'#5a1530',lb:'21'},
 {id:'aberlour-abunadh',c:'speyside',n:'아벨라워 아부나흐',e:"Aberlour A'bunadh",t:'싱글 몰트 · 캐스크 스트렝스',r:'스코틀랜드 · 스페이사이드',abv:'약 60',age:'표기 없음',cask:'스페인 올로로소 셰리 통',p:0,b:5,s:4,sy:3,nose:'오렌지 껍질, 체리, 초콜릿',pal:'진한 셰리, 향신료',fin:'아주 김',drink:'니트 한 모금 뒤 물을 조금씩',design:'땅딸막한 옛 스타일 병. 라벨에 배치 번호가 적혀 있습니다.',fact:'게일어로 \'원조\'라는 뜻입니다. 물을 타지 않아 배치마다 도수가 조금씩 다릅니다.',sh:'round',g:'clear',l:'#e8dcc0',cap:'#5c1a12',lb:'A'},
 {id:'glenfarclas-12',c:'speyside',n:'글렌파클라스 12',e:'Glenfarclas 12',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:43,age:'12년',cask:'셰리 통',p:0,b:3,s:4,sy:3,nose:'셰리, 건포도, 오렌지',pal:'말린 과일, 견과',fin:'중간',drink:'니트',design:'빨간 필기체 이름이 들어간 라벨.',fact:'1865년부터 그랜트 가문이 운영하는 가족 증류소입니다. 진한 셰리 맛에 값이 비교적 착해 바에서 셰리 입문용으로 많이 권합니다.',sh:'std',g:'clear',l:'#efe3c9',cap:'#7a1f1f',lb:'12'},
 {id:'glenfarclas-105',c:'speyside',n:'글렌파클라스 105',e:'Glenfarclas 105 Cask Strength',t:'싱글 몰트 · 캐스크 스트렝스',r:'스코틀랜드 · 스페이사이드',abv:60,age:'표기 없음',cask:'셰리 통',p:0,b:5,s:4,sy:3,nose:'셰리, 캐러멜, 견과',pal:'강한 셰리, 다크초콜릿',fin:'아주 김',drink:'물을 조금씩 타 가며',design:'검은 줄무늬 라벨에 빨간 필기체 로고. 숫자 105가 크게 들어갑니다.',fact:'105는 영국식 도수 표기 105 프루프(약 60%)에서 왔습니다.',sh:'std',g:'clear',l:'#1e1a18',cap:'#b08a4a',lb:'105'},
@@ -323,6 +347,7 @@ const B = [
 // 하일랜드
 {id:'glenmorangie-original',c:'highland',n:'글렌모렌지 오리지널',e:'Glenmorangie The Original 10',t:'싱글 몰트',r:'스코틀랜드 · 하일랜드 · 테인',abv:40,age:'10년',cask:'버번 통',p:0,b:2,s:4,sy:0,nose:'복숭아, 오렌지, 바닐라',pal:'꿀, 시트러스',fin:'짧고 산뜻함',drink:'니트, 하이볼',design:'목이 길고 투명한 병. 키 큰 증류기를 닮은 실루엣입니다.',fact:'스코틀랜드에서 가장 키 큰 증류기를 써서 가볍고 섬세한 원액을 얻습니다.',sh:'tall',g:'clear',l:'#f2ead9',cap:'#2b2b2b',lb:'10'},
 {id:'glenmorangie-lasanta',c:'highland',n:'글렌모렌지 라산타',e:'Glenmorangie Lasanta 12',t:'싱글 몰트',r:'스코틀랜드 · 하일랜드',abv:43,age:'12년',cask:'버번 통 → 셰리 통 마무리',p:0,b:3,s:4,sy:2,nose:'건포도, 오렌지, 초콜릿',pal:'토피, 견과',fin:'중간',drink:'니트',design:'오리지널과 같은 병에 붉은 라벨.',fact:'게일어로 \'따뜻함과 열정\'이라는 뜻입니다. 같은 원액을 통만 바꿔 마무리한 형제 제품(퀸타 루반: 포트 와인 통)과 비교해 마시기 좋습니다.',sh:'tall',g:'clear',l:'#8a2a24',cap:'#2b2b2b',lb:'12'},
+{id:'glenmorangie-18',c:'highland',n:'글렌모렌지 18',e:'Glenmorangie 18 (The Infinita)',t:'싱글 몰트',r:'스코틀랜드 · 하이랜드',abv:43,age:'18년',cask:'버번 + 올로로소 셰리',p:0,b:3,s:4,sy:1,nose:'꽃, 꿀',pal:'말린 과일, 바닐라',fin:'달콤하고 길게',drink:'니트',design:'목이 긴 병에 꽃 그림 라벨.',fact:'키 큰 증류기로 만든 가벼운 원액이 특징이다. 일부 원액을 셰리 통에서 더 숙성한다.',sh:'tall',g:'clear',l:'#e9e2d0',cap:'#1a1a1a',lb:'18'},
 {id:'dalmore-12',c:'highland',n:'달모어 12',e:'The Dalmore 12',t:'싱글 몰트',r:'스코틀랜드 · 하일랜드',abv:40,age:'12년',cask:'버번 통 → 셰리 통',p:0,b:4,s:5,sy:2,nose:'오렌지 마멀레이드, 초콜릿',pal:'오렌지, 커피, 향신료',fin:'중간, 달콤함',drink:'니트',design:'병에 붙은 은빛 사슴 머리 장식이 가장 큰 특징입니다.',fact:'사슴 뿔 장식은 증류소를 오래 이끈 가문의 문장에서 왔습니다. 선반에서 한눈에 찾을 수 있는 병입니다.',sh:'square',g:'clear',l:'#1e1b1a',cap:'#c0c0c0',lb:'12'},
 {id:'glendronach-12',c:'highland',n:'글렌드로낭 12',e:'The GlenDronach 12',t:'싱글 몰트',r:'스코틀랜드 · 하일랜드',abv:43,age:'12년',cask:'PX·올로로소 셰리 통',p:0,b:4,s:4,sy:3,nose:'건포도, 셰리, 꿀',pal:'말린 과일, 견과, 초콜릿',fin:'길고 달콤함',drink:'니트',design:'둥근 어깨의 병, 진한 셰리 색이 그대로 보입니다.',fact:'셰리 통 위스키를 찾는 사람이 맥캘란 다음으로 많이 고르는 증류소입니다.',sh:'round',g:'clear',l:'#efe4cf',cap:'#4a1c16',lb:'12'},
 {id:'clynelish-14',c:'highland',n:'클라이넬리시 14',e:'Clynelish 14',t:'싱글 몰트',r:'스코틀랜드 · 하일랜드 · 브로라',abv:46,age:'14년',cask:'버번 통 위주',p:1,b:3,s:3,sy:0,nose:'밀랍, 꿀, 바다',pal:'기름진 질감, 시트러스',fin:'중간, 짭짤함',drink:'니트',design:'라벨에 삵(들고양이)이 그려져 있습니다.',fact:'초를 녹인 듯한 \'밀랍\' 질감으로 유명합니다. 조니워커 블렌드의 핵심 원액으로도 쓰입니다.',sh:'std',g:'clear',l:'#efe8d6',cap:'#2f2f2f',lb:'14'},
@@ -364,8 +389,11 @@ const B = [
 {id:'jw-blue',c:'blend',n:'조니워커 블루 라벨',e:'Johnnie Walker Blue Label',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'표기 없음',cask:'여러 통',p:1,b:4,s:4,sy:1,nose:'꿀, 말린 과일, 은은한 연기',pal:'부드러움, 초콜릿',fin:'길고 부드러움',drink:'니트',design:'짙은 파란 유리의 무거운 병, 병마다 일련번호.',fact:'희귀한 원액을 섞은 최상위 제품입니다. 선물용으로 유명합니다.',sh:'square',g:'blue',l:'#1a2a5a',cap:'#c9a46a',lb:'B',tilt:1},
 {id:'jw-red',c:'blend',n:'조니워커 레드 라벨',e:'Johnnie Walker Red Label',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'표기 없음',cask:'여러 통',p:1,b:2,s:3,sy:0,nose:'후추, 사과, 약한 연기',pal:'가볍고 스파이시',fin:'짧음',drink:'하이볼, 칵테일',design:'비스듬한 빨간 라벨의 사각 병.',fact:'하이볼과 칵테일에 가장 흔히 쓰는 블렌디드 스카치 중 하나입니다.',sh:'square',g:'clear',l:'#b3261e',cap:'#1a1a1a',lb:'R',tilt:1},
 {id:'jw-double-black',c:'blend',n:'조니워커 더블 블랙',e:'Johnnie Walker Double Black',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'표기 없음',cask:'여러 통, 안쪽을 세게 그을린 통',p:2,b:3,s:3,sy:1,nose:'연기, 바닐라, 건과일',pal:'스모키하고 진함',fin:'중간, 연기',drink:'하이볼, 온더록',design:'어두운 유리의 사각 병, 검은 라벨.',fact:'블랙 라벨보다 연기와 그을린 통 맛을 더 진하게 맞춘 제품입니다.',sh:'square',g:'dark',l:'#121212',cap:'#c9a46a',lb:'DB',tilt:1},
+{id:'jw-18',c:'blend',n:'조니워커 18',e:'Johnnie Walker 18 Year Old',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'18년',cask:'여러 오크',p:1,b:3,s:4,sy:1,nose:'과일, 바닐라',pal:'꿀, 은은한 스모크',fin:'부드럽고 중간',drink:'니트, 온더록',design:'사각 병에 비스듬한 라벨.',fact:'예전 이름은 골드 라벨 리저브였다가 18년 표기로 바뀌었다. 조니워커 블렌디드 중 고숙성 제품이다.',sh:'square',g:'clear',l:'#cfcfcf',cap:'#1a1a1a',lb:'18',tilt:1},
 {id:'ballantines-17',c:'blend',n:'발렌타인 17',e:"Ballantine's 17",t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'17년',cask:'여러 통',p:1,b:3,s:4,sy:1,nose:'꿀, 바닐라, 꽃',pal:'부드러움, 오크',fin:'중간',drink:'니트, 온더록',design:'갈색 사각 병에 문장 라벨.',fact:'국내에서 \'발렌타인 17\'은 명절 선물로 특히 유명합니다. 파인스트·21·30년으로 나란히 있습니다.',sh:'square',g:'brown',l:'#efe5cf',cap:'#7a1f1f',lb:'17'},
 {id:'ballantines-finest',c:'blend',n:'발렌타인 파인스트',e:"Ballantine's Finest",t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'표기 없음',cask:'여러 통',p:0,b:2,s:3,sy:0,nose:'꿀, 사과, 바닐라',pal:'가볍고 부드러움',fin:'짧음',drink:'하이볼, 온더록',design:'문장이 있는 크림색 라벨의 사각 병.',fact:'발렌타인의 기본 제품입니다. 세계에서 많이 팔리는 블렌디드 스카치 중 하나입니다.',sh:'square',g:'brown',l:'#efe6d0',cap:'#7a1f1f',lb:'F'},
+{id:'ballantines-21',c:'blend',n:'발렌타인 21',e:'Ballantine\'s 21',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'21년',cask:'여러 오크',p:0,b:3,s:4,sy:1,nose:'꿀, 꽃',pal:'향신료, 과일',fin:'부드럽고 길게',drink:'니트',design:'짙은 색 병에 문장 라벨.',fact:'한국에서 명절 선물로 많이 찾는 블렌디드다. 여러 증류소 21년 이상 원액을 섞는다.',sh:'square',g:'green',l:'#efe6d0',cap:'#7a1f1f',lb:'21'},
+{id:'ballantines-30',c:'blend',n:'발렌타인 30',e:'Ballantine\'s 30',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'30년',cask:'여러 오크',p:0,b:4,s:4,sy:1,nose:'꿀, 말린 과일',pal:'오크, 향신료',fin:'길고 깊게',drink:'니트',design:'묵직한 병에 금색 문장.',fact:'발렌타인 정규 제품 중 가장 오래 숙성한 축이다. 30년 이상 된 원액만 쓴다.',sh:'square',g:'dark',l:'#1a1a1a',cap:'#c9a46a',lb:'30'},
 {id:'chivas-18',c:'blend',n:'시바스 리갈 18',e:'Chivas Regal 18',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'18년',cask:'여러 통',p:0,b:3,s:4,sy:1,nose:'다크초콜릿, 말린 과일',pal:'토피, 향신료',fin:'길고 부드러움',drink:'니트, 온더록',design:'어깨가 둥근 병에 금속 엠블럼.',fact:'스트라스아일라 같은 스페이사이드 몰트가 중심입니다. 12년은 하이볼, 18년은 니트로 많이 마십니다.',sh:'round',g:'clear',l:'#1c1a1a',cap:'#c9a46a',lb:'18'},
 {id:'chivas-12',c:'blend',n:'시바스 리갈 12',e:'Chivas Regal 12',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'12년',cask:'여러 통',p:0,b:3,s:4,sy:1,nose:'꿀, 사과, 바닐라',pal:'부드러운 꿀, 몰트',fin:'중간',drink:'온더록, 하이볼',design:'호박색 병에 금빛 문장 라벨.',fact:'스트라스아일라 증류소 원액이 중심이라고 알려져 있습니다. 18년과 나란히 마셔 보기 좋습니다.',sh:'round',g:'clear',l:'#d9b46a',cap:'#5a1530',lb:'12'},
 {id:'royal-salute-21',c:'blend',n:'로얄 살루트 21',e:'Royal Salute 21 The Signature Blend',t:'블렌디드 스카치',r:'스코틀랜드',abv:40,age:'21년',cask:'여러 통',p:0,b:4,s:4,sy:1,nose:'꿀, 배, 꽃',pal:'부드러운 오크, 말린 과일',fin:'김',drink:'니트',design:'유리가 아닌 도자기 병. 파란·빨간·초록 등 색이 있습니다.',fact:'1953년 엘리자베스 2세 대관식 때 쏜 21발 예포에서 이름이 왔습니다. 그래서 늘 21년 이상입니다.',sh:'jug',g:'ceramic',l:'#2c3e7a',cap:'#c9a46a',lb:'21'},
@@ -379,6 +407,7 @@ const B = [
 {id:'makers-mark',c:'usa',n:'메이커스 마크',e:"Maker's Mark",t:'버번',r:'미국 · 켄터키',abv:45,age:'표기 없음',cask:'새로 그을린 오크통',p:0,b:3,s:5,sy:0,nose:'캐러멜, 바닐라, 빵',pal:'부드러운 단맛, 계피',fin:'중간',drink:'온더록, 하이볼, 칵테일',design:'병목을 덮은 빨간 밀랍. 손으로 담가 병마다 흘러내린 모양이 다릅니다.',fact:'호밀 대신 밀을 넣은 \'휘티드 버번\'이라 둥글고 부드럽습니다.',sh:'square',g:'clear',l:'#efe4c6',cap:'#b3121a',lb:'M',wax:1},
 {id:'buffalo-trace',c:'usa',n:'버팔로 트레이스',e:'Buffalo Trace',t:'버번',r:'미국 · 켄터키',abv:45,age:'표기 없음',cask:'새로 그을린 오크통',p:0,b:3,s:4,sy:0,nose:'바닐라, 캐러멜, 민트',pal:'흑설탕, 향신료',fin:'중간',drink:'니트, 온더록',design:'들소가 그려진 라벨.',fact:'미국에서 오래 쉬지 않고 운영해 온 증류소로 꼽힙니다. 같은 곳에서 블랜튼, 이글 레어, 웰러도 나옵니다.',sh:'std',g:'clear',l:'#e6dcc6',cap:'#3a2618',lb:'BT'},
 {id:'wild-turkey-101',c:'usa',n:'와일드 터키 101',e:'Wild Turkey 101',t:'버번',r:'미국 · 켄터키',abv:50.5,age:'표기 없음',cask:'아주 강하게 그을린 오크통',p:0,b:4,s:3,sy:0,nose:'캐러멜, 오렌지, 후추',pal:'진한 향신료, 바닐라',fin:'길고 매콤함',drink:'온더록, 칵테일',design:'칠면조 그림이 들어간 라벨.',fact:'101은 미국식 도수 101 프루프(50.5%)라는 뜻입니다. 호밀 비중이 높아 매콤합니다.',sh:'std',g:'clear',l:'#f0e7d4',cap:'#1d1d1d',lb:'101'},
+{id:'wt-rare-breed',c:'usa',n:'와일드 터키 레어 브리드',e:'Wild Turkey Rare Breed',t:'버번 · 배럴 프루프',r:'미국 · 켄터키',abv:58.4,age:'표기 없음',cask:'새 탄화 오크',p:0,b:5,s:4,sy:0,nose:'오렌지, 바닐라',pal:'향신료, 캐러멜',fin:'길고 뜨겁게',drink:'니트, 물 몇 방울',design:'칠면조가 새겨진 진한 색 병.',fact:'물을 타지 않은 배럴 프루프로 병입한다. 배치마다 도수가 조금씩 다르다.',sh:'std',g:'clear',l:'#1a1a1a',cap:'#1a1a1a',lb:'RB'},
 {id:'woodford',c:'usa',n:'우드포드 리저브',e:'Woodford Reserve',t:'버번',r:'미국 · 켄터키',abv:43.2,age:'표기 없음',cask:'새로 그을린 오크통',p:0,b:3,s:4,sy:0,nose:'말린 과일, 초콜릿, 바닐라',pal:'견과, 향신료',fin:'중간',drink:'니트, 올드패션드',design:'납작한 플라스크 모양의 병.',fact:'연속식 증류기와 구리 단식 증류기 원액을 함께 씁니다. 올드패션드 칵테일 베이스로 유명합니다.',sh:'flask',g:'clear',l:'#e9ddc4',cap:'#2a1b12',lb:'W'},
 {id:'four-roses-sb',c:'usa',n:'포 로지스 스몰 배치',e:'Four Roses Small Batch',t:'버번',r:'미국 · 켄터키',abv:45,age:'표기 없음',cask:'새로 그을린 오크통',p:0,b:3,s:4,sy:0,nose:'꽃, 붉은 과일',pal:'꿀, 향신료',fin:'중간',drink:'니트, 온더록',design:'장미 네 송이 로고.',fact:'곡물 배합 2가지 × 효모 5가지로 원액 10가지를 만들어 섞습니다.',sh:'std',g:'clear',l:'#1d1d1d',cap:'#8a1f1f',lb:'4R'},
 {id:'blantons',c:'usa',n:'블랜튼 싱글 배럴',e:"Blanton's Original Single Barrel",t:'버번 · 싱글 배럴',r:'미국 · 켄터키',abv:46.5,age:'표기 없음',cask:'새로 그을린 오크통 한 개',p:0,b:4,s:4,sy:0,nose:'오렌지, 꿀, 캐러멜',pal:'바닐라, 향신료',fin:'길고 부드러움',drink:'니트',design:'수류탄 같은 다면 병, 마개 위에 달리는 말과 기수. 말 모양이 여러 가지라 모으는 사람도 있습니다.',fact:'통 하나만 병입한 \'싱글 배럴 버번\'을 처음 상품으로 낸 제품입니다. 병마다 통 번호가 손글씨로 적힙니다.',sh:'deca',g:'clear',l:'#efe3c4',cap:'#c9a46a',lb:'B',horse:1},
@@ -389,9 +418,13 @@ const B = [
 {id:'jim-beam',c:'usa',n:'짐빔 화이트',e:'Jim Beam White Label',t:'버번',r:'미국 · 켄터키',abv:40,age:'4년',cask:'새로 그을린 오크통',p:0,b:2,s:4,sy:0,nose:'바닐라, 옥수수, 오크',pal:'달콤하고 가벼움',fin:'짧음',drink:'하이볼, 콜라',design:'흰 라벨에 검은 글씨의 사각 병.',fact:'세계에서 가장 많이 팔리는 버번 중 하나입니다. 하이볼 기본 버번으로 자주 씁니다.',sh:'square',g:'clear',l:'#f4f1ea',cap:'#1a1a1a',lb:'JB'},
 {id:'elijah-craig',c:'usa',n:'일라이저 크레이그 스몰 배치',e:'Elijah Craig Small Batch',t:'버번',r:'미국 · 켄터키',abv:47,age:'표기 없음',cask:'새로 그을린 오크통',p:0,b:4,s:4,sy:0,nose:'캐러멜, 육두구, 오크',pal:'진한 바닐라, 향신료',fin:'김',drink:'니트, 온더록',design:'크림색 라벨의 둥근 병.',fact:'버번에 그을린 통을 처음 썼다고 전해지는 목사의 이름을 땄습니다(전설에 가까운 이야기입니다).',sh:'round',g:'clear',l:'#ece3cf',cap:'#1a1a1a',lb:'EC'},
 {id:'michters-us1',c:'usa',n:'믹터스 US1 버번',e:"Michter's US*1 Bourbon",t:'버번',r:'미국 · 켄터키',abv:45.7,age:'표기 없음',cask:'새로 그을린 오크통',p:0,b:3,s:5,sy:0,nose:'캐러멜, 바닐라, 과일',pal:'부드럽고 달콤함',fin:'중간',drink:'니트, 온더록',design:'키 작은 병에 크림색 라벨.',fact:'작은 묶음으로 병입해 부드럽고 달콤한 맛을 강조합니다.',sh:'round',g:'clear',l:'#efe4cc',cap:'#7a1f1f',lb:'M'},
+{id:'michters-rye',c:'usa',n:'믹터스 US1 라이',e:'Michter\'s US*1 Kentucky Straight Rye',t:'라이 위스키',r:'미국 · 켄터키',abv:42.4,age:'표기 없음',cask:'새 탄화 오크',p:0,b:3,s:3,sy:0,nose:'호밀 향신료, 캐러멜',pal:'후추, 꿀',fin:'따뜻하고 중간',drink:'니트, 칵테일',design:'옛날 약병 같은 둥근 병.',fact:'싱글 배럴로 병입하는 라이 위스키다. 호밀 비율이 높아 맵싸한 향이 난다.',sh:'round',g:'clear',l:'#efe4cc',cap:'#7a1f1f',lb:'R'},
 {id:'rittenhouse-rye',c:'usa',n:'리텐하우스 라이',e:'Rittenhouse Rye Bottled in Bond',t:'라이 위스키',r:'미국 · 켄터키',abv:50,age:'4년 이상',cask:'새로 그을린 오크통',p:0,b:3,s:2,sy:0,nose:'호밀 향신료, 캐러멜',pal:'매콤함, 계피',fin:'중간',drink:'칵테일(맨해튼), 온더록',design:'옛 서체의 크림색 라벨.',fact:'보틀드 인 본드 규정(한 증류소·한 시즌·4년 이상·50%)으로 병입했습니다. 칵테일 바에서 자주 씁니다.',sh:'std',g:'clear',l:'#efe6d0',cap:'#1a1a1a',lb:'R'},
+{id:'weller-sr',c:'usa',n:'W.L. 웰러 스페셜 리저브',e:'W.L. Weller Special Reserve',t:'휘티드 버번',r:'미국 · 켄터키',abv:45,age:'표기 없음',cask:'새 탄화 오크',p:0,b:3,s:5,sy:0,nose:'캐러멜, 꿀',pal:'바닐라, 버터',fin:'달콤하고 부드럽게',drink:'니트, 온더록',design:'초록 라벨의 둥근 병.',fact:'호밀 대신 밀을 넣은 버번이다. 미국에서도 구하기 어려워 시세가 오른다.',sh:'round',g:'clear',l:'#2f5a3a',cap:'#1a1a1a',lb:'W'},
+{id:'gentleman-jack',c:'usa',n:'젠틀맨 잭',e:'Gentleman Jack',t:'테네시 위스키',r:'미국 · 테네시',abv:40,age:'표기 없음',cask:'새 탄화 오크',p:0,b:2,s:4,sy:0,nose:'바닐라, 캐러멜',pal:'부드러운 곡물',fin:'짧고 매끄러움',drink:'온더록, 하이볼',design:'검은 라벨에 둥근 어깨 병.',fact:'숯 여과를 숙성 전후 두 번 해서 부드럽다. 잭 다니엘스의 상위 제품이다.',sh:'round',g:'clear',l:'#1a1a1a',cap:'#1a1a1a',lb:'GJ'},
 // 아일랜드·캐나다
 {id:'jameson',c:'irish',n:'제임슨',e:'Jameson Irish Whiskey',t:'블렌디드 아이리시',r:'아일랜드',abv:40,age:'표기 없음',cask:'버번·셰리 통',p:0,b:2,s:3,sy:1,nose:'꽃, 바닐라, 견과',pal:'가볍고 부드러움',fin:'짧음',drink:'니트, 하이볼',design:'초록 유리 병에 크림색 라벨.',fact:'세 번 증류해 매끄럽습니다. 세계에서 가장 많이 팔리는 아이리시 위스키입니다.',sh:'std',g:'green',l:'#efe4c9',cap:'#1c3b2a',lb:'J'},
+{id:'jameson-black-barrel',c:'irish',n:'제임슨 블랙 배럴',e:'Jameson Black Barrel',t:'블렌디드 아이리시',r:'아일랜드',abv:40,age:'표기 없음',cask:'두 번 탄화한 버번 오크',p:0,b:3,s:4,sy:0,nose:'토피, 바닐라',pal:'견과, 향신료',fin:'달콤하고 부드럽게',drink:'니트, 하이볼',design:'검은 라벨의 제임슨 병.',fact:'안쪽을 두 번 태운 통을 써서 맛이 진하다. 세 번 증류하는 아이리시 방식이다.',sh:'std',g:'green',l:'#1a1a1a',cap:'#1a1a1a',lb:'BB'},
 {id:'redbreast-12',c:'irish',n:'레드브레스트 12',e:'Redbreast 12',t:'싱글 팟 스틸',r:'아일랜드',abv:40,age:'12년',cask:'버번·셰리 통',p:0,b:4,s:4,sy:2,nose:'말린 과일, 생강, 크림',pal:'크리미, 향신료',fin:'길고 부드러움',drink:'니트',design:'초록 유리에 크림색 라벨과 빨간 목 띠, 지금 라벨에는 유럽울새 그림.',fact:'맥아와 싹을 틔우지 않은 생보리를 섞어 단식 증류기로 만드는 아일랜드만의 방식입니다.',sh:'std',g:'green',l:'#ece0c0',cap:'#8f1e1e',lb:'12'},
 {id:'green-spot',c:'irish',n:'그린 스팟',e:'Green Spot',t:'싱글 팟 스틸',r:'아일랜드',abv:40,age:'표기 없음',cask:'버번·셰리 통',p:0,b:3,s:4,sy:1,nose:'풋사과, 꿀',pal:'향신료, 보리',fin:'중간',drink:'니트',design:'라벨에 초록 점.',fact:'더블린의 와인 상점이 통에 초록 물감으로 점을 찍어 구분하던 데서 이름이 왔습니다.',sh:'std',g:'clear',l:'#e7e9df',cap:'#2f6b3a',lb:'●'},
 {id:'bushmills-10',c:'irish',n:'부시밀스 10',e:'Bushmills 10 Single Malt',t:'싱글 몰트 아이리시',r:'북아일랜드 · 앤트림',abv:40,age:'10년',cask:'버번·셰리 통',p:0,b:2,s:4,sy:1,nose:'꿀, 바닐라, 과일',pal:'부드러운 몰트',fin:'짧음',drink:'니트',design:'투명한 병에 금색 장식 라벨.',fact:'1608년 증류 허가를 내세우는 오래된 증류소입니다. 보리 맥아만으로 세 번 증류합니다.',sh:'std',g:'clear',l:'#efe6cf',cap:'#c9a46a',lb:'10'},
@@ -401,20 +434,35 @@ const B = [
 // 일본
 {id:'kakubin',c:'japan',n:'산토리 가쿠빈',e:'Suntory Kakubin',t:'재패니즈 블렌디드',r:'일본',abv:40,age:'표기 없음',cask:'여러 통',p:0,b:2,s:3,sy:0,nose:'꿀, 바닐라',pal:'가볍고 깔끔함',fin:'짧음',drink:'하이볼',design:'거북 등껍질 무늬가 새겨진 네모난 병, 노란 라벨.',fact:'1937년에 나온 일본 하이볼의 기본 위스키입니다. 이자카야의 \'가쿠 하이볼\'이 바로 이 병입니다.',sh:'square',g:'clear',l:'#e8c64a',cap:'#1d1d1d',lb:'角',turtle:1},
 {id:'toki',c:'japan',n:'산토리 토키',e:'Suntory Toki',t:'재패니즈 블렌디드',r:'일본',abv:43,age:'표기 없음',cask:'여러 통',p:0,b:1,s:3,sy:0,nose:'풋사과, 꿀, 허브',pal:'가볍고 깔끔함',fin:'짧음',drink:'하이볼',design:'굵은 글씨의 흰 라벨.',fact:'하쿠슈 몰트와 치타 그레인이 중심인 하이볼용 블렌디드입니다.',sh:'square',g:'clear',l:'#f6f3ec',cap:'#1a1a1a',lb:'季'},
+{id:'suntory-ao',c:'japan',n:'산토리 월드 위스키 아오',e:'Suntory World Whisky AO',t:'재패니즈 블렌디드 · 월드 블렌드',r:'일본 · 여러 나라 원액',abv:43,age:'표기 없음',cask:'여러 증류소 원액',p:1,b:3,s:3,sy:1,nose:'과일, 바닐라',pal:'몰트, 스모크 약간',fin:'부드럽고 중간',drink:'니트, 하이볼',design:'푸른빛 칠각형 병.',fact:'산토리 그룹이 가진 5개국 증류소 원액을 섞은 블렌디드다. 이름 \'아오\'는 푸른색을 뜻한다.',sh:'deca',g:'blue',l:'#e9eef8',cap:'#1a1a1a',lb:'碧'},
+{id:'suntory-royal',c:'japan',n:'산토리 로얄',e:'Suntory Royal',t:'재패니즈 블렌디드',r:'일본',abv:43,age:'표기 없음',cask:'셰리 등 여러 오크',p:0,b:3,s:4,sy:2,nose:'말린 과일, 꿀',pal:'부드러운 몰트',fin:'달콤하고 짧음',drink:'니트, 미즈와리',design:'한자 \'酉\' 모양을 본뜬 병과 뚜껑.',fact:'산토리 창업자가 회사 60주년에 맞춰 만든 블렌디드다. 일본에서 선물용으로 오래 쓰였다.',sh:'std',g:'clear',l:'#2a1a12',cap:'#c9a46a',lb:'R'},
 {id:'hibiki-harmony',c:'japan',n:'히비키 재패니즈 하모니',e:'Hibiki Japanese Harmony',t:'재패니즈 블렌디드',r:'일본',abv:43,age:'표기 없음',cask:'미즈나라·셰리·버번 통',p:0,b:3,s:4,sy:1,nose:'장미, 꿀, 오렌지',pal:'꿀, 은은한 나무',fin:'중간, 섬세함',drink:'니트, 미즈와리(물 타기)',design:'24면으로 깎은 병. 일본의 24절기를 뜻합니다.',fact:'야마자키·하쿠슈 몰트와 치타 그레인을 섞었습니다. 일본 블렌디드의 대표입니다.',sh:'deca',g:'clear',l:'#f3ecdc',cap:'#c9a46a',lb:'響'},
+{id:'hibiki-17',c:'japan',n:'히비키 17',e:'Hibiki 17 Year Old',t:'재패니즈 블렌디드',r:'일본',abv:43,age:'17년',cask:'미즈나라 등 여러 오크',p:0,b:4,s:4,sy:2,nose:'말린 과일, 꽃',pal:'꿀, 오크',fin:'길고 은은함',drink:'니트',design:'24면으로 깎은 둥근 병.',fact:'산토리의 고숙성 블렌디드다. 원액 부족으로 한동안 생산이 멈춰 구하기 어렵다.',sh:'deca',g:'clear',l:'#e9dfc9',cap:'#2b2b2b',lb:'響'},
+{id:'hibiki-21',c:'japan',n:'히비키 21',e:'Hibiki 21 Year Old',t:'재패니즈 블렌디드',r:'일본',abv:43,age:'21년',cask:'셰리·미즈나라 등',p:0,b:5,s:4,sy:3,nose:'건포도, 백단향',pal:'초콜릿, 꿀',fin:'길고 부드러움',drink:'니트',design:'24면으로 깎은 둥근 병.',fact:'국제 주류 대회에서 여러 번 상을 받은 산토리 블렌디드다. 한정 수량으로 풀린다.',sh:'deca',g:'clear',l:'#e9dfc9',cap:'#2b2b2b',lb:'21'},
 {id:'yamazaki-12',c:'japan',n:'야마자키 12',e:'The Yamazaki 12',t:'재패니즈 싱글 몰트',r:'일본 · 오사카 근교',abv:43,age:'12년',cask:'버번·셰리·미즈나라 통',p:0,b:3,s:4,sy:1,nose:'복숭아, 파인애플, 백단향',pal:'과일, 미즈나라의 향',fin:'김',drink:'니트',design:'붓글씨 한자 \'山崎\' 라벨.',fact:'1923년 세운 일본 첫 몰트 위스키 증류소입니다. 일본 참나무(미즈나라) 통의 향이 특징입니다.',sh:'std',g:'clear',l:'#f1ead9',cap:'#2b2b2b',lb:'山'},
 {id:'yamazaki-dr',c:'japan',n:'야마자키 디스틸러스 리저브',e:"Yamazaki Distiller's Reserve",t:'재패니즈 싱글 몰트',r:'일본 · 오사카 근교',abv:43,age:'표기 없음',cask:'와인·셰리·미즈나라 등 여러 통',p:0,b:3,s:4,sy:1,nose:'딸기, 체리, 꿀',pal:'붉은 과일, 바닐라',fin:'중간',drink:'니트, 하이볼',design:'12년과 같은 병에 붓글씨 이름.',fact:'연수 표기가 없는 야마자키입니다. 12년과 나란히 두면 숙성 차이가 잘 보입니다.',sh:'std',g:'clear',l:'#f1ead9',cap:'#2b2b2b',lb:'山'},
+{id:'yamazaki-18',c:'japan',n:'야마자키 18',e:'Yamazaki 18 Year Old',t:'재패니즈 싱글 몰트',r:'일본 · 오사카 근교',abv:43,age:'18년',cask:'셰리 캐스크 중심',p:0,b:5,s:4,sy:3,nose:'말린 과일, 초콜릿',pal:'진한 과일, 오크',fin:'길고 묵직함',drink:'니트',design:'한자 \'山崎\'가 크게 적힌 라벨.',fact:'일본 첫 몰트 증류소 야마자키의 고숙성 제품이다. 구하기 어려워 시세가 높다.',sh:'std',g:'clear',l:'#f1ead9',cap:'#2b2b2b',lb:'18'},
 {id:'hakushu-dr',c:'japan',n:'하쿠슈 디스틸러스 리저브',e:"Hakushu Distiller's Reserve",t:'재패니즈 싱글 몰트',r:'일본 · 야마나시',abv:43,age:'표기 없음',cask:'여러 통',p:1,b:2,s:3,sy:0,nose:'풀, 민트, 청사과',pal:'산뜻함, 약한 연기',fin:'짧고 시원함',drink:'하이볼(민트 잎)',design:'초록빛 라벨에 붓글씨 \'白州\'.',fact:'숲속에 있는 증류소입니다. 그래서 \'숲의 위스키\'라고 소개합니다.',sh:'std',g:'clear',l:'#cfe0c8',cap:'#2b2b2b',lb:'白'},
 {id:'hakushu-12',c:'japan',n:'하쿠슈 12',e:'Hakushu 12',t:'재패니즈 싱글 몰트',r:'일본 · 야마나시',abv:43,age:'12년',cask:'여러 통',p:1,b:2,s:3,sy:0,nose:'풋사과, 민트, 약한 연기',pal:'상쾌한 허브, 몰트',fin:'중간, 약한 연기',drink:'하이볼, 니트',design:'초록빛 라벨에 붓글씨 이름.',fact:'숲속 증류소답게 맑고 상쾌한 맛입니다. 피트를 살짝 쓴 원액도 섞입니다.',sh:'std',g:'clear',l:'#dfe8d6',cap:'#2b2b2b',lb:'白'},
+{id:'hakushu-18',c:'japan',n:'하쿠슈 18',e:'Hakushu 18 Year Old',t:'재패니즈 싱글 몰트',r:'일본 · 야마나시',abv:43,age:'18년',cask:'아메리칸 오크 등',p:1,b:3,s:3,sy:0,nose:'풋사과, 허브',pal:'꿀, 은은한 스모크',fin:'상쾌하고 길게',drink:'니트',design:'녹색 톤 라벨의 각진 병.',fact:'숲속 증류소라 불리는 하쿠슈의 고숙성 제품이다. 가벼운 피트 향이 특징이다.',sh:'std',g:'clear',l:'#dfe8d6',cap:'#2b2b2b',lb:'18'},
 {id:'chita',c:'japan',n:'치타',e:'The Chita',t:'재패니즈 싱글 그레인',r:'일본 · 아이치',abv:43,age:'표기 없음',cask:'여러 통',p:0,b:1,s:3,sy:0,nose:'꿀, 크림',pal:'가볍고 달콤함',fin:'짧음',drink:'하이볼',design:'투명한 병에 흰 한자.',fact:'블렌디드의 바탕이 되는 그레인 위스키만 담은 병입니다.',sh:'std',g:'clear',l:'#f6f3ec',cap:'#e9e3d6',lb:'知'},
 {id:'nikka-ftb',c:'japan',n:'닛카 프롬 더 배럴',e:'Nikka From the Barrel',t:'재패니즈 블렌디드',r:'일본',abv:51.4,age:'표기 없음',cask:'여러 통',p:1,b:4,s:3,sy:1,nose:'향신료, 바닐라, 과일',pal:'진하고 묵직함',fin:'김',drink:'온더록, 니트',design:'500ml짜리 낮은 네모 블록 병, 글자만 있는 흰 라벨.',fact:'섞은 원액을 통에 다시 넣어 어우러지게 한 뒤 51.4%로 담았습니다.',sh:'block',g:'clear',l:'#f5f2ea',cap:'#bfbfbf',lb:'FtB'},
 {id:'yoichi',c:'japan',n:'요이치 싱글 몰트',e:'Nikka Yoichi Single Malt',t:'재패니즈 싱글 몰트',r:'일본 · 홋카이도',abv:45,age:'표기 없음',cask:'여러 통',p:2,b:4,s:3,sy:1,nose:'연기, 바다, 과일',pal:'기름진 피트',fin:'김',drink:'니트',design:'어깨가 각진 병, 단정한 라벨.',fact:'증류기를 석탄 불로 직접 데우는 방식으로 묵직한 맛을 냅니다.',sh:'std',g:'clear',l:'#efe6d2',cap:'#1d1d1d',lb:'余'},
 {id:'miyagikyo',c:'japan',n:'미야기쿄 싱글 몰트',e:'Nikka Miyagikyo Single Malt',t:'재패니즈 싱글 몰트',r:'일본 · 미야기',abv:45,age:'표기 없음',cask:'여러 통',p:0,b:2,s:4,sy:1,nose:'사과, 꽃, 바닐라',pal:'부드럽고 과일 같음',fin:'중간',drink:'니트, 하이볼',design:'요이치와 같은 모양의 병.',fact:'같은 닛카지만 요이치와 정반대로 가볍고 화사합니다. 둘을 나란히 마셔 보기 좋습니다.',sh:'std',g:'clear',l:'#efe6d2',cap:'#7a1f1f',lb:'宮'},
 {id:'nikka-coffey-grain',c:'japan',n:'닛카 코피 그레인',e:'Nikka Coffey Grain',t:'재패니즈 그레인',r:'일본',abv:45,age:'표기 없음',cask:'여러 통',p:0,b:2,s:5,sy:0,nose:'바닐라, 코코넛',pal:'달콤하고 부드러움',fin:'중간',drink:'하이볼, 니트',design:'분홍빛 라벨. 코피 몰트(황금색 라벨)와 같은 병입니다.',fact:'코피는 커피가 아니라 연속식 증류기를 만든 사람의 이름입니다. 옥수수 위주의 원액입니다.',sh:'std',g:'clear',l:'#d99a8a',cap:'#1d1d1d',lb:'C'},
 {id:'taketsuru',c:'japan',n:'닛카 다케츠루 퓨어 몰트',e:'Nikka Taketsuru Pure Malt',t:'재패니즈 블렌디드 몰트',r:'일본',abv:43,age:'표기 없음',cask:'여러 통',p:1,b:3,s:3,sy:1,nose:'과일, 몰트, 약한 연기',pal:'부드러운 몰트, 셰리',fin:'중간',drink:'니트, 하이볼',design:'흰 라벨에 창업자 이름.',fact:'요이치와 미야기쿄의 몰트를 섞었습니다. 닛카 창업자 다케츠루 마사타카의 이름을 땄습니다.',sh:'std',g:'clear',l:'#f3efe6',cap:'#2b2b2b',lb:'竹'},
+{id:'nikka-days',c:'japan',n:'닛카 데이즈',e:'Nikka Days',t:'재패니즈 블렌디드',r:'일본',abv:40,age:'표기 없음',cask:'여러 오크',p:0,b:1,s:4,sy:0,nose:'꽃, 과일',pal:'가벼운 몰트, 곡물',fin:'짧고 깔끔',drink:'하이볼, 니트',design:'밝은 색의 산뜻한 라벨.',fact:'닛카가 해외 시장용으로 만든 가벼운 블렌디드다. 요이치·미야기쿄 원액을 쓴다.',sh:'std',g:'clear',l:'#f3e3c9',cap:'#1a1a1a',lb:'D'},
+{id:'black-nikka-clear',c:'japan',n:'블랙 닛카 클리어',e:'Black Nikka Clear',t:'재패니즈 블렌디드',r:'일본',abv:37,age:'표기 없음',cask:'여러 오크',p:0,b:1,s:3,sy:0,nose:'곡물, 바닐라',pal:'가볍고 달콤',fin:'짧음',drink:'하이볼',design:'수염 난 신사 그림이 있는 검은 라벨.',fact:'피트를 쓰지 않은 몰트로 만든 가벼운 블렌디드다. 일본에서 하이볼용으로 많이 마신다.',sh:'std',g:'clear',l:'#1a1a1a',cap:'#1a1a1a',lb:'BN'},
+{id:'ichiros-mwr',c:'japan',n:'이치로즈 몰트 앤 그레인',e:'Ichiro\'s Malt & Grain World Blended',t:'재패니즈 블렌디드 · 월드 블렌드',r:'일본 · 사이타마 치치부',abv:46.5,age:'표기 없음',cask:'여러 오크',p:0,b:3,s:3,sy:1,nose:'꿀, 시트러스',pal:'몰트, 향신료',fin:'중간',drink:'니트, 하이볼',design:'흰 바탕 라벨의 각진 병.',fact:'치치부 증류소 벤처 위스키가 여러 나라 원액을 섞어 만든 블렌디드다. 흔히 \'화이트 라벨\'로 불린다.',sh:'square',g:'clear',l:'#f4f1ea',cap:'#1a1a1a',lb:'MG'},
+{id:'mars-iwai-tradition',c:'japan',n:'마르스 이와이 트래디션',e:'Mars Iwai Tradition',t:'재패니즈 블렌디드',r:'일본 · 나가노',abv:40,age:'표기 없음',cask:'버번·셰리 등',p:0,b:2,s:4,sy:1,nose:'과일, 바닐라',pal:'몰트, 꿀',fin:'부드럽고 중간',drink:'하이볼, 니트',design:'검은 바탕에 금색 글씨 라벨.',fact:'혼보 주조 마르스 신슈 증류소의 대표 블렌디드다. 이름은 일본 위스키 초기 인물 이와이 기이치로에서 왔다.',sh:'std',g:'clear',l:'#1a1a1a',cap:'#c9a46a',lb:'岩'},
+{id:'kanosuke',c:'japan',n:'카노스케 싱글 몰트',e:'Kanosuke Single Malt',t:'재패니즈 싱글 몰트',r:'일본 · 가고시마',abv:48,age:'표기 없음',cask:'쇼추 캐스크 등',p:0,b:2,s:4,sy:0,nose:'시트러스, 바닐라',pal:'꿀, 과일',fin:'달콤하고 깔끔',drink:'니트',design:'짧고 둥근 병에 단정한 라벨.',fact:'쇼추 회사 고모토 양조가 세운 증류소 제품이다. 2017년에 증류를 시작한 신생 증류소다.',sh:'round',g:'clear',l:'#f3efe6',cap:'#1a1a1a',lb:'嘉'},
+{id:'akashi-white-oak',c:'japan',n:'아카시 블렌디드',e:'Akashi Blended (Red · Black)',t:'재패니즈 블렌디드',r:'일본 · 효고',abv:40,age:'표기 없음',cask:'여러 오크',p:0,b:2,s:3,sy:0,nose:'곡물, 과일',pal:'가볍고 달콤',fin:'짧음',drink:'하이볼',design:'색으로 제품을 구분하는 단순한 라벨.',fact:'사케 회사 에이가시마 주조가 화이트 오크 증류소에서 만든다. 바다 가까운 작은 증류소다.',sh:'std',g:'clear',l:'#b3261e',cap:'#1a1a1a',lb:'明'},
+{id:'kirin-fuji-grain',c:'japan',n:'기린 후지 싱글 그레인',e:'Kirin Single Grain Whisky Fuji',t:'재패니즈 싱글 그레인',r:'일본 · 시즈오카',abv:46,age:'표기 없음',cask:'버번 등',p:0,b:1,s:4,sy:0,nose:'바닐라, 과일',pal:'부드러운 곡물',fin:'달콤하고 깔끔',drink:'니트, 하이볼',design:'후지산을 떠올리게 하는 미니멀 라벨.',fact:'기린 후지 고텐바 증류소의 그레인 위스키다. 그레인 위스키 대회에서 상을 받은 적이 있다.',sh:'std',g:'clear',l:'#f6f3ec',cap:'#1a1a1a',lb:'富'},
 // 대만·인도·한국
 {id:'kavalan-classic',c:'world',n:'카발란 클래식',e:'Kavalan Classic Single Malt',t:'싱글 몰트',r:'대만 · 이란',abv:40,age:'표기 없음',cask:'여러 통',p:0,b:3,s:5,sy:1,nose:'망고, 바닐라, 꽃',pal:'열대과일, 꿀',fin:'중간',drink:'니트',design:'어깨가 각진 키 큰 병, KA/VA/LAN 세 줄 로고.',fact:'덥고 습해서 숙성이 빠르고 증발도 많습니다. 연수가 짧아도 맛이 진합니다.',sh:'tall',g:'clear',l:'#6a1d1d',cap:'#d0d0d0',lb:'K'},
+{id:'kavalan-vinho',c:'world',n:'카발란 솔리스트 비노 바리끄',e:'Kavalan Solist Vinho Barrique',t:'싱글 몰트 · 캐스크 스트렝스',r:'대만 · 이란',abv:57,age:'표기 없음',cask:'와인 바리끄',p:0,b:5,s:5,sy:1,nose:'베리, 바닐라',pal:'진한 과일, 향신료',fin:'길고 진하게',drink:'니트, 물 몇 방울',design:'짙은 붉은 상자와 둥근 병.',fact:'국제 대회에서 세계 최고 싱글 몰트로 뽑힌 적이 있다. 도수는 통마다 다르다.',sh:'tall',g:'clear',l:'#4a1525',cap:'#d0d0d0',lb:'V'},
 {id:'amrut',c:'world',n:'암룻 인디언 싱글 몰트',e:'Amrut Indian Single Malt',t:'싱글 몰트',r:'인도 · 방갈로르',abv:46,age:'표기 없음',cask:'버번 통',p:0,b:3,s:4,sy:0,nose:'열대과일, 몰트, 향신료',pal:'진한 과일',fin:'중간',drink:'니트',design:'지도와 히말라야가 그려진 양피지풍 라벨, 원통 케이스.',fact:'인도 보리로 만들고 더운 기후에서 빨리 숙성합니다. 인도 싱글 몰트를 세계에 알린 증류소입니다.',sh:'std',g:'clear',l:'#e8cf8c',cap:'#1d1d1d',lb:'A'},
+{id:'amrut-fusion',c:'world',n:'암룻 퓨전',e:'Amrut Fusion',t:'싱글 몰트',r:'인도 · 벵갈루루',abv:50,age:'표기 없음',cask:'버번 캐스크',p:1,b:4,s:3,sy:0,nose:'과일, 은은한 스모크',pal:'초콜릿, 몰트',fin:'길고 따뜻하게',drink:'니트, 물 몇 방울',design:'검은 바탕 라벨의 단단한 병.',fact:'인도 보리와 스코틀랜드 피트 보리를 함께 쓴다. 해외 평론에서 높은 점수를 받아 유명해졌다.',sh:'std',g:'clear',l:'#1a1a1a',cap:'#1a1a1a',lb:'F'},
 {id:'kiwon',c:'world',n:'기원 (쓰리소사이어티스)',e:'Ki One · Three Societies',t:'한국 싱글 몰트',r:'한국 · 경기 남양주',abv:'제품마다 다름',age:'표기 없음',cask:'여러 통',p:0,b:3,s:4,sy:1,nose:'제품마다 다름',pal:'과일, 몰트',fin:'제품마다 다름',drink:'니트',design:'한글 이름이 들어간 라벨.',fact:'한국의 덥고 추운 날씨 차이 덕분에 빨리 숙성됩니다. 국내 바에서 \'한국 위스키\'로 찾는 손님이 늘고 있습니다.',sh:'std',g:'clear',l:'#efe8da',cap:'#2b2b2b',lb:'기'},
 {id:'paul-john',c:'world',n:'폴 존 브릴리언스',e:'Paul John Brilliance',t:'싱글 몰트',r:'인도 · 고아',abv:46,age:'표기 없음',cask:'버번 통',p:0,b:3,s:4,sy:0,nose:'꿀, 열대과일, 향신료',pal:'달콤하고 진함',fin:'중간',drink:'니트',design:'짙은 색 라벨의 병.',fact:'인도 고아의 증류소입니다. 더운 기후라 빨리 익어 짧은 숙성에도 맛이 진합니다.',sh:'std',g:'clear',l:'#2a1d12',cap:'#c9a46a',lb:'PJ'},
 {id:'kimchangsoo',c:'world',n:'김창수 위스키',e:'Kim Chang Soo Whisky',t:'한국 싱글 몰트',r:'한국 · 경기 김포',abv:'제품마다 다름',age:'표기 없음',cask:'여러 통',p:0,b:3,s:4,sy:1,nose:'제품마다 다름',pal:'과일, 몰트',fin:'제품마다 다름',drink:'니트',design:'이름이 크게 적힌 라벨.',fact:'한 사람이 세운 작은 증류소라 한정 병입이 많습니다. 한국 날씨에서 익은 몰트를 맛볼 수 있습니다.',sh:'std',g:'clear',l:'#f3efe6',cap:'#1a1a1a',lb:'김'}
@@ -533,9 +581,25 @@ const FLAVS = [
   {id:'strong',n:'고도수',f:o=>typeof o.abv==='number'?o.abv>=48:/약 6/.test(o.abv)},
   {id:'highball',n:'하이볼',f:o=>/하이볼/.test(o.drink)}
 ];
+// ── 국내 판매 가격(소매, 병 하나) ─────────────────
+// [최저, 최고(원), 조사 신뢰도 h·m·l, 출처, 가격을 본 시기, 메모]. 바에서 마시는 한 잔 값이 아님.
+const PRICE_ASOF = '2026년 11월';
+const PRICE = {"glenfiddich-12":[65000,91000,"h","데일리샷(스토어·CU)","2026-11","구형 케이스 스토어 65,000원, CU 픽업 89,000~91,000원",700],"glenfiddich-15":[94000,99000,"m","데일리샷","2026-11","구형 케이스 99,000원, 700ml/750ml 표기가 엇갈리는 매물 94,000원",700],"glenlivet-12":[76000,110000,"h","데일리샷(스토어·파트너·CU)","2026-11","스토어 76,000~78,000원, CU 109,900원; 750ml 95,000원, 1L 99,000원도 있음",700],"macallan-12-sherry":[129000,130000,"m","데일리샷(스토어·파트너)","2026-11","현행 병 128,900~129,900원. 구형은 220,000원 이상",700],"macallan-12-double":[100000,134000,"h","데일리샷(여러 판매처)","2026-11","할인가 99,900원, 보통 109,000~134,000원",700],"macallan-18-sherry":[489000,545000,"m","데일리샷","2026-11","2024~2026 릴리스 기준. 연도가 오래된 릴리스는 60만~100만원 이상",700],"balvenie-12":[100000,112000,"h","데일리샷(CU·이마트24·파트너)","2026-11","",700],"balvenie-14":[144000,170000,"h","데일리샷(CU·이마트24·파트너)","2026-11","",700],"aberlour-abunadh":[150000,200000,"m","데일리샷","2026-11","배치마다 가격이 다름(배치 74·81·84 150,000~158,000원, 일반 표기 200,000원)",700],"glenfarclas-12":[110000,114000,"m","데일리샷(스토어·파트너)","2026-11","750ml 110,000원, 1L 102,900원 매물도 있음",700],"glenfarclas-105":[105000,132000,"m","데일리샷","2026-11","700ml 119,000~131,500원, 750ml 105,000원, 1L 174,000원",700],"glenfarclas-15":[166000,180000,"m","데일리샷(스토어·파트너)","2026-11","",700],"glenallachie-12":[102000,130000,"m","데일리샷(스토어·파트너·CU)","2026-11","",700],"cragganmore-12":[75000,107000,"m","데일리샷(스토어·파트너)","2026-11","매물 2건뿐, 가격 차이 큼",700],"benromach-10":[80000,104000,"m","데일리샷(이마트24·스토어)","2026-11","",700],"tamdhu-12":[109000,119000,"m","데일리샷(스토어·파트너)","2026-11","국내 표기는 '탐두'",700],"glenmorangie-original":[69000,69000,"l","데일리샷(스토어)","2026-11","매물 1건",700],"glenmorangie-lasanta":[92000,92000,"l","데일리샷(스토어)","2026-11","매물 1건",700],"dalmore-12":[109000,125000,"h","데일리샷(CU·이마트24·스토어·파트너)","2026-11","셰리 캐스크 버전은 140,000~169,000원",700],"glendronach-12":[77000,120000,"h","데일리샷(스토어·CU·이마트24·파트너)","2026-11","할인가 77,000~89,000원, 정가 약 120,000원. 국내 표기는 '글렌드로낙'",700],"clynelish-14":[90000,90000,"l","데일리샷(파트너)","2026-11","전용잔 패키지 매물 1건(89,900원)만 확인, 단품 매물 없음",700],"oban-14":[103000,153000,"m","데일리샷(스토어·파트너)","2026-11","",700],"old-pulteney-12":[66000,79000,"m","데일리샷(스토어·CU)","2026-11","",700],"dalwhinnie-15":[83000,89000,"m","데일리샷(파트너·스토어)","2026-11","",700],"glengoyne-12":[96000,103000,"m","데일리샷(스토어·파트너)","2026-11","",700],"tomatin-12":[94000,97000,"l","데일리샷(스토어)","2026-11","단품 94,000원, 전용잔 패키지 97,000원",700],"aberfeldy-12":[63000,105000,"m","데일리샷(스토어·파트너·이마트24)","2026-11","스토어 62,900원, 편의점·파트너 99,000~105,000원",700],"ardmore-legacy":[52000,52000,"l","데일리샷(스토어)","2026-11","매물 1건, 용량 표기 없음",700],"talisker-10":[69000,90000,"h","데일리샷(스토어·파트너·CU·이마트24)","2026-11","750ml 75,900원 매물도 있음",700],"highland-park-12":[66000,75000,"m","데일리샷(스토어·파트너)","2026-11","'바이킹 아너' 이름 없이 '하이랜드 파크 12년'으로 판매",700],"arran-10":[89000,89000,"l","데일리샷","2026-11","단품 매물 1건",700],"laphroaig-10":[78000,80000,"m","데일리샷(스토어·파트너)","2026-11","현행은 750ml 43%. 구형 700ml 40%는 100,000원",750],"laphroaig-qc":[98000,99000,"m","데일리샷(스토어·파트너)","2026-11","용량 표기 없음",700],"lagavulin-16":[142000,182000,"h","데일리샷(스토어·파트너·CU·이마트24)","2026-11","이마트24는 208,000원, 750ml 매물 155,000원",700],"ardbeg-10":[90000,105000,"m","데일리샷","2026-11","1L 약 119,000원",700],"ardbeg-uigeadail":[139000,152000,"m","데일리샷","2026-11","750ml 약 180,000원",700],"ardbeg-corryvreckan":[159000,180000,"m","데일리샷","2026-11","750ml 판매분 159,000원 포함",700],"bowmore-12":[80000,99000,"m","데일리샷","2026-11","구형 81,000~109,000원",700],"caol-ila-12":[99000,99000,"l","데일리샷","2026-11","판매처 1곳 확인",700],"bunnahabhain-12":[84000,120000,"m","데일리샷·CU·이마트24","2026-11","84,000원은 행사가, 편의점 픽업 116,000~120,000원",700],"bruichladdich-classic":[99000,120000,"m","데일리샷","2026-11","이마트24 픽업 149,000원",700],"kilchoman-machir":[110000,110000,"l","데일리샷","2026-11","판매처 1곳 확인",700],"kilchoman-sanaig":[114000,128000,"m","데일리샷","2026-11","750ml 125,000원도 있음",700],"port-charlotte-10":[125000,125000,"l","데일리샷","2026-11","판매처 1곳 확인",700],"ledaig-10":[123000,123000,"l","데일리샷(검색 요약)","2025","데일리샷 검색 목록에는 안 나옴, 상품 페이지 가격 1건만 확인",700],"springbank-10":[380000,380000,"l","데일리샷","2026-11","물량이 적어 웃돈 붙은 시세, 750ml도 같은 값",700],"longrow":[198000,198000,"l","데일리샷","2026-11","판매처 1곳, 물량 적음",700],"auchentoshan-12":[45000,80000,"m","데일리샷","2026-11","44,900원은 리뉴얼 출시 특가, 보통 55,000~80,000원",700],"glenkinchie-12":[94000,108000,"m","데일리샷","2026-11","",700],"hazelburn-10":[380000,380000,"l","데일리샷","2026-11","물량이 적어 웃돈 붙은 시세",700],"kilkerran-12":[159000,189000,"l","데일리샷","2026-11","189,000원은 구형",700],"jw-black":[44000,59000,"h","데일리샷·이마트","2026-11","1L 약 55,000원",700],"jw-green":[72000,85000,"m","데일리샷","2026-11","",700],"jw-blue":[259000,298000,"m","데일리샷","2026-11","국내는 750ml, 500ml는 205,000~235,000원",750],"jw-red":[24000,35000,"m","데일리샷","2026-11","24,500원은 마감 할인가",700],"jw-double-black":[47000,61000,"m","데일리샷·이마트","2026-11","1L 약 63,000원",700],"ballantines-17":[109000,149000,"m","데일리샷","2026-11","149,000원은 750ml, 500ml 86,000원",700],"ballantines-finest":[25000,42000,"m","데일리샷·보틀벙커·키햐","2026-11","1L 약 29,700원",700],"chivas-18":[105000,166000,"m","데일리샷","2026-11","판매처별 차이 큼, 750ml 99,000원 판매분도 있음",700],"chivas-12":[39000,59000,"m","데일리샷","2026-11","39,000원은 750ml, 1L 65,000~77,000원",700],"royal-salute-21":[189000,328000,"m","데일리샷·CU·이마트24","2026-11","주류점 약 189,000원, 편의점 픽업 314,000~328,000원",700],"monkey-shoulder":[52000,65000,"h","데일리샷·CU·이마트24","2026-11","1L 약 62,000원",700],"famous-grouse":[25000,35000,"m","데일리샷","2026-11","1L 29,000~38,000원",700],"dewars-white":[27000,35000,"m","데일리샷·CU","2026-11","",700],"windsor-12":[36000,41000,"m","데일리샷","2026-11","700ml 없음, 500ml 기준. 350·450ml 약 25,000~27,000원",500],"big-peat":[110000,110000,"l","데일리샷","2026-11","판매처 1곳",700],"haig-club":[78000,78000,"l","데일리샷","2026-11","판매처 1곳",700],"makers-mark":[38000,55000,"h","데일리샷","2026-11","750ml 2병 묶음 65,000~84,000원",700],"buffalo-trace":[39000,59000,"h","데일리샷(CU·이마트24·매장)","2026-11","750ml·1L도 유통, 편의점 할인가 44,000~46,000",700],"wild-turkey-101":[50000,66000,"h","데일리샷","2026-11","8년 표기 700ml 기준, 750ml 37,000~60,000·1L 44,000~45,000도 유통",700],"woodford":[58000,67000,"m","데일리샷","2026-11","750ml도 같은 가격대, 편의점 105,000 표시는 제외",700],"four-roses-sb":[56000,75000,"m","데일리샷","2026-11","750ml 위주, 품절 임박 판매처 많음",750],"blantons":[189000,261000,"m","데일리샷","2026-11","주로 매장 189,000, 한정 수량",700],"knob-creek-9":[77000,86000,"m","데일리샷(표기 '납 크릭')","2026-11","9년 표기는 없지만 표준 버번으로 보임, 1L 82,000",700],"eagle-rare-10":[77000,130000,"m","데일리샷","2026-11","750ml 위주(86,000~130,000), 700ml 77,000 한 곳, 한정 수량",750],"jack-daniels-7":[37000,49000,"h","데일리샷","2026-11","500ml 40,000·1L 60,000도 유통",700],"bulleit-rye":[49000,72000,"m","데일리샷","2026-11","판매처 2곳, 용량 미표기",700],"jim-beam":[20000,22000,"h","데일리샷","2026-11","750ml 22,000·1L 28,000~29,000",700],"elijah-craig":[69000,99000,"m","데일리샷","2026-11","115,000 판매처도 있음",700],"michters-us1":[87000,115000,"m","데일리샷(매장·이마트24)","2026-11","용량 미표기",700],"rittenhouse-rye":[90000,90000,"l","데일리샷","2026-11","판매처 1곳, 용량 미표기(미국 750ml), 한정 유통",700],"jameson":[29000,45000,"h","데일리샷(CU·이마트24·매장)","2026-11","500ml 35,000·750ml 34,000·1L 38,000도 유통",700],"redbreast-12":[79000,123000,"m","데일리샷","2026-11","주로 79,000 매장가",700],"green-spot":[115000,115000,"l","데일리샷(주류백화점 1곳)","2025","국내 유통 매우 적음, 해외 구매대행 750ml 약 190,000",700],"bushmills-10":[80000,95000,"m","데일리샷","2026-11","",700],"crown-royal":[50000,55000,"m","데일리샷","2026-11","750ml, 1L 67,000",750],"tullamore":[null,null,"l","데일리샷·웹 검색","2026-11","국내 판매가 찾지 못함(데일리샷 검색 결과 없음), 정식 수입 확인 안 됨",700],"teeling-sb":[40000,53000,"m","데일리샷(CU·매장)","2026-11","용량 미표기",700],"kakubin":[34000,45000,"h","데일리샷(CU·이마트24·매장)","2026-11","1.92L 85,000~89,000도 유통",700],"toki":[null,null,"l","데일리샷","2026-11","국내 일반 매장 판매가 찾지 못함, 신라면세점 1L 약 36,000만 확인",700],"hibiki-harmony":[135000,179000,"m","데일리샷·키햐","2026-11","일본 산토리 2026-04 출하분부터 가격 인상",700],"yamazaki-12":[358000,379000,"m","데일리샷·키햐","2026-11","수량 적음, 100주년 에디션은 550,000",700],"yamazaki-dr":[250000,250000,"l","데일리샷","2026-11","판매처 1곳, 용량 미표기",700],"hakushu-dr":[220000,220000,"l","데일리샷","2026-11","판매처 1곳, 용량 미표기",700],"hakushu-12":[390000,390000,"l","데일리샷","2026-11","판매처 1곳, 용량 미표기",700],"chita":[91000,128000,"m","키햐·에이와인·일만와인상회·가나주류","2025","일부는 유흥업소용 표시, 게시 시점 제각각",700],"nikka-ftb":[55000,78000,"h","데일리샷(CU·이마트24·매장)","2026-11","500ml만 판매",500],"yoichi":[129000,131000,"h","데일리샷(CU·이마트24·매장)","2026-11","해외직구 151,000",700],"miyagikyo":[129000,131000,"h","데일리샷(CU·이마트24·매장)","2026-11","",700],"nikka-coffey-grain":[110000,115000,"l","데일리샷·키햐(해외직구)","2026","국내 매장 판매 적음, 해외직구 가격",700],"taketsuru":[129000,131000,"h","데일리샷(CU·이마트24·매장)","2026-11","해외직구 224,000은 제외",700],"kavalan-classic":[139000,199000,"m","데일리샷(CU·이마트24·매장)","2026-11","할인가 139,000~153,000 많음",700],"amrut":[103000,106000,"m","데일리샷(스토어·파트너)","2026-11","",700],"kiwon":[103000,149000,"m","데일리샷(스토어·파트너·CU)","2026-11","기원 독수리·호랑이·유니콘 등 상시 제품 기준, 한정 배치는 16만~50만 원대",700],"paul-john":[70000,115000,"m","데일리샷(스토어·CU)","2026-11","",700],"kimchangsoo":[229000,269000,"l","데일리샷(이마트24·스토어)","2026-11","김포 2026 에디션 기준, 해마다 한정 출시라 에디션별 가격 차이 큼(지난 에디션 40만 원 이상), 용량 확인 필요",700],"hibiki-17":[990000,990000,"l","데일리샷","2026-11","국내 공식 상시 판매 거의 없음, 판매처 한 곳 가격",700],"hibiki-21":[940000,940000,"l","데일리샷","2026-11","국내 공식 상시 판매 적음, 판매처마다 차이 큼(260만 원대 게시도 있음)",700],"yamazaki-18":[1250000,1250000,"l","데일리샷","2026-11","국내 공식 상시 판매 적음, 구형은 170만 원 게시",700],"hakushu-18":[1300000,1300000,"l","데일리샷","2026-11","국내 공식 상시 판매 적음, 구형 135만 원 게시",700],"suntory-ao":[105000,105000,"l","데일리샷(스토어)","2026-11","판매처 한 곳 가격",700],"suntory-royal":[95900,95900,"l","데일리샷","2026-11","한정 기간 판매 가격, 국내 상시 유통 적음",700],"nikka-days":[null,null,"l","데일리샷 검색 결과 없음","2026-11","국내 정식 수입·판매처 확인 안 됨",700],"black-nikka-clear":[23900,23900,"l","데일리샷(해외직구)","2026-11","국내 매장 상시 판매 적고 해외직구 가격",700],"ichiros-mwr":[195000,195000,"l","데일리샷(스토어)","2026-11","판매처 한 곳 가격",700],"mars-iwai-tradition":[57000,84000,"l","데일리샷(신라면세점·스토어)","2026-11","국내 시중가는 확인 안 됨, 낮은 값은 면세점 가격·높은 값은 셰리 캐스크 피니시 한정판",750],"kanosuke":[179000,230000,"m","데일리샷(파트너·스토어·해외직구)","2026-11","",700],"akashi-white-oak":[23000,55000,"l","데일리샷(해외직구·스토어)","2026-11","아카시 레드·블랙 블렌디드 기준, 500ml 제품이 흔함(용량 확인 필요)",500],"kirin-fuji-grain":[120000,120000,"l","데일리샷(스토어)","2026-11","판매처 한 곳 가격",700],"glenfiddich-18":[165000,249000,"h","데일리샷(파트너·CU·이마트24)","2026-11","",700],"glenlivet-18":[165000,217000,"m","데일리샷(스토어·파트너)","2026-11","",700],"balvenie-21-pw":[528000,599000,"h","데일리샷(파트너·CU·스토어)","2026-11","",700],"glenmorangie-18":[208000,231000,"m","데일리샷(스토어·파트너)","2026-11","현재 '디 인피니타 18년'으로 판매",700],"jw-18":[149000,188000,"h","데일리샷(파트너·스토어·CU)","2026-11","750ml 패키지도 있음",700],"ballantines-21":[179000,210000,"h","데일리샷(스토어·파트너)","2026-11","500ml 13만 원대도 판매",700],"ballantines-30":[499000,539000,"m","데일리샷(스토어)·신라면세점","2026-11","면세점 약 42만 원",700],"weller-sr":[155000,155000,"l","데일리샷(스토어)","2026-11","국내 공급 적음, 판매처 한 곳 가격, 면세점은 더 저렴",750],"wt-rare-breed":[83000,109000,"h","데일리샷(CU·파트너·이마트24)","2026-11","1L 11만 원대도 판매",700],"gentleman-jack":[65000,70000,"h","데일리샷(스토어·이마트24)","2026-11","",700],"michters-rye":[79000,115000,"h","데일리샷(스토어·CU·파트너·이마트24)","2026-11","",700],"jameson-black-barrel":[54000,58000,"h","데일리샷(스토어·파트너)","2026-11","",700],"kavalan-vinho":[310000,360000,"h","데일리샷(CU·이마트24·스토어·파트너)","2026-11","싱글 캐스크 원액 도수, 1L 면세점 약 20만 원",700],"amrut-fusion":[109000,137000,"m","데일리샷(파트너·스토어)","2026-11","",700]};
+const BANDS = [
+  {id:'p1',n:'5만 원 아래',lo:0,hi:50000},
+  {id:'p2',n:'5–10만',lo:50000,hi:100000},
+  {id:'p3',n:'10–20만',lo:100000,hi:200000},
+  {id:'p4',n:'20–50만',lo:200000,hi:500000},
+  {id:'p5',n:'50만 원 이상',lo:500000,hi:Infinity}
+];
+const priceOf=o=>{const p=PRICE[o.id];return p&&p[0]!=null?p:null};
+const priceMid=o=>{const p=priceOf(o);return p?(p[0]+p[1])/2:null};
+const bandOf=o=>{const m=priceMid(o);return m==null?null:BANDS.find(b=>m>=b.lo&&m<b.hi).id};
+function won(v){if(v>=10000){const m=v/10000;return (m>=10?Math.round(m):Math.round(m*10)/10)+'만'}return v.toLocaleString('ko-KR')}
+function priceText(o){const p=priceOf(o);if(!p)return '';const lo=won(p[0]),hi=won(p[1]);return lo===hi?`약 ${lo} 원`:`약 ${lo}–${hi} 원`}
 // 실제 바처럼 병 높이를 조금씩 다르게(모양 기준)
 const SH_K = {std:1, tall:1.07, round:.94, square:.97, tri:1, flask:.9, block:.8, deca:.92, jug:.9};
-const state={style:'all',nat:'all',flav:new Set(),q:'',favOnly:false};
+const state={style:'all',nat:'all',flav:new Set(),q:'',favOnly:false,band:'all'};
 // 내 관심(★)·비교 목록: 이 기기 브라우저에만 저장
 const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:d}catch(_){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
 const valid=a=>a.filter(id=>B.some(o=>o.id===id));
@@ -549,14 +613,18 @@ function face(o, big){
   if(p) return `<img src="${p.f}" alt="" width="${p.w}" height="${p.h}" loading="lazy" decoding="async">`;
   return `<span class="svgb">${bottleSVG(o,1)}</span>`;
 }
-function btn(o){const f=fav.has(o.id);return `<button class="bt" data-id="${o.id}" aria-label="${esc(o.n)} 자세히 보기${f?' (관심)':''}"><span class="stand">${face(o)}${f?'<span class="star" aria-hidden="true">★</span>':''}</span><span class="nm">${esc(o.n)}</span></button>`}
+function btn(o,extra){const f=fav.has(o.id);return `<button class="bt" data-id="${o.id}" aria-label="${esc(o.n)} 자세히 보기${f?' (관심)':''}${extra?', '+esc(extra):''}"><span class="stand">${face(o)}${f?'<span class="star" aria-hidden="true">★</span>':''}</span><span class="nm">${esc(o.n)}</span>${extra?`<small class="why">${esc(extra)}</small>`:''}</button>`}
 
 function renderStats(){
   const photo=B.filter(o=>PH[o.id]).length;
   document.getElementById('stats').innerHTML=
     `<div><b>${B.length}</b><span>Bottles</span></div><div><b>${STYLES.length}</b><span>Styles</span></div><div><b>${NATIONS.length}</b><span>Countries</span></div><div><b>${photo}</b><span>Bottles drawn</span></div>`;
 }
+const FOCUS_KEYS=['style','nat','flav','band','favonly','fav','cmp','unset'];
+function focusKey(){const a=document.activeElement;if(!a||!a.dataset)return null;for(const k of FOCUS_KEYS)if(k in a.dataset)return [k,a.dataset[k]];if(a.hasAttribute&&a.hasAttribute('data-reset'))return ['reset',''];return null}
+function restoreFocus(fk){if(!fk)return;const [k,v]=fk;const sel=k==='reset'?'[data-reset]':'[data-'+k+(v!==''?'="'+v+'"':'')+']';const el=document.querySelector('#sheet.on '+sel)||document.querySelector(sel);if(el&&el!==document.activeElement)el.focus({preventScroll:true})}
 function renderControls(){
+  const fk=focusKey();
   const cnt=id=>B.filter(o=>(id==='all'||o.st===id)).length;
   document.getElementById('tabs').innerHTML=[{id:'all',n:'전체'}].concat(STYLES)
     .map(s=>`<button class="tab" data-style="${s.id}" aria-pressed="${state.style===s.id}">${s.n}<small>${cnt(s.id)}</small></button>`).join('');
@@ -565,13 +633,30 @@ function renderControls(){
   document.getElementById('flavs').innerHTML=FLAVS
     .map(f=>`<button class="chip flav" data-flav="${f.id}" aria-pressed="${state.flav.has(f.id)}">${f.n}</button>`).join('')
     +`<button class="chip fav" data-favonly aria-pressed="${state.favOnly}">★ 내 관심 ${fav.size}</button>`;
-  const n=(state.nat!=='all'?1:0)+state.flav.size+(state.favOnly?1:0);
+  document.getElementById('bands').innerHTML=`<span class="cg-label">병 가격</span>`+BANDS
+    .map(b=>`<button class="chip" data-band="${b.id}" aria-pressed="${state.band===b.id}">${b.n}</button>`).join('');
+  const n=(state.nat!=='all'?1:0)+state.flav.size+(state.favOnly?1:0)+(state.band!=='all'?1:0);
   document.getElementById('fcount').textContent=n||'';
+  renderActive();
+  restoreFocus(fk);
 }
+// 걸려 있는 필터를 한 줄로(휴대폰에서 필터를 접어도 보이게) + 초기화
+function activeList(){const a=[];if(state.nat!=='all')a.push(['nat',state.nat]);for(const id of state.flav)a.push(['flav:'+id,FLAVS.find(x=>x.id===id).n]);if(state.band!=='all')a.push(['band',BANDS.find(b=>b.id===state.band).n]);if(state.favOnly)a.push(['fav','★ 내 관심']);if(state.q)a.push(['q','"'+state.q+'"']);return a}
+function renderActive(){const el=document.getElementById('active');const a=activeList();if(!a.length){el.hidden=true;el.innerHTML='';return}
+  el.hidden=false;el.innerHTML=a.map(([k,n])=>`<button class="achip" data-unset="${esc(k)}" aria-label="${esc(n)} 조건 빼기">${esc(n)} <span aria-hidden="true">×</span></button>`).join('')+`<button class="areset" data-reset>필터 초기화</button>`}
+function unsetFilter(k){if(k==='nat')state.nat='all';else if(k==='band')state.band='all';else if(k==='fav')state.favOnly=false;else if(k==='q'){state.q='';document.getElementById('q').value=''}else if(k.startsWith('flav:'))state.flav.delete(k.slice(5));renderControls();renderShelves()}
+function resetFilters(){state.nat='all';state.band='all';state.favOnly=false;state.flav.clear();state.q='';document.getElementById('q').value='';renderControls();renderShelves();document.getElementById('q').focus({preventScroll:true})}
+// 메뉴판 이름 그대로 찾기: 대소문자·띄어쓰기·기호 무시, 흔한 줄임말
+const norm=t=>String(t).toLowerCase().normalize('NFKC').replace(/[\s·\-'’.,()&*!/]/g,'');
+const ALIAS={'jw':'조니워커 johnniewalker','jd':'잭다니엘','bt':'버팔로트레이스','wt':'와일드터키','gm':'','sb':'스몰배치'};
+const HAY=new Map();
+function hayOf(o){let h=HAY.get(o.id);if(h)return h;let ex='';for(const [k,v] of Object.entries(ALIAS))if(v&&(norm(o.n).includes(norm(v.split(' ')[0]))))ex+=' '+k;
+  h=norm([o.n,o.e,o.r,o.t,o.nose,o.pal,o.fin,o.cask,o.design,ex].join(' '));HAY.set(o.id,h);return h}
 function matches(o){
   if(state.favOnly&&!fav.has(o.id))return false;
+  if(state.band!=='all'&&bandOf(o)!==state.band)return false;
   if(state.nat!=='all'&&o.nat!==state.nat)return false;
-  if(state.q){const q=state.q.toLowerCase();const hay=[o.n,o.e,o.r,o.t,o.nose,o.pal,o.fin,o.cask,o.design].join(' ').toLowerCase();if(!hay.includes(q))return false}
+  if(state.q){const q=norm(state.q);if(q&&!hayOf(o).includes(q))return false}
   for(const f of state.flav){if(!FLAVS.find(x=>x.id===f).f(o))return false}
   return true;
 }
@@ -591,12 +676,12 @@ function renderShelves(){
     if(!rows)continue;
     html+=`<section class="style" id="s-${s.id}" aria-label="${s.n} 진열장"><div class="style-head"><div class="style-no">${String(no).padStart(2,'0')}</div><div class="style-en">${s.en}</div><h2>${s.n}</h2><p>${s.d}</p></div><div class="cabinet"><div class="track">${rows}</div></div></section>`;
   }
-  el.innerHTML=html||`<p class="empty">조건에 맞는 병이 없습니다. 나라나 맛 필터를 하나 풀어 보세요.</p>`;
+  el.innerHTML=html||`<div class="empty"><p>조건에 맞는 병이 없습니다.</p><button class="chip go" data-reset>필터 초기화</button></div>`;
   document.getElementById('count').textContent=`${shown} / ${B.length}`;
 }
 function renderFoot(){
   const list=B.filter(o=>PH[o.id]).map(o=>{const p=PH[o.id];return `<li>${esc(o.n)}: ${esc(p.a)} · ${esc(p.l)} · <a href="${p.u}" target="_blank" rel="noopener">원본</a>${p.n?` (${esc(p.n)})`:''}</li>`}).join('');
-  document.getElementById('site-foot').innerHTML=`맛 표현과 수치는 일반적으로 알려진 내용을 줄인 것이고, 맛 점수는 병끼리 비교하려고 붙인 대략적인 값입니다. 도수와 라벨은 제품 연도·수입 판에 따라 다를 수 있습니다.<br>병 이미지는 위키미디어 공용의 자유 라이선스 사진을 참고해 AI(GPT 이미지)로 정면·투명 배경으로 다시 그린 것입니다. 라벨 글자가 실제와 조금 다를 수 있고, 참고 사진의 작가와 라이선스를 함께 적었습니다(CC BY-SA 사진에서 나온 이미지는 같은 라이선스를 따릅니다). 사진을 찾지 못한 병은 모양과 색만 단순한 그림으로 그렸습니다.
+  document.getElementById('site-foot').innerHTML=`병 소매가는 ${esc(PRICE_ASOF)}에 국내 주류 판매처(주로 데일리샷, 일부 대형마트·주류 전문점)에 올라온 가격을 모은 범위이고, 바에서 파는 한 잔 값이 아닙니다. 판매처·환율·행사에 따라 달라집니다.<br>맛 표현과 수치는 일반적으로 알려진 내용을 줄인 것이고, 맛 점수는 병끼리 비교하려고 붙인 대략적인 값입니다. 도수와 라벨은 제품 연도·수입 판에 따라 다를 수 있습니다.<br>병 이미지는 위키미디어 공용의 자유 라이선스 사진을 참고해 AI(GPT 이미지)로 정면·투명 배경으로 다시 그린 것입니다. 라벨 글자가 실제와 조금 다를 수 있고, 참고 사진의 작가와 라이선스를 함께 적었습니다(CC BY-SA 사진에서 나온 이미지는 같은 라이선스를 따릅니다). 사진을 찾지 못한 병은 모양과 색만 단순한 그림으로 그렸습니다.
   <details><summary>참고 사진 출처 전체 보기 (${B.filter(o=>PH[o.id]).length}장)</summary><ul>${list}</ul></details>`;
 }
 
@@ -606,12 +691,18 @@ function similar(o){
     .sort((a,b)=>a.d-b.d).slice(0,6).map(a=>a.x);
 }
 function level(o){
-  const hard=(o.p>=3?2:0)+(typeof o.abv==='number'&&o.abv>=48?2:(String(o.abv).startsWith('약 6')?2:0))+(o.b>=5?1:0);
+  const hard=(o.p>=3?2:0)+(isStrong(o)?2:0)+(o.b>=5?1:0);
   return hard>=3?'경험자용':hard>=1?'중급':'입문';
 }
+function isStrong(o){return typeof o.abv==='number'?o.abv>=48:/약 6/.test(o.abv)}
+// 난이도를 왜 그렇게 봤는지(근거 낱말)
+function levelWhy(o){const w=[];if(o.p>=3)w.push('피트 강함');if(isStrong(o))w.push('고도수');if(o.b>=5)w.push('아주 묵직함');return w.length?w.join('·'):'피트·도수 부담 적음'}
+// 비슷한 병: 실제로 가까운 항목 이름
+function simWhy(o,x){const k=[];if(x.p===o.p)k.push('피트');if(Math.abs(x.b-o.b)<=0)k.push('무게감');if(Math.abs(x.s-o.s)<=0)k.push('단맛');if(x.sy===o.sy&&o.sy>0)k.push('셰리');return (k.length?k.slice(0,2).join('·'):'전체 맛')+' 비슷'}
 function meter(label,v,max,cls){return `<div class="meter">${label}<div class="bar-track"><div class="bar-fill ${cls||''}" style="width:${Math.round(v/max*100)}%"></div></div><em>${v}/${max}</em></div>`}
 function openDetail(id,push){
-  const o=B.find(b=>b.id===id); if(!o)return;
+  const o=B.find(b=>b.id===id);
+  if(!o){ if(location.hash.startsWith('#b-')){try{history.replaceState(null,'',location.pathname+location.search)}catch(_){}} closeDetail(true); return; }
   const s=STYLES.find(x=>x.id===o.st); const row=s.rows.find(r=>r[0]===o.row);
   const abvNum = typeof o.abv==='number';
   const abv = abvNum? o.abv+'%' : o.abv+(String(o.abv).startsWith('약')?'%':'');
@@ -623,12 +714,14 @@ function openDetail(id,push){
       <div><div class="d-kicker">${esc(s.en)}</div><h2 id="d-name">${esc(o.n)}</h2><div class="d-en">${esc(o.e)}</div>
       <div class="pills"><span class="pill">${esc(o.t)}</span><span class="pill">${esc(o.r)}</span>${row&&o.st==='single'?'':`<span class="pill">${esc(row?row[1]:'')}</span>`}</div>
       <div class="acts">${actBtns(o.id)}</div></div></div>
+    <div class="d-key"><b>${esc(o.nose.split(', ').slice(0,3).join(' · '))}</b><span>마시는 법 ${esc(o.drink)} · ${level(o)}(${levelWhy(o)})</span></div>
     <div class="facts">
       <div class="fact"><b class="${abvNum?'':'ko'}">${esc(abv)}</b><span>도수</span></div>
       <div class="fact"><b class="ko">${esc(o.age)}</b><span>숙성</span></div>
       <div class="fact"><b class="ko">${PEAT[o.p]}</b><span>피트</span></div>
-      <div class="fact"><b class="ko">${level(o)}</b><span>난이도</span></div>
+      <div class="fact"><b class="ko">${priceOf(o)?esc(priceText(o).replace('약 ','').replace(' 원','')):'확인 중'}</b><span>병 소매가</span></div>
     </div>
+    ${priceSec(o)}
     <div class="sec"><h3>Cask <span>숙성 통</span></h3><p>${esc(o.cask)}</p></div>
     <div class="sec"><h3>Profile <span>맛의 결</span></h3><div class="meters">
       ${meter('피트·연기',o.p,4,'peat')}${meter('무게감',o.b,5)}${meter('단맛·과일',o.s,5)}${meter('셰리 영향',o.sy,3)}
@@ -641,21 +734,25 @@ function openDetail(id,push){
     <div class="sec"><h3>Serve <span>이렇게 마셔 보세요</span></h3><p>${esc(o.drink)}</p></div>
     <div class="sec"><h3>Bottle <span>병 디자인</span></h3><p>${esc(o.design)}</p></div>
     <div class="sec"><h3>Story <span>알아 두면 좋은 이야기</span></h3><p>${esc(o.fact)}</p></div>
-    <div class="sec"><h3>Similar <span>비슷한 맛의 병</span></h3><div class="sim">${similar(o).map(btn).join('')}</div></div>
+    <div class="sec"><h3>Similar <span>비슷한 맛의 병</span></h3><div class="sim">${similar(o).map(x=>btn(x,simWhy(o,x))).join('')}</div></div>
     ${p?`<p class="credit">참고 사진: ${esc(p.a)} · ${esc(p.l)} · <a href="${p.u}" target="_blank" rel="noopener">위키미디어 공용 원본</a> · AI(GPT 이미지)로 다시 그린 병 · 라벨 글자가 실제와 다를 수 있음${p.n?` · ${esc(p.n)}`:''}</p>`:`<p class="credit">이 병은 자유 이용 사진을 찾지 못해 모양과 색만 그림으로 그렸습니다.</p>`}
     <p class="foot">비슷한 병은 피트·무게감·단맛·셰리 점수가 가까운 순서입니다. 점수는 이 페이지에서 비교하려고 붙인 대략적인 값입니다.</p>
   </div>`;
-  sheet.hidden=false; sheet.scrollTop=0;
-  requestAnimationFrame(()=>{sheet.classList.add('on');document.getElementById('scrim').classList.add('on')});
-  if(push!==false && location.hash!=='#b-'+id){ try{history.pushState(null,'','#b-'+id)}catch(e){} }
-  setTimeout(()=>document.getElementById('close')?.focus({preventScroll:true}),60);
+  openSheet(sheet.innerHTML,'#b-'+id,push);
+}
+function priceSec(o){
+  const p=priceOf(o);
+  if(!p) return `<div class="sec"><h3>Price <span>국내 병 소매가</span></h3><p>아직 믿을 만한 국내 판매가를 찾지 못했습니다${PRICE[o.id]&&PRICE[o.id][5]?' ('+esc(PRICE[o.id][5])+')':''}.</p></div>`;
+  const conf={h:'여러 곳에서 확인',m:'두어 곳에서 확인',l:'자료가 적어 참고용'}[p[2]]||'';
+  return `<div class="sec"><h3>Price <span>국내 병 소매가</span></h3><p class="price"><b>${esc(priceText(o))}</b> <small>${esc(String(p[6]||700))}ml 한 병</small></p>
+    <p class="price-note">${esc(PRICE_ASOF)} 조사 · ${esc(p[3]||'')} 기준${p[4]?' (가격 자료 '+esc(p[4])+')':''} · ${conf}${p[5]?' · '+esc(p[5]):''}<br>판매처·환율·행사에 따라 달라집니다. 바에서 파는 한 잔 값은 그 바의 메뉴를 확인하세요.</p></div>`;
 }
 function actBtns(id){
   const f=fav.has(id), c=cmp.includes(id), full=!c&&cmp.length>=CMP_MAX;
   return `<button class="act" data-fav="${id}" aria-pressed="${f}">${f?'★ 관심 표시함':'☆ 관심 표시'}</button>`
     +`<button class="act" data-cmp="${id}" aria-pressed="${c}" ${full?'disabled':''}>${c?'비교에서 빼기':full?'비교는 3병까지':'+ 비교에 담기'}</button>`;
 }
-function refreshActs(){document.querySelectorAll('.acts').forEach(a=>{const id=a.querySelector('[data-fav]')?.dataset.fav;if(id)a.innerHTML=actBtns(id)})}
+function refreshActs(){const fk=focusKey();document.querySelectorAll('.acts').forEach(a=>{const id=a.querySelector('[data-fav]')?.dataset.fav;if(id)a.innerHTML=actBtns(id)});restoreFocus(fk)}
 function toggleFav(id){fav.has(id)?fav.delete(id):fav.add(id);store.set('bb-fav',[...fav]);refreshActs();renderControls();renderShelves()}
 function toggleCmp(id){const i=cmp.indexOf(id);if(i>=0)cmp.splice(i,1);else if(cmp.length<CMP_MAX)cmp.push(id);store.set('bb-cmp',cmp);refreshActs();renderTray()}
 function renderTray(){
@@ -666,8 +763,12 @@ function renderTray(){
   t.innerHTML=`<div class="tray-in"><div class="tray-list">${items.map(o=>`<span class="tray-item">${esc(o.n)}<button data-cmpx="${o.id}" aria-label="${esc(o.n)} 비교에서 빼기">×</button></span>`).join('')}</div>
     <div class="tray-btns"><button class="chip" data-cmpclear>비우기</button><button class="chip go" data-cmpopen ${items.length<2?'disabled':''}>${items.length<2?'한 병 더 담기':`${items.length}병 비교하기`}</button></div></div>`;
 }
+let lastFocus=null;
+function setBackgroundInert(on){document.querySelectorAll('body > :not(#sheet):not(#scrim):not(script)').forEach(el=>{if(on)el.setAttribute('inert','');else el.removeAttribute('inert')})}
 function openSheet(html,hash,push){
   const sheet=document.getElementById('sheet');
+  if(!sheet.classList.contains('on')){const a=document.activeElement;lastFocus=a&&a!==document.body?a:null}
+  setBackgroundInert(true);
   sheet.innerHTML=html; sheet.hidden=false; sheet.scrollTop=0;
   requestAnimationFrame(()=>{sheet.classList.add('on');document.getElementById('scrim').classList.add('on')});
   if(push!==false && location.hash!==hash){ try{history.pushState(null,'',hash)}catch(e){} }
@@ -676,7 +777,7 @@ function openSheet(html,hash,push){
 const CLOSE_BTN=`<button class="close" id="close" aria-label="닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
 function openCompare(push){
   const items=cmp.map(id=>B.find(o=>o.id===id));
-  if(items.length<2){closeDetail(true);return}
+  if(items.length<2){ if(location.hash==='#cmp'){try{history.replaceState(null,'',location.pathname+location.search)}catch(_){}} closeDetail(true); return; }
   const abvTxt=o=>typeof o.abv==='number'?o.abv+'%':o.abv+(String(o.abv).startsWith('약')?'%':'');
   const bar=(v,max,cls)=>`<div class="bar-track"><div class="bar-fill ${cls||''}" style="width:${Math.round(v/max*100)}%"></div></div><em>${v}/${max}</em>`;
   const rowOf=(label,fn)=>`<div class="cmp-row"><div class="cmp-k">${label}</div>${items.map(o=>`<div class="cmp-v">${fn(o)}</div>`).join('')}</div>`;
@@ -684,18 +785,24 @@ function openCompare(push){
     <div><div class="d-kicker">Compare</div><h2 id="d-name" class="cmp-title">${items.length}병 나란히 보기</h2></div>
     <div class="cmp-head">${items.map(o=>`<button class="cmp-bottle" data-open="${o.id}"><span class="cmp-img">${face(o,true)}</span><b>${esc(o.n)}</b><small>${esc(o.t)}</small></button>`).join('')}</div>
     <div class="cmp-table">
-      ${rowOf('도수',o=>esc(abvTxt(o)))}${rowOf('숙성',o=>esc(o.age))}${rowOf('산지',o=>esc(o.r.split(' · ').slice(0,2).join(' · ')))}
-      ${rowOf('숙성 통',o=>esc(o.cask))}
+      ${rowOf('도수',o=>esc(abvTxt(o)))}${rowOf('병 소매가',o=>priceOf(o)?esc(priceText(o)):'확인 중')}
       ${rowOf('피트·연기',o=>bar(o.p,4,'peat'))}${rowOf('무게감',o=>bar(o.b,5))}${rowOf('단맛·과일',o=>bar(o.s,5))}${rowOf('셰리 영향',o=>bar(o.sy,3))}
-      ${rowOf('향',o=>esc(o.nose))}${rowOf('맛',o=>esc(o.pal))}${rowOf('여운',o=>esc(o.fin))}${rowOf('마시는 법',o=>esc(o.drink))}${rowOf('난이도',o=>level(o))}
+      ${rowOf('마시는 법',o=>esc(o.drink))}
     </div>
+    <details class="cmp-more"><summary>향·맛·숙성 더 보기</summary><div class="cmp-table">
+      ${rowOf('향',o=>esc(o.nose))}${rowOf('맛',o=>esc(o.pal))}${rowOf('여운',o=>esc(o.fin))}
+      ${rowOf('숙성',o=>esc(o.age))}${rowOf('숙성 통',o=>esc(o.cask))}${rowOf('산지',o=>esc(o.r.split(' · ').slice(0,2).join(' · ')))}${rowOf('난이도',o=>level(o)+' ('+levelWhy(o)+')')}
+    </div></details>
     <p class="foot">병을 누르면 자세한 설명이 열립니다. 점수는 이 페이지에서 비교하려고 붙인 대략적인 값입니다.</p>
   </div>`,'#cmp',push);
 }
 function closeDetail(fromHash){
   const sheet=document.getElementById('sheet');
+  const wasOn=sheet.classList.contains('on');
   sheet.classList.remove('on');document.getElementById('scrim').classList.remove('on');
+  setBackgroundInert(false);
   setTimeout(()=>{if(!sheet.classList.contains('on'))sheet.hidden=true},300);
+  if(wasOn){const id=lastFocus&&lastFocus.dataset&&lastFocus.dataset.id;const back=lastFocus&&document.contains(lastFocus)?lastFocus:(id?document.querySelector('#shelves .bt[data-id="'+id+'"]'):null);if(back)back.focus({preventScroll:true});lastFocus=null}
   if(!fromHash && (location.hash.startsWith('#b-')||location.hash==='#cmp')){ try{history.pushState(null,'',location.pathname+location.search)}catch(e){location.hash=''} }
 }
 function route(){
@@ -707,20 +814,30 @@ document.addEventListener('click',e=>{
   const t=e.target.closest('[data-style]'); if(t){state.style=t.dataset.style;renderControls();renderShelves();try{localStorage.setItem('bb-style',state.style)}catch(_){};
     const top=document.querySelector('.bar').getBoundingClientRect().top+scrollY; if(scrollY>top) scrollTo({top:top,behavior:'smooth'}); return}
   const n=e.target.closest('[data-nat]'); if(n){state.nat=n.dataset.nat;renderControls();renderShelves();return}
+  const bd=e.target.closest('[data-band]'); if(bd){state.band=state.band===bd.dataset.band?'all':bd.dataset.band;renderControls();renderShelves();return}
   const f=e.target.closest('[data-flav]'); if(f){const id=f.dataset.flav;state.flav.has(id)?state.flav.delete(id):state.flav.add(id);renderControls();renderShelves();return}
   const fo=e.target.closest('[data-favonly]'); if(fo){state.favOnly=!state.favOnly;renderControls();renderShelves();return}
   const ft=e.target.closest('#ftoggle'); if(ft){const box=document.getElementById('chipbox');const open=box.classList.toggle('open');ft.setAttribute('aria-expanded',open);return}
   const fv=e.target.closest('[data-fav]'); if(fv){toggleFav(fv.dataset.fav);return}
   const cm=e.target.closest('[data-cmp]'); if(cm){toggleCmp(cm.dataset.cmp);return}
   const cx=e.target.closest('[data-cmpx]'); if(cx){toggleCmp(cx.dataset.cmpx);if(location.hash==='#cmp')openCompare(false);return}
+  if(e.target.closest('[data-reset]')){resetFilters();return}
+  const ax=e.target.closest('[data-unset]'); if(ax){unsetFilter(ax.dataset.unset);return}
   if(e.target.closest('[data-cmpclear]')){cmp=[];store.set('bb-cmp',cmp);refreshActs();renderTray();if(location.hash==='#cmp')closeDetail();return}
   if(e.target.closest('[data-cmpopen]')){openCompare();return}
   const op=e.target.closest('[data-open]'); if(op){openDetail(op.dataset.open);return}
   const b=e.target.closest('.bt'); if(b){openDetail(b.dataset.id);return}
   if(e.target.closest('#close')||e.target.id==='scrim'){closeDetail();}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('sheet').classList.contains('on'))closeDetail()});
-document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value.trim();renderShelves()});
+document.addEventListener('keydown',e=>{
+  const sheet=document.getElementById('sheet'); if(!sheet.classList.contains('on'))return;
+  if(e.key==='Escape'){closeDetail();return}
+  if(e.key==='Tab'){const f=[...sheet.querySelectorAll('button:not([disabled]),a[href],summary,[tabindex]:not([tabindex="-1"])')].filter(x=>x.offsetParent!==null);if(!f.length)return;
+    const first=f[0],last=f[f.length-1];
+    if(e.shiftKey&&(document.activeElement===first||!sheet.contains(document.activeElement))){e.preventDefault();last.focus()}
+    else if(!e.shiftKey&&(document.activeElement===last||!sheet.contains(document.activeElement))){e.preventDefault();first.focus()}}
+});
+document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value.trim();renderShelves();renderActive()});
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
 try{const s=localStorage.getItem('bb-style');if(s&&(s==='all'||STYLES.some(x=>x.id===s)))state.style=s}catch(_){}
