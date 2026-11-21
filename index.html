@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>위스키 백바</title>
 <meta name="description" content="국내 위스키바에서 자주 보는 위스키를 종류별 선반에 진열하고, 병을 누르면 맛·도수·통·병 디자인을 보여 주는 페이지">
+<meta name="theme-color" content="#0a0807">
+<meta property="og:type" content="website">
+<meta property="og:title" content="위스키 백바">
+<meta property="og:description" content="국내 위스키바 선반에서 자주 보는 72병. 맛·도수·숙성 통과 비슷한 병을 한눈에.">
+<meta property="og:url" content="https://newhead84.github.io/whisky-backbar/">
+<meta property="og:image" content="https://newhead84.github.io/whisky-backbar/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap">
 <style>
@@ -39,6 +49,7 @@ body{font-family:var(--f-body);font-size:15px;line-height:1.6;-webkit-font-smoot
     var(--bg);
   min-height:100vh}
 button,input{font:inherit;color:inherit}
+h1,h2,h3,p,li,.lede{word-break:keep-all;overflow-wrap:break-word}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
 .latin{font-family:var(--f-latin)}
 
@@ -53,21 +64,20 @@ h1 em{font-style:normal;color:var(--amber)}
 .stats div{display:flex;flex-direction:column}
 .stats b{font-weight:500;font-size:28px;letter-spacing:-.02em;line-height:1.1}
 .stats span{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-3)}
+@media (max-width:480px){.stats{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:12px}.stats b{font-size:24px}.stats span{font-size:9.5px;letter-spacing:.12em}}
 
 /* 고정 바 */
 .bar{position:sticky;top:0;z-index:30;background:rgba(10,8,7,.78);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);border-bottom:1px solid var(--line)}
-.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-top:10px}
-.tabs::-webkit-scrollbar{display:none}
+.tabs{display:flex;flex-wrap:wrap;gap:0 4px;padding-top:10px}
 .tab{flex:0 0 auto;background:none;border:0;padding:10px 14px 12px;cursor:pointer;color:var(--ink-3);font-weight:600;font-size:15px;position:relative;white-space:nowrap;transition:color .15s}
 .tab small{font-family:var(--f-latin);font-weight:400;font-size:11px;margin-left:5px;color:var(--ink-3)}
 .tab:hover{color:var(--ink-2)}
 .tab[aria-pressed="true"]{color:var(--ink)}
 .tab[aria-pressed="true"]::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:2px;border-radius:2px;background:var(--amber);box-shadow:0 0 10px var(--amber)}
-.filters{display:flex;gap:8px;align-items:center;padding:10px 0 12px;overflow-x:auto;scrollbar-width:none}
-.filters::-webkit-scrollbar{display:none}
-.search{flex:0 0 220px;display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 0 12px}
+.search{flex:1 1 150px;min-width:0;max-width:340px;display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line)}
 .search svg{flex:none;opacity:.6}
-.search input{flex:1;min-width:0;background:none;border:0;outline:0;font-size:14px;height:100%}
+.search input{flex:1;min-width:0;width:100%;background:none;border:0;outline:0;font-size:14px;height:100%}
 .search input::placeholder{color:var(--ink-3)}
 .search:focus-within{border-color:var(--amber)}
 .sep{flex:none;width:1px;height:20px;background:var(--line-2);margin:0 4px}
@@ -76,6 +86,18 @@ h1 em{font-style:normal;color:var(--amber)}
 .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#120d09;font-weight:600}
 .chip.flav[aria-pressed="true"]{background:var(--amber);border-color:var(--amber)}
 .count{flex:none;margin-left:auto;padding-left:8px;font-family:var(--f-latin);font-size:12px;letter-spacing:.12em;color:var(--ink-3);white-space:nowrap}
+.chipbox{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px 18px}
+.cgroup{display:flex;flex-wrap:wrap;gap:6px}
+.chip.fav[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#120d09}
+.ftoggle{display:none}
+.ftoggle b{font-family:var(--f-latin);font-weight:600;margin-left:6px;color:var(--amber)}
+.ftoggle b:empty{display:none}
+@media (max-width:900px){.ftoggle{display:inline-block}.chipbox{display:none;padding-top:2px}.chipbox.open{display:flex}}
+@media (max-width:640px){
+  .tab{padding:8px 10px 10px;font-size:14px}
+  .tab[aria-pressed="true"]::after{left:10px;right:10px}
+  .chip{height:32px;padding:0 11px;font-size:13px}
+}
 :focus-visible{outline:2px solid var(--amber);outline-offset:2px}
 
 /* 종류별 진열장 */
@@ -85,10 +107,13 @@ h1 em{font-style:normal;color:var(--amber)}
 .style-en{font-family:var(--f-latin);font-size:11.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-3)}
 .style-head h2{margin:2px 0 0;font-weight:800;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.03em;line-height:1.15}
 .style-head p{grid-column:1/-1;margin:10px 0 0;color:var(--ink-2);max-width:62ch;text-wrap:pretty}
-.row-label{display:flex;align-items:baseline;gap:10px;margin:26px 0 8px}
-.row-label b{font-weight:700;font-size:15px}
-.row-label span{font-family:var(--f-latin);font-size:12px;color:var(--ink-3)}
-.row-label i{font-style:normal;color:var(--ink-3);font-size:13px}
+.cabinet{margin-top:22px}
+/* 선반 이름표: 산지·세부 종류가 시작되는 자리에 병 한 칸 크기로 놓음 */
+.plate{justify-self:stretch;align-self:start;height:var(--H);display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:0 4px 14px;min-width:0;word-break:keep-all;border-left:1px solid var(--amber);background:linear-gradient(90deg,var(--amber-soft),transparent 80%)}
+.plate b{font-weight:700;font-size:14px;line-height:1.25;color:var(--ink)}
+.plate span{font-family:var(--f-latin);font-size:12px;color:var(--amber)}
+.plate i{font-style:normal;color:var(--ink-3);font-size:12px;line-height:1.35}
+@media (max-width:640px){.plate b{font-size:13px}.plate i{font-size:11px}}
 
 /* 유리 선반 한 칸: 뒤 벽 백라이트 + 위쪽 LED 줄 + 유리판 + 바닥 반사 */
 .cabinet{position:relative;border-radius:14px;overflow:hidden;
@@ -97,14 +122,13 @@ h1 em{font-style:normal;color:var(--amber)}
     linear-gradient(180deg,#17110c 0%,#0d0a08 100%);
   box-shadow:inset 0 0 0 1px rgba(255,236,210,.06), inset 0 -40px 60px rgba(0,0,0,.45)}
 .cabinet::before{content:"";position:absolute;left:4%;right:4%;top:0;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--amber) 15%,#ffd9a0 50%,var(--amber) 85%,transparent);box-shadow:0 0 18px 2px rgba(242,170,76,.55);z-index:1;pointer-events:none}
-.scroller{overflow-x:auto;scrollbar-width:thin;scrollbar-color:rgba(255,236,210,.18) transparent;scroll-snap-type:x proximity;overscroll-behavior-x:contain}
-.track{display:inline-flex;align-items:flex-start;gap:clamp(6px,1.4vw,14px);min-width:100%;padding:34px clamp(14px,3vw,30px) 14px;position:relative}
-.track::after{ /* 유리판 */
-  content:"";position:absolute;left:0;right:0;top:calc(34px + var(--H));height:9px;
-  background:linear-gradient(180deg,rgba(255,244,228,.30),rgba(255,244,228,.06) 45%,rgba(255,244,228,.12));
-  border-top:1px solid rgba(255,248,236,.55);
-  box-shadow:0 10px 26px rgba(242,170,76,.10),0 1px 0 rgba(0,0,0,.5);pointer-events:none}
-.bt{flex:0 0 var(--slot);width:var(--slot);display:flex;flex-direction:column;align-items:center;background:none;border:0;padding:0;cursor:pointer;scroll-snap-align:center;-webkit-tap-highlight-color:transparent}
+/* 한 종류 안의 칸들: 병이 적은 칸은 옆으로 나란히, 많은 칸은 여러 층으로 접힘(가로 스크롤 없음) */
+.track{--gx:clamp(6px,1.4vw,14px);--gy:22px;--px:clamp(12px,2.4vw,26px);--L:calc(var(--H) + 54px + var(--gy));
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--slot),1fr));justify-items:center;column-gap:var(--gx);row-gap:var(--gy);
+  padding:34px var(--px) 12px;position:relative;
+  /* 층마다 유리판: 병 높이 바로 아래에 9px 판, 한 층(L)마다 반복 */
+  background:linear-gradient(180deg,transparent var(--H),rgba(255,248,236,.55) var(--H),rgba(255,244,228,.30) calc(var(--H) + 1px),rgba(255,244,228,.06) calc(var(--H) + 5px),rgba(255,244,228,.12) calc(var(--H) + 9px),transparent calc(var(--H) + 9px)) 0 34px / 100% var(--L) repeat-y}
+.bt{width:var(--slot);display:flex;flex-direction:column;align-items:center;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .bt .stand{width:100%;height:var(--H);display:flex;align-items:flex-end;justify-content:center;position:relative}
 .bt .stand::before{ /* 고를 때 위에서 비추는 조명 */
   content:"";position:absolute;inset:-30px -18px 0;background:radial-gradient(50% 60% at 50% 30%,rgba(255,214,150,.22),transparent 70%);opacity:0;transition:opacity .2s;pointer-events:none}
@@ -113,7 +137,7 @@ h1 em{font-style:normal;color:var(--amber)}
   -webkit-box-reflect:below 9px linear-gradient(transparent 78%,rgba(255,255,255,.16));
   transition:transform .22s cubic-bezier(.2,.7,.2,1),filter .22s}
 .bt .svgb svg{height:100%;width:auto;display:block;margin:0 auto}
-.bt .nm{margin-top:22px;font-size:12px;line-height:1.3;color:var(--ink-3);text-align:center;word-break:keep-all;height:2.6em;width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;transition:color .2s}
+.bt .nm{margin-top:22px;font-size:12px;line-height:1.3;color:var(--ink-3);text-align:center;word-break:keep-all;height:32px;width:100%;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;transition:color .2s}
 .bt:hover img,.bt:hover .svgb,.bt:focus-visible img,.bt:focus-visible .svgb{transform:translateY(-8px);filter:drop-shadow(0 16px 14px rgba(0,0,0,.6)) brightness(1.06)}
 .bt:hover .stand::before,.bt:focus-visible .stand::before{opacity:1}
 .bt:hover .nm,.bt:focus-visible .nm{color:var(--ink)}
@@ -177,6 +201,53 @@ footer.site ul{margin:10px 0 0;padding-left:18px;columns:2;column-gap:28px}
 footer.site li{break-inside:avoid;margin-bottom:4px}
 footer.site a{color:var(--ink-2)}
 @media (max-width:640px){footer.site ul{columns:1}}
+/* 내 관심 별 */
+.bt .stand{position:relative}
+.star{position:absolute;top:-4px;right:8%;font-size:13px;line-height:1;color:var(--amber);text-shadow:0 0 8px rgba(242,170,76,.7);pointer-events:none}
+/* 상세 시트 버튼 */
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.act{height:34px;padding:0 13px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--ink-2);cursor:pointer;font-size:13px;white-space:nowrap}
+.act:hover{color:var(--ink);border-color:var(--ink-3)}
+.act[aria-pressed="true"]{background:var(--amber-soft);border-color:var(--amber);color:var(--ink)}
+.act:disabled{opacity:.45;cursor:default}
+/* 비슷한 병: 가로 스크롤 대신 접어서 */
+.sim{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--slot),1fr));justify-items:center;gap:14px 6px;overflow:visible}
+.sim .star{display:none}
+/* 비교 바구니 */
+.tray{position:fixed;z-index:35;left:50%;bottom:max(12px,env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(720px,calc(100% - 24px));
+  background:rgba(24,18,13,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--line-2);border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.tray-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px}
+.tray-list{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 220px;min-width:0}
+.tray-item{display:inline-flex;align-items:center;gap:2px;font-size:13px;padding:3px 4px 3px 10px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line)}
+.tray-item button{width:24px;height:24px;border:0;background:none;color:var(--ink-3);cursor:pointer;font-size:15px;line-height:1}
+.tray-btns{display:flex;gap:6px;margin-left:auto}
+.chip.go{background:var(--amber);border-color:var(--amber);color:#120d09;font-weight:600}
+.chip.go:disabled{background:transparent;border-color:var(--line);color:var(--ink-3);font-weight:400;cursor:default}
+body.has-tray footer.site{padding-bottom:120px}
+/* 비교 화면 */
+.sheet:has(.cmp){width:min(860px,100%)}
+.cmp-title{font-weight:800;font-size:26px;letter-spacing:-.03em;margin:8px 0 0}
+.cmp-head,.cmp-row{display:grid;grid-template-columns:72px repeat(var(--c),minmax(0,1fr));gap:10px}
+.cmp-head::before{content:""}
+.cmp-bottle{display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;color:inherit;cursor:pointer;padding:0;text-align:center;min-width:0;word-break:keep-all}
+.cmp-img{height:150px;display:flex;align-items:flex-end;justify-content:center}
+.cmp-img img,.cmp-img .svgb{height:150px;width:auto;max-width:100%;object-fit:contain;filter:drop-shadow(0 10px 10px rgba(0,0,0,.55))}
+.cmp-img .svgb svg{height:100%;width:auto}
+.cmp-bottle b{font-size:14px;line-height:1.3;margin-top:6px}
+.cmp-bottle small{font-size:11.5px;color:var(--ink-3)}
+.cmp-table{display:grid;border-top:1px solid var(--line)}
+.cmp-row{padding:10px 0;border-bottom:1px solid var(--line);align-items:center}
+.cmp-k{font-size:12.5px;color:var(--ink-3)}
+.cmp-v{font-size:13.5px;color:var(--ink);min-width:0;word-break:keep-all;overflow-wrap:break-word;display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.cmp-v:not(:has(.bar-track)){display:block}
+.cmp-v em{font-style:normal;font-family:var(--f-latin);font-size:11px;color:var(--ink-3)}
+@media (max-width:640px){
+  .cmp-head,.cmp-row{grid-template-columns:repeat(var(--c),minmax(0,1fr))}
+  .cmp-head::before{display:none}
+  .cmp-k{grid-column:1/-1;font-size:12px;margin-bottom:-4px}
+  .cmp-img,.cmp-img img,.cmp-img .svgb{height:120px}
+  .cmp-v{font-size:13px}
+}
 @media (prefers-reduced-motion:reduce){.bt img,.bt .svgb,.sheet,.scrim,.bt .stand::before{transition:none}}
 </style>
 </head>
@@ -186,7 +257,7 @@ footer.site a{color:var(--ink-2)}
 <div class="wrap">
   <header class="top">
     <div class="eyebrow">Back Bar · Whisky Selection</div>
-    <h1>오늘 밤, <em>어떤 한 잔</em>으로 할까요</h1>
+    <h1>오늘 밤, <em>어떤 한&nbsp;잔</em>으로 할까요</h1>
     <p class="lede">국내 위스키바 선반에서 자주 보는 병을 종류별로 진열해 두었습니다. 병을 누르면 맛, 도수, 숙성 통, 병 디자인, 마시는 법과 맛이 비슷한 병이 나옵니다.</p>
     <div class="stats" id="stats"></div>
   </header>
@@ -197,11 +268,12 @@ footer.site a{color:var(--ink-2)}
     <div class="tabs" id="tabs" role="group" aria-label="종류 고르기"></div>
     <div class="filters">
       <label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="이름·맛 찾기 (예: 셰리)" aria-label="위스키 찾기"></label>
-      <span class="sep" aria-hidden="true"></span>
-      <div id="nations" style="display:contents" role="group" aria-label="나라로 고르기"></div>
-      <span class="sep" aria-hidden="true"></span>
-      <div id="flavs" style="display:contents" role="group" aria-label="맛으로 고르기"></div>
+      <button class="chip ftoggle" id="ftoggle" aria-expanded="false" aria-controls="chipbox">필터<b id="fcount"></b></button>
       <span class="count" id="count"></span>
+      <div class="chipbox" id="chipbox">
+        <div class="cgroup" id="nations" role="group" aria-label="나라로 고르기"></div>
+        <div class="cgroup" id="flavs" role="group" aria-label="맛·내 표시로 고르기"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -212,9 +284,10 @@ footer.site a{color:var(--ink-2)}
 
 <div class="scrim" id="scrim"></div>
 <aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="d-name" hidden></aside>
+<div class="tray" id="tray" role="region" aria-label="비교할 병" hidden></div>
 
 <script>
-const PH = {"glenfiddich-12":{"f":"bottles/glenfiddich-12.webp","w":110,"h":440,"a":"Blueye","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bottle_of_Glenfiddich_12yo.jpg","n":""},"glenfiddich-15":{"f":"bottles/glenfiddich-15.webp","w":125,"h":440,"a":"Trollhead","l":"퍼블릭 도메인","u":"https://commons.wikimedia.org/wiki/File:Glenfiddich_bottle.JPG","n":"사진은 다른 연수의 글렌피딕(같은 삼각 병)"},"glenlivet-12":{"f":"bottles/glenlivet-12.webp","w":123,"h":440,"a":"ChickenFalls","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:The_Glenlivet_-_12_yr_Single_Malt.JPG","n":""},"macallan-12-sherry":{"f":"bottles/macallan-12-sherry.webp","w":116,"h":440,"a":"Nebydlogop","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Macallan_12.jpg","n":"사진 속 판(셰리 오크·더블 캐스크·파인 오크)은 다를 수 있음"},"macallan-12-double":{"f":"bottles/macallan-12-double.webp","w":115,"h":440,"a":"Arkadiy P.","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:The_Macallan_12_yo_new.png","n":"사진 속 판(셰리 오크·더블 캐스크·파인 오크)은 다를 수 있음"},"balvenie-12":{"f":"bottles/balvenie-12.webp","w":161,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Balvenie_Whisky_Doublewood_12_years_old.jpg","n":""},"balvenie-14":{"f":"bottles/balvenie-14.webp","w":145,"h":440,"a":"Thomon","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Balvenie_14.jpg","n":""},"glenfarclas-12":{"f":"bottles/glenfarclas-12.webp","w":145,"h":440,"a":"Yoshee","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glenfarclas_15y_bottle.jpg","n":"사진은 15년 제품"},"glenfarclas-105":{"f":"bottles/glenfarclas-105.webp","w":136,"h":440,"a":"Andy Mabbett","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Glenfarclas_105_miniature.jpg","n":"사진은 작은 병"},"glenallachie-12":{"f":"bottles/glenallachie-12.webp","w":162,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glen_allachie_12yo.jpg","n":""},"cragganmore-12":{"f":"bottles/cragganmore-12.webp","w":110,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Gragganmore_Single_Malt_Speyside_Scotch_Whisky_12_years_old.jpg","n":""},"glenmorangie-original":{"f":"bottles/glenmorangie-original.webp","w":120,"h":440,"a":"Nebydlogop","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glenmorangie_10.jpg","n":""},"glenmorangie-lasanta":{"f":"bottles/glenmorangie-lasanta.webp","w":117,"h":440,"a":"Sänger","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glenmorangie_Quinta_Ruban_und_Lasanta.jpg","n":""},"dalmore-12":{"f":"bottles/dalmore-12.webp","w":184,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Dalmore_12yo.jpg","n":""},"glendronach-12":{"f":"bottles/glendronach-12.webp","w":113,"h":440,"a":"Thanhtour (thảo luận)","l":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Ruou_whisky_glendronach.jpg","n":"사진 속 병은 다른 연수일 수 있음"},"clynelish-14":{"f":"bottles/clynelish-14.webp","w":109,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Clynelish14yo.jpg","n":""},"oban-14":{"f":"bottles/oban-14.webp","w":109,"h":440,"a":"Björn Rath","l":"퍼블릭 도메인","u":"https://commons.wikimedia.org/wiki/File:Oban_14yo.jpg","n":""},"old-pulteney-12":{"f":"bottles/old-pulteney-12.webp","w":159,"h":440,"a":"Numitr0n","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Bottle_of_Old_Pulteney_12.jpg","n":""},"dalwhinnie-15":{"f":"bottles/dalwhinnie-15.webp","w":185,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Dalwhinnie_Single_Highland_Malt_15_years_old.jpg","n":""},"talisker-10":{"f":"bottles/talisker-10.webp","w":116,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Talisker_Single_Malt_Scotch_Whisky_10_years_old.jpg","n":""},"highland-park-12":{"f":"bottles/highland-park-12.webp","w":176,"h":440,"a":"Adrenalin658","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Highland_Park_12_yo_new.png","n":""},"arran-10":{"f":"bottles/arran-10.webp","w":113,"h":440,"a":"Look Sharp!","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:The_Arran_Malt_Single_Malt_Scotch_Whisky.jpg","n":"사진은 같은 증류소의 다른 제품"},"laphroaig-10":{"f":"bottles/laphroaig-10.webp","w":120,"h":440,"a":"Thomon","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Laphroaig_10.jpg","n":""},"laphroaig-qc":{"f":"bottles/laphroaig-qc.webp","w":114,"h":440,"a":"Lord van Tasm","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Laphroaig_Quarter_Cask_Dram.jpg","n":""},"lagavulin-16":{"f":"bottles/lagavulin-16.webp","w":120,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Lagavulin_Single_Islay_Malt_Whisky_16_years_old.jpg","n":""},"bowmore-12":{"f":"bottles/bowmore-12.webp","w":116,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bowmore_Single_Malt_Scotch_Whisky_12_years_old.jpg","n":""},"caol-ila-12":{"f":"bottles/caol-ila-12.webp","w":117,"h":440,"a":"Look Sharp!","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Caol_Ila_Islay_Single_Malt_Whisky_aged_12_years.jpg","n":""},"bunnahabhain-12":{"f":"bottles/bunnahabhain-12.webp","w":169,"h":440,"a":"JIP","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Bunnahabhain_Cruach-Mh%C3%B2na.jpg","n":"사진은 크루아흐 모나(같은 증류소 다른 제품)"},"bruichladdich-classic":{"f":"bottles/bruichladdich-classic.webp","w":182,"h":440,"a":"Trashmillion","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bruichladdich_Scottish_Barley_Single_Malt_Scotch_Whisky.jpg","n":""},"kilchoman-machir":{"f":"bottles/kilchoman-machir.webp","w":191,"h":440,"a":"HReuter","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Kilchoman_Sanaig_0061.jpg","n":"사진은 사나이그(같은 증류소 다른 제품)"},"springbank-10":{"f":"bottles/springbank-10.webp","w":150,"h":440,"a":"BjörnR","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Springbank15yo_s.jpg","n":"사진은 15년 제품"},"longrow":{"f":"bottles/longrow.webp","w":146,"h":440,"a":"작가 미상","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Longrow_aged10y_100proof.jpg","n":"사진은 예전 10년 100프루프"},"auchentoshan-12":{"f":"bottles/auchentoshan-12.webp","w":138,"h":440,"a":"Nebydlogop","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Auchentoshan_12.jpg","n":""},"glenkinchie-12":{"f":"bottles/glenkinchie-12.webp","w":146,"h":440,"a":"Tasma3197","l":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Glenkinchie12.jpg","n":""},"jw-black":{"f":"bottles/jw-black.webp","w":121,"h":440,"a":"Newone http://blogtiengviet.net/NghiaHa","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Johnnie_Walker_Black_Label_Limited_edition2.JPG","n":"사진은 한정판 병"},"jw-green":{"f":"bottles/jw-green.webp","w":111,"h":440,"a":"Iceman7840","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:JW_Greens.jpg","n":""},"jw-blue":{"f":"bottles/jw-blue.webp","w":134,"h":440,"a":"Iceman7840","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:JW_Blue_Label.jpg","n":""},"chivas-18":{"f":"bottles/chivas-18.webp","w":178,"h":440,"a":"Pablo Jiménez Díez","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Chivas_Regal.jpg","n":"사진은 12년 제품"},"royal-salute-21":{"f":"bottles/royal-salute-21.webp","w":215,"h":440,"a":"Amitbalani","l":"CC0","u":"https://commons.wikimedia.org/wiki/File:Royal_Salute_scotch_whiskey.jpg","n":""},"monkey-shoulder":{"f":"bottles/monkey-shoulder.webp","w":186,"h":440,"a":"Clément Bucco-Lechat","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Monkey_Shoulder_scotch_bottle.jpg","n":""},"famous-grouse":{"f":"bottles/famous-grouse.webp","w":125,"h":440,"a":"Popperipopp","l":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Famous_Grouse.JPG","n":""},"buffalo-trace":{"f":"bottles/buffalo-trace.webp","w":152,"h":440,"a":"Craiglduncan","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Buffalo_Trace.JPG","n":""},"wild-turkey-101":{"f":"bottles/wild-turkey-101.webp","w":137,"h":440,"a":"Craiglduncan","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Wild_Turkey_101.JPG","n":""},"woodford":{"f":"bottles/woodford.webp","w":217,"h":440,"a":"Guerlin","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Woodford_Reserve_2016.png","n":""},"four-roses-sb":{"f":"bottles/four-roses-sb.webp","w":130,"h":440,"a":"King4120","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Four_Roses_Bourbon.jpg","n":"사진은 다른 판일 수 있음"},"knob-creek-9":{"f":"bottles/knob-creek-9.webp","w":201,"h":440,"a":"LittleGun","l":"퍼블릭 도메인","u":"https://commons.wikimedia.org/wiki/File:Knob_creek_bottle.jpg","n":""},"eagle-rare-10":{"f":"bottles/eagle-rare-10.webp","w":101,"h":440,"a":"Craiglduncan","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Eagle_Rare.JPG","n":""},"bulleit-rye":{"f":"bottles/bulleit-rye.webp","w":175,"h":440,"a":"David","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Bulleit_95_Rye_Frontier_Whiskey_(52057370044).jpg","n":""},"jameson":{"f":"bottles/jameson.webp","w":110,"h":440,"a":"Datenralfi","l":"CC BY-SA 3.0 de","u":"https://commons.wikimedia.org/wiki/File:Jameson_Irish_Whiskey.JPG","n":""},"redbreast-12":{"f":"bottles/redbreast-12.webp","w":169,"h":440,"a":"Tasma3197","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Redbreast12.jpg","n":""},"green-spot":{"f":"bottles/green-spot.webp","w":127,"h":440,"a":"Matt Wunderle","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Green_Spot_and_Yellow_Spot_Irish_Whiskey.jpg","n":""},"bushmills-10":{"f":"bottles/bushmills-10.webp","w":125,"h":440,"a":"Datenralfi","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bushmills_10_Years_Old_Single_Malt.JPG","n":""},"crown-royal":{"f":"bottles/crown-royal.webp","w":303,"h":440,"a":"Jean-Francois Pilon from Montreal, Canada","l":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Crown_Royal_Limited_Edition_(7468262392).jpg","n":"사진은 한정판 병"},"kakubin":{"f":"bottles/kakubin.webp","w":156,"h":440,"a":"Kuha455405","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Suntory_Kakubin.jpg","n":""},"hibiki-harmony":{"f":"bottles/hibiki-harmony.webp","w":198,"h":440,"a":"ウィキ太郎 (Wiki Taro)","l":"퍼블릭 도메인","u":"https://commons.wikimedia.org/wiki/File:Hibiki_the_premium_blended_whisky_from_Japanese_distiller_Suntory.jpg","n":"사진 속 히비키는 다른 연수일 수 있음"},"yamazaki-12":{"f":"bottles/yamazaki-12.webp","w":144,"h":440,"a":"Look Sharp!","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:The_Yamazaki_Single_Malt_Whisky_Aged_12_years.JPG","n":""},"chita":{"f":"bottles/chita.webp","w":139,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Chita_180ml.jpg","n":"사진은 작은 병"},"nikka-ftb":{"f":"bottles/nikka-ftb.webp","w":218,"h":440,"a":"Dominic Lockyer","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Nikka_Whisky_From_the_Barrel,_Japan.jpg","n":""},"yoichi":{"f":"bottles/yoichi.webp","w":137,"h":440,"a":"Clément Bucco-Lechat","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Yoichi_bottle.jpg","n":"사진은 10년 제품"},"miyagikyo":{"f":"bottles/miyagikyo.webp","w":142,"h":440,"a":"KASEI","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Miyagikyou_bottle.jpg","n":""},"nikka-coffey-grain":{"f":"bottles/nikka-coffey-grain.webp","w":140,"h":440,"a":"Kentin","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Nikka_coffey_grain_whisky_2015.jpg","n":""},"kavalan-classic":{"f":"bottles/kavalan-classic.webp","w":126,"h":440,"a":"othree","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Kavalan_single_malt_whiskey.jpg","n":""},"amrut":{"f":"bottles/amrut.webp","w":116,"h":440,"a":"Vikrambj","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Amrut_singlemalt_whisky_2013-06-11_18-39.jpg","n":""},"aberlour-abunadh":{"f":"bottles/aberlour-abunadh.webp","w":159,"h":440,"a":"Paweł Mazurek KRK","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Aberlour_A%27bunadh_Batch_59.jpg","n":""},"ardbeg-10":{"f":"bottles/ardbeg-10.webp","w":131,"h":440,"a":"DYVER","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Ardbeg_10_Jahre_Flasche.jpg","n":""},"ardbeg-uigeadail":{"f":"bottles/ardbeg-uigeadail.webp","w":131,"h":440,"a":"JIP","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Ardbeg_Corryvreckan.jpg","n":"사진은 코리브레칸(같은 모양의 아드벡 병)"},"ballantines-17":{"f":"bottles/ballantines-17.webp","w":167,"h":440,"a":"Jacek Halicki","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:2017_Ballantine%27s_Finest.jpg","n":"사진은 파인스트(같은 브랜드 다른 제품)"},"makers-mark":{"f":"bottles/makers-mark.webp","w":170,"h":440,"a":"Céréales Killer","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Maker%27s_Mark.jpg","n":""},"blantons":{"f":"bottles/blantons.webp","w":230,"h":440,"a":"DixieLiquor","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Blanton%27s_Single_Barrel_Bourbon.jpg","n":""},"jack-daniels-7":{"f":"bottles/jack-daniels-7.webp","w":143,"h":440,"a":"Clément Bucco-Lechat","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Jack_Daniels_bottle.jpg","n":""},"hakushu-dr":{"f":"bottles/hakushu-dr.webp","w":139,"h":440,"a":"Satoru Shimizu","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Yamazaki,Hakushu,Hibiki.JPG","n":"사진 속 하쿠슈는 다른 판일 수 있음"}};
+const PH = {"glenfiddich-12":{"f":"bottles/glenfiddich-12.webp","w":110,"h":440,"a":"Blueye","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bottle_of_Glenfiddich_12yo.jpg","n":""},"glenfiddich-15":{"f":"bottles/glenfiddich-15.webp","w":113,"h":440,"a":"Rennboot","l":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Glenfiddich_Products.jpg","n":"사진은 예전 둥근 병의 15년 솔레라(지금 병은 12년과 같은 삼각 병)"},"glenlivet-12":{"f":"bottles/glenlivet-12.webp","w":123,"h":440,"a":"ChickenFalls","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:The_Glenlivet_-_12_yr_Single_Malt.JPG","n":""},"macallan-12-sherry":{"f":"bottles/macallan-12-sherry.webp","w":116,"h":440,"a":"Nebydlogop","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Macallan_12.jpg","n":"사진 속 판(셰리 오크·더블 캐스크·파인 오크)은 다를 수 있음"},"macallan-12-double":{"f":"bottles/macallan-12-double.webp","w":115,"h":440,"a":"Arkadiy P.","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:The_Macallan_12_yo_new.png","n":"사진 속 판(셰리 오크·더블 캐스크·파인 오크)은 다를 수 있음"},"balvenie-12":{"f":"bottles/balvenie-12.webp","w":161,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Balvenie_Whisky_Doublewood_12_years_old.jpg","n":""},"balvenie-14":{"f":"bottles/balvenie-14.webp","w":145,"h":440,"a":"Thomon","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Balvenie_14.jpg","n":""},"glenfarclas-12":{"f":"bottles/glenfarclas-12.webp","w":145,"h":440,"a":"Yoshee","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glenfarclas_15y_bottle.jpg","n":"사진은 15년 제품"},"glenfarclas-105":{"f":"bottles/glenfarclas-105.webp","w":136,"h":440,"a":"Andy Mabbett","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Glenfarclas_105_miniature.jpg","n":"사진은 작은 병"},"glenallachie-12":{"f":"bottles/glenallachie-12.webp","w":162,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glen_allachie_12yo.jpg","n":""},"cragganmore-12":{"f":"bottles/cragganmore-12.webp","w":110,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Gragganmore_Single_Malt_Speyside_Scotch_Whisky_12_years_old.jpg","n":""},"glenmorangie-original":{"f":"bottles/glenmorangie-original.webp","w":120,"h":440,"a":"Nebydlogop","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glenmorangie_10.jpg","n":""},"glenmorangie-lasanta":{"f":"bottles/glenmorangie-lasanta.webp","w":117,"h":440,"a":"Sänger","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Glenmorangie_Quinta_Ruban_und_Lasanta.jpg","n":""},"dalmore-12":{"f":"bottles/dalmore-12.webp","w":184,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Dalmore_12yo.jpg","n":""},"glendronach-12":{"f":"bottles/glendronach-12.webp","w":113,"h":440,"a":"Thanhtour (thảo luận)","l":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Ruou_whisky_glendronach.jpg","n":"사진 속 병은 다른 연수일 수 있음"},"clynelish-14":{"f":"bottles/clynelish-14.webp","w":109,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Clynelish14yo.jpg","n":""},"oban-14":{"f":"bottles/oban-14.webp","w":109,"h":440,"a":"Björn Rath","l":"퍼블릭 도메인","u":"https://commons.wikimedia.org/wiki/File:Oban_14yo.jpg","n":""},"old-pulteney-12":{"f":"bottles/old-pulteney-12.webp","w":159,"h":440,"a":"Numitr0n","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Bottle_of_Old_Pulteney_12.jpg","n":""},"dalwhinnie-15":{"f":"bottles/dalwhinnie-15.webp","w":185,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Dalwhinnie_Single_Highland_Malt_15_years_old.jpg","n":""},"talisker-10":{"f":"bottles/talisker-10.webp","w":116,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Talisker_Single_Malt_Scotch_Whisky_10_years_old.jpg","n":""},"highland-park-12":{"f":"bottles/highland-park-12.webp","w":176,"h":440,"a":"Adrenalin658","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Highland_Park_12_yo_new.png","n":""},"arran-10":{"f":"bottles/arran-10.webp","w":113,"h":440,"a":"Look Sharp!","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:The_Arran_Malt_Single_Malt_Scotch_Whisky.jpg","n":"사진은 같은 증류소의 다른 제품"},"laphroaig-10":{"f":"bottles/laphroaig-10.webp","w":120,"h":440,"a":"Thomon","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Laphroaig_10.jpg","n":""},"laphroaig-qc":{"f":"bottles/laphroaig-qc.webp","w":114,"h":440,"a":"Lord van Tasm","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Laphroaig_Quarter_Cask_Dram.jpg","n":""},"lagavulin-16":{"f":"bottles/lagavulin-16.webp","w":120,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Lagavulin_Single_Islay_Malt_Whisky_16_years_old.jpg","n":""},"bowmore-12":{"f":"bottles/bowmore-12.webp","w":116,"h":440,"a":"P. Brundel","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bowmore_Single_Malt_Scotch_Whisky_12_years_old.jpg","n":""},"caol-ila-12":{"f":"bottles/caol-ila-12.webp","w":117,"h":440,"a":"Look Sharp!","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Caol_Ila_Islay_Single_Malt_Whisky_aged_12_years.jpg","n":""},"bunnahabhain-12":{"f":"bottles/bunnahabhain-12.webp","w":169,"h":440,"a":"JIP","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Bunnahabhain_Cruach-Mh%C3%B2na.jpg","n":"사진은 크루아흐 모나(같은 증류소 다른 제품)"},"bruichladdich-classic":{"f":"bottles/bruichladdich-classic.webp","w":182,"h":440,"a":"Trashmillion","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bruichladdich_Scottish_Barley_Single_Malt_Scotch_Whisky.jpg","n":""},"kilchoman-machir":{"f":"bottles/kilchoman-machir.webp","w":191,"h":440,"a":"HReuter","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Kilchoman_Sanaig_0061.jpg","n":"사진은 사나이그(같은 증류소 다른 제품)"},"springbank-10":{"f":"bottles/springbank-10.webp","w":150,"h":440,"a":"BjörnR","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Springbank15yo_s.jpg","n":"사진은 15년 제품"},"longrow":{"f":"bottles/longrow.webp","w":146,"h":440,"a":"작가 미상","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Longrow_aged10y_100proof.jpg","n":"사진은 예전 10년 100프루프"},"auchentoshan-12":{"f":"bottles/auchentoshan-12.webp","w":138,"h":440,"a":"Nebydlogop","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Auchentoshan_12.jpg","n":""},"glenkinchie-12":{"f":"bottles/glenkinchie-12.webp","w":146,"h":440,"a":"Tasma3197","l":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Glenkinchie12.jpg","n":""},"jw-black":{"f":"bottles/jw-black.webp","w":121,"h":440,"a":"Newone http://blogtiengviet.net/NghiaHa","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Johnnie_Walker_Black_Label_Limited_edition2.JPG","n":"사진은 한정판 병"},"jw-green":{"f":"bottles/jw-green.webp","w":111,"h":440,"a":"Iceman7840","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:JW_Greens.jpg","n":""},"jw-blue":{"f":"bottles/jw-blue.webp","w":134,"h":440,"a":"Iceman7840","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:JW_Blue_Label.jpg","n":""},"chivas-18":{"f":"bottles/chivas-18.webp","w":178,"h":440,"a":"Pablo Jiménez Díez","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Chivas_Regal.jpg","n":"사진은 12년 제품"},"royal-salute-21":{"f":"bottles/royal-salute-21.webp","w":215,"h":440,"a":"Amitbalani","l":"CC0","u":"https://commons.wikimedia.org/wiki/File:Royal_Salute_scotch_whiskey.jpg","n":""},"monkey-shoulder":{"f":"bottles/monkey-shoulder.webp","w":186,"h":440,"a":"Clément Bucco-Lechat","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Monkey_Shoulder_scotch_bottle.jpg","n":""},"famous-grouse":{"f":"bottles/famous-grouse.webp","w":125,"h":440,"a":"Popperipopp","l":"CC BY 3.0","u":"https://commons.wikimedia.org/wiki/File:Famous_Grouse.JPG","n":""},"buffalo-trace":{"f":"bottles/buffalo-trace.webp","w":152,"h":440,"a":"Craiglduncan","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Buffalo_Trace.JPG","n":""},"wild-turkey-101":{"f":"bottles/wild-turkey-101.webp","w":137,"h":440,"a":"Craiglduncan","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Wild_Turkey_101.JPG","n":""},"woodford":{"f":"bottles/woodford.webp","w":217,"h":440,"a":"Guerlin","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Woodford_Reserve_2016.png","n":""},"four-roses-sb":{"f":"bottles/four-roses-sb.webp","w":130,"h":440,"a":"King4120","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Four_Roses_Bourbon.jpg","n":"사진은 다른 판일 수 있음"},"knob-creek-9":{"f":"bottles/knob-creek-9.webp","w":201,"h":440,"a":"LittleGun","l":"퍼블릭 도메인","u":"https://commons.wikimedia.org/wiki/File:Knob_creek_bottle.jpg","n":""},"eagle-rare-10":{"f":"bottles/eagle-rare-10.webp","w":101,"h":440,"a":"Craiglduncan","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Eagle_Rare.JPG","n":""},"bulleit-rye":{"f":"bottles/bulleit-rye.webp","w":175,"h":440,"a":"David","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Bulleit_95_Rye_Frontier_Whiskey_(52057370044).jpg","n":""},"jameson":{"f":"bottles/jameson.webp","w":110,"h":440,"a":"Datenralfi","l":"CC BY-SA 3.0 de","u":"https://commons.wikimedia.org/wiki/File:Jameson_Irish_Whiskey.JPG","n":""},"redbreast-12":{"f":"bottles/redbreast-12.webp","w":169,"h":440,"a":"Tasma3197","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Redbreast12.jpg","n":""},"green-spot":{"f":"bottles/green-spot.webp","w":127,"h":440,"a":"Matt Wunderle","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Green_Spot_and_Yellow_Spot_Irish_Whiskey.jpg","n":""},"bushmills-10":{"f":"bottles/bushmills-10.webp","w":125,"h":440,"a":"Datenralfi","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Bushmills_10_Years_Old_Single_Malt.JPG","n":""},"crown-royal":{"f":"bottles/crown-royal.webp","w":303,"h":440,"a":"Jean-Francois Pilon from Montreal, Canada","l":"CC BY-SA 2.0","u":"https://commons.wikimedia.org/wiki/File:Crown_Royal_Limited_Edition_(7468262392).jpg","n":"사진은 한정판 병"},"kakubin":{"f":"bottles/kakubin.webp","w":156,"h":440,"a":"Kuha455405","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Suntory_Kakubin.jpg","n":""},"hibiki-harmony":{"f":"bottles/hibiki-harmony.webp","w":198,"h":440,"a":"ウィキ太郎 (Wiki Taro)","l":"퍼블릭 도메인","u":"https://commons.wikimedia.org/wiki/File:Hibiki_the_premium_blended_whisky_from_Japanese_distiller_Suntory.jpg","n":"사진 속 히비키는 다른 연수일 수 있음"},"yamazaki-12":{"f":"bottles/yamazaki-12.webp","w":144,"h":440,"a":"Look Sharp!","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:The_Yamazaki_Single_Malt_Whisky_Aged_12_years.JPG","n":""},"chita":{"f":"bottles/chita.webp","w":139,"h":440,"a":"Keeezawa","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Chita_180ml.jpg","n":"사진은 작은 병"},"nikka-ftb":{"f":"bottles/nikka-ftb.webp","w":218,"h":440,"a":"Dominic Lockyer","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Nikka_Whisky_From_the_Barrel,_Japan.jpg","n":""},"yoichi":{"f":"bottles/yoichi.webp","w":137,"h":440,"a":"Clément Bucco-Lechat","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Yoichi_bottle.jpg","n":"사진은 10년 제품"},"miyagikyo":{"f":"bottles/miyagikyo.webp","w":142,"h":440,"a":"KASEI","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Miyagikyou_bottle.jpg","n":""},"nikka-coffey-grain":{"f":"bottles/nikka-coffey-grain.webp","w":140,"h":440,"a":"Kentin","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Nikka_coffey_grain_whisky_2015.jpg","n":""},"kavalan-classic":{"f":"bottles/kavalan-classic.webp","w":126,"h":440,"a":"othree","l":"CC BY 2.0","u":"https://commons.wikimedia.org/wiki/File:Kavalan_single_malt_whiskey.jpg","n":""},"amrut":{"f":"bottles/amrut.webp","w":116,"h":440,"a":"Vikrambj","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Amrut_singlemalt_whisky_2013-06-11_18-39.jpg","n":""},"aberlour-abunadh":{"f":"bottles/aberlour-abunadh.webp","w":159,"h":440,"a":"Paweł Mazurek KRK","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Aberlour_A%27bunadh_Batch_59.jpg","n":""},"ardbeg-10":{"f":"bottles/ardbeg-10.webp","w":131,"h":440,"a":"DYVER","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Ardbeg_10_Jahre_Flasche.jpg","n":""},"ardbeg-uigeadail":{"f":"bottles/ardbeg-uigeadail.webp","w":131,"h":440,"a":"JIP","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Ardbeg_Corryvreckan.jpg","n":"사진은 코리브레칸(같은 모양의 아드벡 병)"},"ballantines-17":{"f":"bottles/ballantines-17.webp","w":167,"h":440,"a":"Jacek Halicki","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:2017_Ballantine%27s_Finest.jpg","n":"사진은 파인스트(같은 브랜드 다른 제품)"},"makers-mark":{"f":"bottles/makers-mark.webp","w":170,"h":440,"a":"Céréales Killer","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Maker%27s_Mark.jpg","n":""},"blantons":{"f":"bottles/blantons.webp","w":230,"h":440,"a":"DixieLiquor","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Blanton%27s_Single_Barrel_Bourbon.jpg","n":""},"jack-daniels-7":{"f":"bottles/jack-daniels-7.webp","w":143,"h":440,"a":"Clément Bucco-Lechat","l":"CC BY-SA 3.0","u":"https://commons.wikimedia.org/wiki/File:Jack_Daniels_bottle.jpg","n":""},"hakushu-dr":{"f":"bottles/hakushu-dr.webp","w":139,"h":440,"a":"Satoru Shimizu","l":"CC BY-SA 4.0","u":"https://commons.wikimedia.org/wiki/File:Yamazaki,Hakushu,Hibiki.JPG","n":"사진 속 하쿠슈는 다른 판일 수 있음"}};
 // sh: 병 모양 std 기본 / tall 목 긴 / round 배불뚝 / square 사각 / tri 삼각 / flask 납작 / block 낮은 블록 / deca 디캔터 / jug 도자기
 // g: 유리 clear 투명(액체 보임) / green / dark / brown / teal 불투명 하늘색 / ceramic
 // p 피트 0-4, b 무게감 1-5, s 단맛·과일 1-5, sy 셰리 영향 0-3
@@ -232,7 +305,7 @@ const CATS = [
 const B = [
 // 스페이사이드
 {id:'glenfiddich-12',c:'speyside',n:'글렌피딕 12',e:'Glenfiddich 12 Year Old',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드 · 더프타운',abv:40,age:'12년',cask:'버번·셰리 통',p:0,b:2,s:4,sy:1,nose:'배, 풋사과, 꽃',pal:'꿀, 바닐라, 은은한 오크',fin:'짧고 깔끔함',drink:'니트, 하이볼',design:'세 모서리가 있는 삼각기둥 병과 초록빛 유리. 라벨 위에 사슴이 그려져 있습니다.',fact:'1887년 세워져 지금도 가족이 운영합니다. 세계에서 가장 많이 팔리는 싱글 몰트 중 하나라 바마다 거의 있습니다.',sh:'tri',g:'green',l:'#efe6d2',cap:'#1f2a22',lb:'12'},
-{id:'glenfiddich-15',c:'speyside',n:'글렌피딕 15',e:'Glenfiddich 15 Year Old',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'15년',cask:'버번·셰리·새 오크 → 솔레라 통',p:0,b:3,s:4,sy:2,nose:'꿀, 건포도, 계피',pal:'말린 과일, 토피',fin:'중간, 달콤함',drink:'니트, 물 몇 방울',design:'12년과 같은 삼각기둥 병에 짙은 색 라벨.',fact:'커다란 나무 통에 원액을 섞어 두고 절반만 덜어 병입한 뒤 다시 채우는 솔레라 방식을 씁니다. 12년과 나란히 마셔 보면 숙성의 차이가 잘 보입니다.',sh:'tri',g:'green',l:'#5b2a2a',cap:'#2a1a14',lb:'15'},
+{id:'glenfiddich-15',c:'speyside',n:'글렌피딕 15',e:'Glenfiddich 15 Year Old',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'15년',cask:'버번·셰리·새 오크 → 솔레라 통',p:0,b:3,s:4,sy:2,nose:'꿀, 건포도, 계피',pal:'말린 과일, 토피',fin:'중간, 달콤함',drink:'니트, 물 몇 방울',design:'지금 병은 12년과 같은 삼각기둥 병에 짙은 적갈색 라벨. 예전에는 둥근 병이었습니다.',fact:'커다란 나무 통에 원액을 섞어 두고 절반만 덜어 병입한 뒤 다시 채우는 솔레라 방식을 씁니다. 12년과 나란히 마셔 보면 숙성의 차이가 잘 보입니다.',sh:'tri',g:'green',l:'#5b2a2a',cap:'#2a1a14',lb:'15'},
 {id:'glenlivet-12',c:'speyside',n:'글렌리벳 12',e:'The Glenlivet 12',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'12년',cask:'버번 통 위주',p:0,b:2,s:3,sy:0,nose:'꽃, 파인애플, 배',pal:'바닐라, 꿀',fin:'짧고 산뜻함',drink:'니트, 하이볼',design:'투명한 병에 이름 앞 \'The\'가 크게 들어간 라벨.',fact:'1824년 스페이사이드에서 처음으로 정부 허가를 받은 증류소입니다. 다른 증류소들이 이름 뒤에 \'글렌리벳\'을 붙일 만큼 유명해져서 \'The\'를 앞에 붙였습니다.',sh:'std',g:'clear',l:'#f4efe4',cap:'#20314a',lb:'12'},
 {id:'macallan-12-sherry',c:'speyside',n:'맥캘란 12 셰리 오크',e:'The Macallan 12 Sherry Oak',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'12년',cask:'스페인 셰리 시즈닝 오크 100%',p:0,b:4,s:4,sy:3,nose:'건포도, 말린 무화과, 생강',pal:'말린 과일, 나무, 향신료',fin:'길고 따뜻함',drink:'니트',design:'어깨가 넓은 투명 병. 라벨 위쪽에 증류소의 저택 그림이 작게 있습니다.',fact:'스페이사이드에서 손꼽히게 작은 증류기를 써서 기름지고 묵직한 원액을 얻습니다. 셰리 통 위스키의 대명사입니다.',sh:'square',g:'clear',l:'#f3ede0',cap:'#6b1d1d',lb:'12'},
 {id:'macallan-12-double',c:'speyside',n:'맥캘란 12 더블 캐스크',e:'The Macallan 12 Double Cask',t:'싱글 몰트',r:'스코틀랜드 · 스페이사이드',abv:40,age:'12년',cask:'미국·유럽산 셰리 시즈닝 오크',p:0,b:3,s:4,sy:2,nose:'꿀, 바닐라, 시트러스',pal:'토피, 말린 과일, 생강',fin:'중간, 부드러움',drink:'니트, 온더록',design:'셰리 오크와 같은 병에 파란 띠 라벨.',fact:'셰리 오크보다 미국산 통 비중이 있어 바닐라가 더 나고 조금 가볍습니다.',sh:'square',g:'clear',l:'#f3ede0',cap:'#2a3f6b',lb:'12'},
@@ -428,7 +501,13 @@ const FLAVS = [
 ];
 // 실제 바처럼 병 높이를 조금씩 다르게(모양 기준)
 const SH_K = {std:1, tall:1.07, round:.94, square:.97, tri:1, flask:.9, block:.8, deca:.92, jug:.9};
-const state={style:'all',nat:'all',flav:new Set(),q:''};
+const state={style:'all',nat:'all',flav:new Set(),q:'',favOnly:false};
+// 내 관심(★)·비교 목록: 이 기기 브라우저에만 저장
+const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return Array.isArray(v)?v:d}catch(_){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}}};
+const valid=a=>a.filter(id=>B.some(o=>o.id===id));
+const fav=new Set(valid(store.get('bb-fav',[])));
+let cmp=valid(store.get('bb-cmp',[])).slice(0,3);
+const CMP_MAX=3;
 
 function face(o, big){
   const p=PH[o.id];
@@ -436,7 +515,7 @@ function face(o, big){
   if(p) return `<img src="${p.f}" alt="" width="${p.w}" height="${p.h}" loading="lazy" decoding="async">`;
   return `<span class="svgb">${bottleSVG(o,1)}</span>`;
 }
-function btn(o){return `<button class="bt" data-id="${o.id}" aria-label="${esc(o.n)} 자세히 보기"><span class="stand">${face(o)}</span><span class="nm">${esc(o.n)}</span></button>`}
+function btn(o){const f=fav.has(o.id);return `<button class="bt" data-id="${o.id}" aria-label="${esc(o.n)} 자세히 보기${f?' (관심)':''}"><span class="stand">${face(o)}${f?'<span class="star" aria-hidden="true">★</span>':''}</span><span class="nm">${esc(o.n)}</span></button>`}
 
 function renderStats(){
   const photo=B.filter(o=>PH[o.id]).length;
@@ -450,9 +529,13 @@ function renderControls(){
   document.getElementById('nations').innerHTML=['all'].concat(NATIONS)
     .map(n=>`<button class="chip" data-nat="${n}" aria-pressed="${state.nat===n}">${n==='all'?'모든 나라':n}</button>`).join('');
   document.getElementById('flavs').innerHTML=FLAVS
-    .map(f=>`<button class="chip flav" data-flav="${f.id}" aria-pressed="${state.flav.has(f.id)}">${f.n}</button>`).join('');
+    .map(f=>`<button class="chip flav" data-flav="${f.id}" aria-pressed="${state.flav.has(f.id)}">${f.n}</button>`).join('')
+    +`<button class="chip fav" data-favonly aria-pressed="${state.favOnly}">★ 내 관심 ${fav.size}</button>`;
+  const n=(state.nat!=='all'?1:0)+state.flav.size+(state.favOnly?1:0);
+  document.getElementById('fcount').textContent=n||'';
 }
 function matches(o){
+  if(state.favOnly&&!fav.has(o.id))return false;
   if(state.nat!=='all'&&o.nat!==state.nat)return false;
   if(state.q){const q=state.q.toLowerCase();const hay=[o.n,o.e,o.r,o.t,o.nose,o.pal,o.fin,o.cask,o.design].join(' ').toLowerCase();if(!hay.includes(q))return false}
   for(const f of state.flav){if(!FLAVS.find(x=>x.id===f).f(o))return false}
@@ -469,11 +552,10 @@ function renderShelves(){
       const hit=B.filter(o=>o.st===s.id&&o.row===rid&&matches(o));
       if(!hit.length)continue;
       shown+=hit.length;
-      rows+=`<div class="row-label"><b>${rn}</b><span>${hit.length}</span><i>${rhint}</i></div>
-      <div class="cabinet"><div class="scroller"><div class="track">${hit.map(btn).join('')}</div></div></div>`;
+      rows+=`<div class="plate" role="heading" aria-level="3"><b>${rn}</b><span>${hit.length}</span><i>${rhint}</i></div>${hit.map(btn).join('')}`;
     }
     if(!rows)continue;
-    html+=`<section class="style" id="s-${s.id}" aria-label="${s.n} 진열장"><div class="style-head"><div class="style-no">${String(no).padStart(2,'0')}</div><div class="style-en">${s.en}</div><h2>${s.n}</h2><p>${s.d}</p></div>${rows}</section>`;
+    html+=`<section class="style" id="s-${s.id}" aria-label="${s.n} 진열장"><div class="style-head"><div class="style-no">${String(no).padStart(2,'0')}</div><div class="style-en">${s.en}</div><h2>${s.n}</h2><p>${s.d}</p></div><div class="cabinet"><div class="track">${rows}</div></div></section>`;
   }
   el.innerHTML=html||`<p class="empty">조건에 맞는 병이 없습니다. 나라나 맛 필터를 하나 풀어 보세요.</p>`;
   document.getElementById('count').textContent=`${shown} / ${B.length}`;
@@ -505,7 +587,8 @@ function openDetail(id,push){
     <button class="close" id="close" aria-label="닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="d-hero"><div class="d-stage">${face(o,true)}</div>
       <div><div class="d-kicker">${esc(s.en)}</div><h2 id="d-name">${esc(o.n)}</h2><div class="d-en">${esc(o.e)}</div>
-      <div class="pills"><span class="pill">${esc(o.t)}</span><span class="pill">${esc(o.r)}</span>${row&&o.st==='single'?'':`<span class="pill">${esc(row?row[1]:'')}</span>`}</div></div></div>
+      <div class="pills"><span class="pill">${esc(o.t)}</span><span class="pill">${esc(o.r)}</span>${row&&o.st==='single'?'':`<span class="pill">${esc(row?row[1]:'')}</span>`}</div>
+      <div class="acts">${actBtns(o.id)}</div></div></div>
     <div class="facts">
       <div class="fact"><b class="${abvNum?'':'ko'}">${esc(abv)}</b><span>도수</span></div>
       <div class="fact"><b class="ko">${esc(o.age)}</b><span>숙성</span></div>
@@ -533,15 +616,57 @@ function openDetail(id,push){
   if(push!==false && location.hash!=='#b-'+id){ try{history.pushState(null,'','#b-'+id)}catch(e){} }
   setTimeout(()=>document.getElementById('close')?.focus({preventScroll:true}),60);
 }
+function actBtns(id){
+  const f=fav.has(id), c=cmp.includes(id), full=!c&&cmp.length>=CMP_MAX;
+  return `<button class="act" data-fav="${id}" aria-pressed="${f}">${f?'★ 관심 표시함':'☆ 관심 표시'}</button>`
+    +`<button class="act" data-cmp="${id}" aria-pressed="${c}" ${full?'disabled':''}>${c?'비교에서 빼기':full?'비교는 3병까지':'+ 비교에 담기'}</button>`;
+}
+function refreshActs(){document.querySelectorAll('.acts').forEach(a=>{const id=a.querySelector('[data-fav]')?.dataset.fav;if(id)a.innerHTML=actBtns(id)})}
+function toggleFav(id){fav.has(id)?fav.delete(id):fav.add(id);store.set('bb-fav',[...fav]);refreshActs();renderControls();renderShelves()}
+function toggleCmp(id){const i=cmp.indexOf(id);if(i>=0)cmp.splice(i,1);else if(cmp.length<CMP_MAX)cmp.push(id);store.set('bb-cmp',cmp);refreshActs();renderTray()}
+function renderTray(){
+  const t=document.getElementById('tray');
+  if(!cmp.length){t.hidden=true;document.body.classList.remove('has-tray');return}
+  t.hidden=false;document.body.classList.add('has-tray');
+  const items=cmp.map(id=>B.find(o=>o.id===id));
+  t.innerHTML=`<div class="tray-in"><div class="tray-list">${items.map(o=>`<span class="tray-item">${esc(o.n)}<button data-cmpx="${o.id}" aria-label="${esc(o.n)} 비교에서 빼기">×</button></span>`).join('')}</div>
+    <div class="tray-btns"><button class="chip" data-cmpclear>비우기</button><button class="chip go" data-cmpopen ${items.length<2?'disabled':''}>${items.length<2?'한 병 더 담기':`${items.length}병 비교하기`}</button></div></div>`;
+}
+function openSheet(html,hash,push){
+  const sheet=document.getElementById('sheet');
+  sheet.innerHTML=html; sheet.hidden=false; sheet.scrollTop=0;
+  requestAnimationFrame(()=>{sheet.classList.add('on');document.getElementById('scrim').classList.add('on')});
+  if(push!==false && location.hash!==hash){ try{history.pushState(null,'',hash)}catch(e){} }
+  setTimeout(()=>document.getElementById('close')?.focus({preventScroll:true}),60);
+}
+const CLOSE_BTN=`<button class="close" id="close" aria-label="닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`;
+function openCompare(push){
+  const items=cmp.map(id=>B.find(o=>o.id===id));
+  if(items.length<2){closeDetail(true);return}
+  const abvTxt=o=>typeof o.abv==='number'?o.abv+'%':o.abv+(String(o.abv).startsWith('약')?'%':'');
+  const bar=(v,max,cls)=>`<div class="bar-track"><div class="bar-fill ${cls||''}" style="width:${Math.round(v/max*100)}%"></div></div><em>${v}/${max}</em>`;
+  const rowOf=(label,fn)=>`<div class="cmp-row"><div class="cmp-k">${label}</div>${items.map(o=>`<div class="cmp-v">${fn(o)}</div>`).join('')}</div>`;
+  openSheet(`<div class="sheet-in cmp" style="--c:${items.length}">${CLOSE_BTN}
+    <div><div class="d-kicker">Compare</div><h2 id="d-name" class="cmp-title">${items.length}병 나란히 보기</h2></div>
+    <div class="cmp-head">${items.map(o=>`<button class="cmp-bottle" data-open="${o.id}"><span class="cmp-img">${face(o,true)}</span><b>${esc(o.n)}</b><small>${esc(o.t)}</small></button>`).join('')}</div>
+    <div class="cmp-table">
+      ${rowOf('도수',o=>esc(abvTxt(o)))}${rowOf('숙성',o=>esc(o.age))}${rowOf('산지',o=>esc(o.r.split(' · ').slice(0,2).join(' · ')))}
+      ${rowOf('숙성 통',o=>esc(o.cask))}
+      ${rowOf('피트·연기',o=>bar(o.p,4,'peat'))}${rowOf('무게감',o=>bar(o.b,5))}${rowOf('단맛·과일',o=>bar(o.s,5))}${rowOf('셰리 영향',o=>bar(o.sy,3))}
+      ${rowOf('향',o=>esc(o.nose))}${rowOf('맛',o=>esc(o.pal))}${rowOf('여운',o=>esc(o.fin))}${rowOf('마시는 법',o=>esc(o.drink))}${rowOf('난이도',o=>level(o))}
+    </div>
+    <p class="foot">병을 누르면 자세한 설명이 열립니다. 점수는 이 페이지에서 비교하려고 붙인 대략적인 값입니다.</p>
+  </div>`,'#cmp',push);
+}
 function closeDetail(fromHash){
   const sheet=document.getElementById('sheet');
   sheet.classList.remove('on');document.getElementById('scrim').classList.remove('on');
   setTimeout(()=>{if(!sheet.classList.contains('on'))sheet.hidden=true},300);
-  if(!fromHash && location.hash.startsWith('#b-')){ try{history.pushState(null,'',location.pathname+location.search)}catch(e){location.hash=''} }
+  if(!fromHash && (location.hash.startsWith('#b-')||location.hash==='#cmp')){ try{history.pushState(null,'',location.pathname+location.search)}catch(e){location.hash=''} }
 }
 function route(){
   const h=location.hash;
-  if(h.startsWith('#b-')) openDetail(h.slice(3),false); else closeDetail(true);
+  if(h.startsWith('#b-')) openDetail(h.slice(3),false); else if(h==='#cmp') openCompare(false); else closeDetail(true);
 }
 
 document.addEventListener('click',e=>{
@@ -549,6 +674,14 @@ document.addEventListener('click',e=>{
     const top=document.querySelector('.bar').getBoundingClientRect().top+scrollY; if(scrollY>top) scrollTo({top:top,behavior:'smooth'}); return}
   const n=e.target.closest('[data-nat]'); if(n){state.nat=n.dataset.nat;renderControls();renderShelves();return}
   const f=e.target.closest('[data-flav]'); if(f){const id=f.dataset.flav;state.flav.has(id)?state.flav.delete(id):state.flav.add(id);renderControls();renderShelves();return}
+  const fo=e.target.closest('[data-favonly]'); if(fo){state.favOnly=!state.favOnly;renderControls();renderShelves();return}
+  const ft=e.target.closest('#ftoggle'); if(ft){const box=document.getElementById('chipbox');const open=box.classList.toggle('open');ft.setAttribute('aria-expanded',open);return}
+  const fv=e.target.closest('[data-fav]'); if(fv){toggleFav(fv.dataset.fav);return}
+  const cm=e.target.closest('[data-cmp]'); if(cm){toggleCmp(cm.dataset.cmp);return}
+  const cx=e.target.closest('[data-cmpx]'); if(cx){toggleCmp(cx.dataset.cmpx);if(location.hash==='#cmp')openCompare(false);return}
+  if(e.target.closest('[data-cmpclear]')){cmp=[];store.set('bb-cmp',cmp);refreshActs();renderTray();if(location.hash==='#cmp')closeDetail();return}
+  if(e.target.closest('[data-cmpopen]')){openCompare();return}
+  const op=e.target.closest('[data-open]'); if(op){openDetail(op.dataset.open);return}
   const b=e.target.closest('.bt'); if(b){openDetail(b.dataset.id);return}
   if(e.target.closest('#close')||e.target.id==='scrim'){closeDetail();}
 });
@@ -557,7 +690,7 @@ document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
 try{const s=localStorage.getItem('bb-style');if(s&&(s==='all'||STYLES.some(x=>x.id===s)))state.style=s}catch(_){}
-renderStats();renderControls();renderShelves();renderFoot();route();
+renderStats();renderControls();renderShelves();renderFoot();renderTray();route();
 </script>
 
 </body>
