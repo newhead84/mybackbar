@@ -10,7 +10,7 @@
 <meta property="og:title" content="위스키 백바">
 <meta property="og:description" content="국내 위스키바 선반의 위스키 290여 병과 진·럼·데킬라·리큐르 등 칵테일 술 97종, 대표 칵테일 65종. 맛·도수·병 소매가를 한눈에.">
 <meta property="og:url" content="https://newhead84.github.io/whisky-backbar/">
-<meta property="og:image" content="https://newhead84.github.io/whisky-backbar/og.jpg">
+<meta property="og:image" content="https://newhead84.github.io/whisky-backbar/og.jpg?v=20261123">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ko_KR">
@@ -1174,8 +1174,8 @@ function route(){
 
 document.addEventListener('click',e=>{
   const ck=e.target.closest('[data-ck]'); if(ck){openCocktail(ck.dataset.ck);return}
-  const vw=e.target.closest('[data-view]'); if(vw){const v=vw.dataset.view;state.style=v==='whisky'?(viewOf(state.style)==='whisky'?state.style:'all'):v;fitFiltersToView();renderControls();renderShelves();try{localStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
-  const t=e.target.closest('[data-style]'); if(t){state.style=t.dataset.style;fitFiltersToView();renderControls();renderShelves();try{localStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
+  const vw=e.target.closest('[data-view]'); if(vw){const v=vw.dataset.view;state.style=v==='whisky'?(viewOf(state.style)==='whisky'?state.style:'all'):v;fitFiltersToView();renderControls();renderShelves();try{sessionStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
+  const t=e.target.closest('[data-style]'); if(t){state.style=t.dataset.style;fitFiltersToView();renderControls();renderShelves();try{sessionStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
   const n=e.target.closest('[data-nat]'); if(n){state.nat=n.dataset.nat;renderControls();renderShelves();return}
   const bd=e.target.closest('[data-band]'); if(bd){state.band=state.band===bd.dataset.band?'all':bd.dataset.band;renderControls();renderShelves();return}
   const f=e.target.closest('[data-flav]'); if(f){const id=f.dataset.flav;state.flav.has(id)?state.flav.delete(id):state.flav.add(id);renderControls();renderShelves();return}
@@ -1203,7 +1203,7 @@ document.addEventListener('keydown',e=>{
 document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value.trim();renderShelves();renderActive()});
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
-try{const s=localStorage.getItem('bb-style');if(s&&(s==='all'||s==='cocktails'||STYLES.some(x=>x.id===s)))state.style=s}catch(_){}
+try{const s=sessionStorage.getItem('bb-style');if(s&&(s==='all'||s==='cocktails'||STYLES.some(x=>x.id===s)))state.style=s}catch(_){}
 renderStats();renderControls();renderShelves();renderFoot();renderTray();route();
 
 // 휴대폰·태블릿: 아래로 내리면 위 막대 숨김, 위로 올리면 보임. 검색 입력 중·막대 위쪽에서는 늘 보인다
