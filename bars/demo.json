@@ -1,0 +1,200 @@
+{
+ "name": "데모 바",
+ "area": "시범용 가상 바",
+ "intro": "싱글 몰트와 클래식 칵테일을 주로 내는 작은 바라고 가정한 시범 페이지입니다. 선반에는 이 바에 있는 병만 놓여 있고, 병을 누르면 맛과 숙성 통, 이 바에서 만드는 칵테일이 나옵니다.",
+ "notice": "시범용 가상 바입니다. 진열과 한 잔 가격은 예시입니다.",
+ "event": "금요일 밤 9시, 셰리 통 세 잔 비교 시음(예시)",
+ "pick": [
+  "glendronach-15",
+  "lagavulin-16",
+  "blantons",
+  "penicillin",
+  "paper-plane"
+ ],
+ "soldout": [
+  "macallan-12-double",
+  "jw-blue"
+ ],
+ "new": [
+  "kilchoman-machir",
+  "springbank-10"
+ ],
+ "bottles": [
+  "glenfiddich-12",
+  "glenfiddich-15",
+  "glenlivet-12",
+  "macallan-12-sherry",
+  "macallan-12-double",
+  "balvenie-12",
+  "balvenie-14",
+  "aberlour-abunadh",
+  "glenfarclas-12",
+  "glenallachie-12",
+  "glenmorangie-original",
+  "glenmorangie-lasanta",
+  "dalmore-12",
+  "glendronach-12",
+  "glendronach-15",
+  "clynelish-14",
+  "oban-14",
+  "talisker-10",
+  "highland-park-12",
+  "arran-10",
+  "laphroaig-10",
+  "lagavulin-16",
+  "ardbeg-10",
+  "ardbeg-uigeadail",
+  "bowmore-12",
+  "caol-ila-12",
+  "bunnahabhain-12",
+  "springbank-10",
+  "kilchoman-machir",
+  "jw-black",
+  "jw-blue",
+  "chivas-12",
+  "monkey-shoulder",
+  "big-peat",
+  "makers-mark",
+  "buffalo-trace",
+  "wild-turkey-101",
+  "woodford",
+  "blantons",
+  "eagle-rare-10",
+  "rittenhouse-rye",
+  "bulleit-rye",
+  "jameson",
+  "redbreast-12",
+  "hibiki-harmony",
+  "yamazaki-12",
+  "hakushu-dr",
+  "nikka-ftb",
+  "kakubin",
+  "kavalan-concertmaster",
+  "tanqueray",
+  "hendricks",
+  "monkey-47",
+  "roku-gin",
+  "grey-goose",
+  "bacardi-carta-blanca",
+  "diplomatico-reserva",
+  "planteray-oftd",
+  "patron-silver",
+  "don-julio-blanco",
+  "del-maguey-vida",
+  "hennessy-vsop",
+  "cointreau",
+  "campari",
+  "aperol",
+  "carpano-antica",
+  "dolin-dry",
+  "chartreuse-green",
+  "luxardo-maraschino",
+  "kahlua",
+  "disaronno",
+  "amaro-nonino",
+  "angostura",
+  "peychauds",
+  "st-germain",
+  "drambuie"
+ ],
+ "cocktails": [
+  "whisky-highball",
+  "old-fashioned",
+  "manhattan",
+  "whiskey-sour",
+  "penicillin",
+  "boulevardier",
+  "paper-plane",
+  "sazerac",
+  "rusty-nail",
+  "godfather",
+  "gin-tonic",
+  "negroni",
+  "dry-martini",
+  "last-word",
+  "margarita",
+  "naked-and-famous",
+  "daiquiri",
+  "mojito",
+  "espresso-martini",
+  "aperol-spritz"
+ ],
+ "glass": {
+  "glenfiddich-12": [
+   14000,
+   "30ml"
+  ],
+  "glenlivet-12": [
+   14000,
+   "30ml"
+  ],
+  "macallan-12-sherry": [
+   22000,
+   "30ml"
+  ],
+  "balvenie-12": [
+   19000,
+   "30ml"
+  ],
+  "glendronach-15": [
+   26000,
+   "30ml"
+  ],
+  "lagavulin-16": [
+   25000,
+   "30ml"
+  ],
+  "ardbeg-10": [
+   18000,
+   "30ml"
+  ],
+  "talisker-10": [
+   17000,
+   "30ml"
+  ],
+  "blantons": [
+   24000,
+   "30ml"
+  ],
+  "jw-blue": [
+   45000,
+   "30ml"
+  ],
+  "hibiki-harmony": [
+   22000,
+   "30ml"
+  ],
+  "yamazaki-12": [
+   38000,
+   "30ml"
+  ],
+  "whisky-highball": [
+   13000,
+   ""
+  ],
+  "old-fashioned": [
+   18000,
+   ""
+  ],
+  "penicillin": [
+   19000,
+   ""
+  ],
+  "paper-plane": [
+   18000,
+   ""
+  ],
+  "negroni": [
+   17000,
+   ""
+  ],
+  "gin-tonic": [
+   13000,
+   ""
+  ],
+  "espresso-martini": [
+   17000,
+   ""
+  ]
+ }
+}

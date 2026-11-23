@@ -397,15 +397,58 @@ header.top .lede,header.top .stats{display:none}
 .nr-s{font-size:12.5px;color:var(--ink-3);word-break:keep-all}
 .nr-s i{font-style:normal;color:var(--amber);letter-spacing:1px}
 .nr-m{font-size:13px;color:var(--ink-2);word-break:keep-all;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.mn-lede{margin:14px 0 0;color:var(--ink-2);word-break:keep-all}
 .nempty{color:var(--ink-3);padding:24px 0;text-align:center;word-break:keep-all}
 .nmsg{margin-top:10px;font-size:13px;color:var(--amber);word-break:keep-all}
 .nmsg:empty{display:none}
-.qrbox{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;margin-top:14px}
-.qrbox .qr{flex:none;width:200px;height:200px;background:#fff;border-radius:12px;padding:10px;box-sizing:border-box}
-.qrbox .qr svg{display:block;width:100%;height:100%}
-.qrbox p{flex:1 1 200px}
-.qrbox .acts{flex-basis:100%;margin-top:0}
+/* 바 전용 페이지 */
+html.barmode #bands{display:none}
+.barflag{display:inline-block;margin-top:12px;font-size:12.5px;color:var(--amber);border:1px solid var(--line-2);border-radius:999px;padding:4px 12px;word-break:keep-all}
+.bt .pickb,.ck-pickb{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:700;line-height:1;padding:3px 7px;border-radius:999px;background:var(--amber);color:#120d09;white-space:nowrap}
+.ck-pickb{align-self:flex-start;margin:0 0 2px}
+.barnote{color:var(--ink-2);margin:0 0 14px}
+/* 고르기 도우미 */
+.helper{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:26px}
+.hbtn{display:flex;flex-direction:column;gap:3px;text-align:left;padding:12px 14px;border-radius:12px;border:1px solid var(--line-2);background:linear-gradient(180deg,rgba(242,170,76,.08),rgba(255,236,210,.02));color:var(--ink);cursor:pointer;word-break:keep-all;transition:border-color .2s,transform .25s cubic-bezier(.2,.8,.2,1)}
+.hbtn b{font-size:14.5px}
+.hbtn small{font-size:12px;color:var(--ink-3)}
+.hbtn:hover,.hbtn:focus-visible{border-color:var(--amber);transform:translateY(-2px)}
+@media (max-width:520px){.hbtn{padding:11px 6px;align-items:center;text-align:center}.hbtn small{display:none}}
+.qopts{display:flex;flex-wrap:wrap;gap:6px}
+.flight{border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px;background:var(--panel-2)}
+.flight h4{margin:0;font-size:15.5px}
+.flight p{margin:4px 0 10px;font-size:13px;color:var(--ink-3);word-break:keep-all}
+.flight .sim{margin-bottom:8px}
+.tmap{width:100%;height:auto;display:block;margin-top:12px;touch-action:manipulation}
+.tmap .mdot{cursor:pointer}
+.tmap .mdot:hover circle.v,.tmap .mdot:focus circle.v{stroke:var(--ink);stroke-width:1.5}
+.mlegend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--ink-3);margin-top:8px}
+.mlegend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:0}
+.order{display:flex;flex-direction:column;gap:6px}
+.order span{display:block;padding:9px 12px;border-radius:10px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);font-size:14px;word-break:keep-all}
+/* 바: 품절·새로 입고·이벤트 */
+.bt.out img,.bt.out .svgb{opacity:.38;filter:grayscale(.7)}
+.bt .pickb.outb{background:var(--line-2);color:var(--ink-2)}
+.bt .pickb.newb{background:transparent;color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.barevent{margin-top:8px;font-size:13px;color:var(--ink-2);word-break:keep-all}
+.barevent b{color:var(--amber);margin-right:6px}
+/* 모션 */
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fill{from{transform:scaleX(0)}to{transform:none}}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.38)}100%{transform:scale(1)}}
+@keyframes sweep{0%,72%{transform:translateX(-130%)}100%{transform:translateX(230%)}}
+#shelves.enter .bt,#shelves.enter .plate,#shelves.enter .ck,#shelves.enter .hbtn{animation:rise .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0) * 28ms)}
+.cabinet::after{content:"";position:absolute;top:0;bottom:0;left:0;width:45%;pointer-events:none;z-index:2;background:linear-gradient(100deg,transparent,rgba(255,226,180,.05) 40%,rgba(255,236,210,.11) 50%,rgba(255,226,180,.05) 60%,transparent);transform:translateX(-130%);animation:sweep 12s ease-in-out infinite;animation-delay:calc(var(--k,0) * 1.9s)}
+.bt .stand::after{content:"";position:absolute;left:8%;right:8%;bottom:2%;height:60%;border-radius:50%;background:radial-gradient(closest-side,rgba(242,170,76,.32),transparent);opacity:0;transform:scale(.8);transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1);pointer-events:none}
+.bt img,.bt .svgb{position:relative;z-index:1}
+.bt:hover .stand::after,.bt:focus-visible .stand::after{opacity:1;transform:none}
+.ck{transition:border-color .2s,transform .3s cubic-bezier(.2,.8,.2,1)}
+.ck:hover,.ck:focus-visible{transform:translateY(-3px)}
+.sheet{transition:transform .5s cubic-bezier(.16,1,.3,1)}
+.sheet.fresh .sheet-in>*{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+.sheet.fresh .sheet-in>:nth-child(2){animation-delay:.04s}.sheet.fresh .sheet-in>:nth-child(3){animation-delay:.08s}.sheet.fresh .sheet-in>:nth-child(4){animation-delay:.12s}.sheet.fresh .sheet-in>:nth-child(5){animation-delay:.16s}.sheet.fresh .sheet-in>:nth-child(n+6){animation-delay:.2s}
+.sheet.fresh .bar-fill{transform-origin:left;animation:fill .9s cubic-bezier(.2,.8,.2,1) .25s both}
+.nstars.pop .nstar[aria-pressed="true"]{animation:pop .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--n) * 45ms)}
+@media (prefers-reduced-motion:reduce){#shelves.enter .bt,#shelves.enter .plate,#shelves.enter .ck,#shelves.enter .hbtn,.sheet.fresh .sheet-in>*,.sheet.fresh .bar-fill,.nstars.pop .nstar{animation:none}.cabinet::after{display:none}.hbtn,.ck,.bt .stand::after{transition:none}}
 @media (prefers-reduced-motion:reduce){.bt img,.bt .svgb,.sheet,.scrim,.bt .stand::before{transition:none}}
 </style>
 </head>
@@ -934,7 +977,7 @@ const BANDS = [
   {id:'p4',n:'20~50만',lo:200000,hi:500000},
   {id:'p5',n:'50만 원 이상',lo:500000,hi:Infinity}
 ];
-const priceOf=o=>{const p=PRICE[o.id];return p&&p[0]!=null?p:null};
+const priceOf=o=>{if(BAR)return null;const p=PRICE[o.id];return p&&p[0]!=null?p:null};
 const priceMid=o=>{const p=priceOf(o);return p?(p[0]+p[1])/2:null};
 const bandOf=o=>{const m=priceMid(o);return m==null?null:BANDS.find(b=>m>=b.lo&&m<b.hi).id};
 function won(v){if(v>=10000){const m=v/10000;return (m>=10?Math.round(m):Math.round(m*10)/10)+'만'}return v.toLocaleString('ko-KR')}
@@ -948,6 +991,12 @@ const valid=a=>a.filter(id=>B.some(o=>o.id===id));
 const fav=new Set(valid(store.get('bb-fav',[])));
 let cmp=valid(store.get('bb-cmp',[])).slice(0,3);
 const CMP_MAX=3;
+// 바 전용 페이지(?bar=)일 때만 채워짐
+let BAR=null;
+const soldOut=id=>!!(BAR&&BAR.out.has(id)),isNew=id=>!!(BAR&&BAR.fresh.has(id));
+function badge(o){return soldOut(o.id)?'<span class="pickb outb">오늘 없음</span>':isNew(o.id)?'<span class="pickb newb">새로 입고</span>':BAR&&BAR.pick.has(o.id)?'<span class="pickb">바 추천</span>':''}
+const glassOf=id=>BAR&&Array.isArray(BAR.glass[id])&&+BAR.glass[id][0]>0?BAR.glass[id]:null;
+const glassTxt=g=>Number(g[0]).toLocaleString('ko-KR')+'원';
 
 // 내 노트: 이 기기 localStorage bb-note에만 저장. 열쇠는 'b:병id' 또는 'c:칵테일id', 값 {r 별점,d 날짜,w 장소,m 메모,u 고친 시각}
 let notes=(()=>{try{const v=JSON.parse(localStorage.getItem('bb-note'));return v&&typeof v==='object'&&!Array.isArray(v)?cleanNotes(v):{}}catch(_){return {}}})();
@@ -962,14 +1011,68 @@ const starTxt=r=>r?'<i>'+'★'.repeat(r)+'</i>':'별점 없음';
 function noteSec(key){const n=notes[key];const r=n?n.r:0;
   return `<div class="sec mynote" id="mynote" data-nkey="${key}"><h3 class="mn-head">My note <span>내 노트</span><small class="mn-save" aria-live="polite"></small></h3>
     <div class="mn-row"><button class="act" data-ntried aria-pressed="${!!n}">${n?'✓ 마셔 봄':'+ 마셔 봤어요'}</button>
-    <div class="nstars" role="group" aria-label="내 별점">${[1,2,3,4,5].map(i=>`<button class="nstar" data-nstar="${i}" aria-pressed="${i<=r}" aria-label="별 ${i}개">★</button>`).join('')}</div></div>
+    <div class="nstars" role="group" aria-label="내 별점">${[1,2,3,4,5].map(i=>`<button class="nstar" style="--n:${i}" data-nstar="${i}" aria-pressed="${i<=r}" aria-label="별 ${i}개">★</button>`).join('')}</div></div>
     ${n?`<div class="mn-form">
       <label>날짜<input type="date" data-nf="d" value="${esc(n.d)}"></label>
       <label>장소<input type="text" data-nf="w" maxlength="40" placeholder="예: 동네 바, 집" value="${esc(n.w)}"></label>
       <label class="mn-memo">메모<textarea data-nf="m" maxlength="500" rows="3" placeholder="향과 맛, 같이 먹은 것, 다음에 또 마실지">${esc(n.m)}</textarea></label>
       <button class="mn-del" data-ndel>이 노트 지우기</button></div>`:''}
-    <p class="mn-tip">${n?'적는 대로 이 기기에 저장됩니다. ':''}백업과 다른 기기로 옮기기는 위쪽 '노트' 단추에서 합니다.</p></div>`}
+    <p class="mn-tip">${n?'적는 대로 이 기기에 저장됩니다. ':''}백업은 위쪽 '노트' 단추에서 합니다.</p></div>`}
 function refreshNote(){const el=document.getElementById('mynote');if(el){const fk=focusKey();el.outerHTML=noteSec(el.dataset.nkey);restoreFocus(fk)}}
+
+// 취향 찾기: 세 문항 → 지금 선반(바 모드면 그 바)의 위스키에서 세 병
+const quiz={};
+const QZ=[['p','연기·피트는?',[['0','없는 게 좋아요'],['1','조금은 괜찮아요'],['3','진할수록 좋아요']]],
+  ['t','어떤 단맛이 끌려요?',[['fruit','과일·꿀처럼 가볍게'],['sherry','건과일·셰리처럼 진하게'],['any','상관없어요']]],
+  ['d','어떻게 마실까요?',[['neat','니트로 천천히'],['hb','하이볼·얼음으로 시원하게'],['any','상관없어요']]]];
+function quizPick(){const P=+quiz.p;
+  const sc=o=>{let d=Math.abs(o.p-P)*2.2+(P===0&&o.p>=2?6:0);
+    if(quiz.t==='fruit')d+=Math.max(0,o.sy-1)*1.5+Math.max(0,3-o.s)*.8;if(quiz.t==='sherry')d+=Math.max(0,2-o.sy)*3;
+    if(quiz.d==='hb')d+=Math.max(0,o.b-3)*1.2+(isStrong(o)?2:0);if(BAR&&BAR.pick.has(o.id))d-=.6;if(isNew(o.id))d-=.3;return d};
+  const r=B.filter(o=>!isSpirit(o)&&!soldOut(o.id)).map(o=>({o,d:sc(o)})).sort((a,b)=>a.d-b.d);
+  const out=[],seen=new Set();for(const x of r){const k=x.o.n.split(' ')[0];if(seen.has(k))continue;seen.add(k);out.push(x.o);if(out.length===3)break}return out}
+const tasteWhy=o=>[o.p?'피트 '+PEAT[o.p]:'피트 없음',o.sy>=2?'셰리 진함':o.s>=4?'달콤·과일':'균형',o.b<=2?'가벼움':o.b>=4?'묵직함':'중간 무게'].join('·');
+function openQuiz(push,keep){const done=QZ.every(q=>quiz[q[0]]);const res=done?quizPick():[];const sh=document.getElementById('sheet');const st=sh.scrollTop;
+  openSheet(`<div class="sheet-in">${CLOSE_BTN}<div><div class="d-kicker">Taste finder</div><h2 id="d-name">취향 찾기</h2><div class="d-en">세 가지만 고르면 ${BAR?'이 바에 있는':'선반의'} 위스키에서 세 병을 골라 드립니다.</div></div>
+    ${QZ.map(([k,t,os])=>`<div class="sec"><h3>${t}</h3><div class="qopts">${os.map(([v,n])=>`<button class="chip" data-quiz="${k}:${v}" aria-pressed="${quiz[k]===v}">${n}</button>`).join('')}</div></div>`).join('')}
+    ${done?`<div class="sec" id="qres"><h3>Pick <span>이 세 병부터</span></h3><div class="sim">${res.map(o=>btn(o,tasteWhy(o))).join('')}</div><div class="acts"><button class="act" data-quizcmp="${res.map(o=>o.id).join(',')}">세 병 나란히 비교</button><button class="act" data-quizreset>다시 고르기</button></div></div>`:''}
+    <p class="foot">맛 점수로 고른 대략적인 추천입니다. 바에서는 이 이름을 보여 주고 비슷한 병을 물어봐도 좋습니다.</p></div>`,'#quiz',push);
+  if(keep){sh.classList.remove('fresh');sh.scrollTop=st;if(done&&keep==='done')setTimeout(()=>document.getElementById('qres')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'}),80)}}
+// 비교 3잔: 지금 선반에서 결이 다른 세 병 묶음
+function flights(){const L=B.filter(o=>!isSpirit(o)&&!soldOut(o.id)),G=new Map();
+  const best=(f,used)=>L.filter(o=>f(o)&&!used.has(o.id)).sort((a,b)=>((G.get(a.id)||0)-(G.get(b.id)||0))||((BAR&&BAR.pick.has(b.id))-(BAR&&BAR.pick.has(a.id)))||(a.p+a.b)-(b.p+b.b))[0];
+  const mk=(n,d,fs)=>{const used=new Set(),items=[];for(const f of fs){const o=best(f,used);if(!o)return null;used.add(o.id);items.push(o)}items.forEach(o=>G.set(o.id,(G.get(o.id)||0)+1));return {n,d,items}};
+  return [mk('통이 만드는 차이','버번 통 싱글 몰트, 셰리 통 싱글 몰트, 버번 위스키. 통에 따라 단맛의 결이 어떻게 달라지는지 봅니다.',[o=>o.st==='single'&&o.sy===0&&o.p===0,o=>o.st==='single'&&o.sy>=2&&o.p<=1,o=>o.row==='bourbon']),
+    mk('스코틀랜드 지역 여행','스페이사이드, 하일랜드, 아일레이. 과일에서 바다와 연기까지 지역의 결을 따라갑니다.',[o=>o.row==='speyside',o=>o.row==='highland',o=>/아일레이/.test(o.r)]),
+    mk('연기 단계별','피트 없음, 조금, 진함 순서. 피트가 처음이면 왼쪽부터 마셔 보세요.',[o=>o.st==='single'&&o.p===0,o=>o.p>=1&&o.p<=2,o=>o.p>=3]),
+    mk('나라별 한 잔','스코틀랜드, 미국, 일본. 같은 위스키라도 나라마다 다른 인상을 비교합니다.',[o=>o.nat==='스코틀랜드'&&o.st==='single',o=>o.nat==='미국',o=>o.nat==='일본'])].filter(Boolean)}
+function openFlights(push){const F=flights();
+  openSheet(`<div class="sheet-in">${CLOSE_BTN}<div><div class="d-kicker">Flights</div><h2 id="d-name">비교 3잔</h2><div class="d-en">결이 다른 세 잔을 나란히 마시면 차이가 또렷해집니다. 적은 양으로 주문해 보세요.</div></div>
+    ${F.length?F.map((f,i)=>`<div class="flight"><h4>${esc(f.n)}</h4><p>${esc(f.d)}</p><div class="sim">${f.items.map(o=>btn(o,tasteWhy(o))).join('')}</div><button class="act" data-quizcmp="${f.items.map(o=>o.id).join(',')}">세 병 나란히 비교</button></div>`).join(''):'<p class="nempty">지금 선반으로는 묶음을 만들기 어렵습니다.</p>'}
+    <p class="foot">${BAR?'이 바에 있는 병으로 만든 묶음입니다. ':''}맛 점수로 고른 묶음이라 바에 따라 더 좋은 조합이 있을 수 있습니다.</p></div>`,'#flight',push)}
+// 맛 지도: 가로 피트, 세로 단맛·과일. 점을 누르면 상세
+function openMap(push){const L=B.filter(o=>!isSpirit(o));const W=340,H=300,x0=40,x1=W-36,y0=30,y1=H-40;
+  const jit=(id,k)=>{let h=2166136261;for(const c of k+id+k){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return ((h>>>0)%1000)/1000-.5};
+  const X=p=>x0+p/4*(x1-x0),Y=v=>y1-v/5*(y1-y0);
+  const dot=o=>{const n=notes['b:'+o.id];const cx=(X(o.p)+jit(o.id,'x')*54).toFixed(1),cy=(Y(o.s)+jit(o.id,'y')*34).toFixed(1);
+    const fill=n?'var(--amber)':o.sy>=2?'#b25d3c':'#7d7368';return `<g class="mdot" data-open="${o.id}"><title>${esc(o.n)}</title><circle cx="${cx}" cy="${cy}" r="11" fill="transparent"/><circle class="v" cx="${cx}" cy="${cy}" r="${n?6:4.2}" fill="${fill}" opacity="${n?1:.85}"/></g>`};
+  const liked=noteItems().filter(x=>x.k==='b'&&x.n.r>=4).map(x=>x.o);
+  const me=liked.length?`<circle cx="${X(liked.reduce((a,o)=>a+o.p,0)/liked.length).toFixed(1)}" cy="${Y(liked.reduce((a,o)=>a+o.s,0)/liked.length).toFixed(1)}" r="26" fill="none" stroke="var(--amber)" stroke-dasharray="4 4" stroke-width="1.5"/>`:'';
+  const ax=[0,1,2,3,4].map(p=>`<line x1="${X(p)}" x2="${X(p)}" y1="${y0}" y2="${y1}" stroke="var(--line)"/><text x="${X(p)}" y="${H-16}" fill="var(--ink-3)" font-size="10" text-anchor="middle">${PEAT[p]}</text>`).join('');
+  const L2=L.slice().sort((a,b)=>!!notes['b:'+a.id]-!!notes['b:'+b.id]);
+  openSheet(`<div class="sheet-in">${CLOSE_BTN}<div><div class="d-kicker">Taste map</div><h2 id="d-name">맛 지도</h2><div class="d-en">${BAR?'이 바의 ':''}위스키 ${L.length}병을 피트(가로)와 단맛·과일(세로)로 펼쳤습니다. 점을 누르면 병이 열립니다.</div></div>
+    <svg class="tmap" viewBox="0 0 ${W} ${H}" role="img" aria-label="피트와 단맛으로 펼친 위스키 지도">${ax}<text x="4" y="12" fill="var(--ink-3)" font-size="10">↑ 단맛·과일</text><text x="${x1}" y="${H-3}" fill="var(--ink-3)" font-size="10" text-anchor="end">피트 →</text>${me}${L2.map(dot).join('')}</svg>
+    <div class="mlegend"><span><i style="background:var(--amber)"></i>내 노트가 있는 병</span><span><i style="background:#b25d3c"></i>셰리 영향 큼</span><span><i style="background:#7d7368"></i>그 밖</span>${me?'<span>점선 원: 별점 4개 이상 준 병의 가운데(내 취향)</span>':''}</div>
+    <p class="foot">점 위치는 이 페이지에서 붙인 대략적인 맛 점수이고, 겹치지 않게 조금씩 흩어 놓았습니다.</p></div>`,'#map',push)}
+// 다음 잔: 별점 4개 이상 준 병과 비슷한데 아직 노트가 없는 병
+function nextPicks(){const liked=noteItems().filter(x=>x.k==='b'&&x.n.r>=4).map(x=>x.o);if(!liked.length)return [];
+  const sc=new Map();for(const o of liked)similar(o).forEach((x,i)=>{if(notes['b:'+x.id]||soldOut(x.id))return;sc.set(x,(sc.get(x)||0)+6-i)});
+  return [...sc].sort((a,b)=>b[1]-a[1]).slice(0,4).map(a=>a[0])}
+// 주문 문장: 바에서 바로 말할 수 있게
+function orderSec(o,ck){const t=[];
+  if(ck){t.push(`${o.n} 한 잔 주세요.`);if(/달|꿀|시럽/.test(o.taste+o.ing.join(' ')))t.push('조금 덜 달게 만들어 주실 수 있을까요?');t.push('도수를 조금 낮춰 주실 수 있을까요?')}
+  else{t.push(`${o.n}, 니트로 한 잔 주세요.`);if(isStrong(o)||o.p>=3)t.push('물 몇 방울 따로 주실 수 있을까요?');if(/하이볼/.test(o.drink))t.push(`${o.n} 하이볼 가능할까요?`);t.push('이거랑 비슷한데 조금 더 가벼운 것도 있을까요?')}
+  return `<div class="sec"><h3>Order <span>바에서 이렇게 말해 보세요</span></h3><div class="order">${t.slice(0,3).map(x=>`<span>${esc(x)}</span>`).join('')}</div></div>`}
 let noteSort='d',noteMsg='';
 function openNotes(push){
   const l=noteItems();
@@ -980,13 +1083,13 @@ function openNotes(push){
   openSheet(`<div class="sheet-in">${CLOSE_BTN}
     <div><div class="d-kicker">My notes</div><h2 id="d-name">내 노트</h2><div class="d-en">${l.length?`병 ${nb}개 · 칵테일 ${l.length-nb}잔`:'아직 적은 노트가 없습니다'}</div></div>
     ${l.length?`<div class="nsort" role="group" aria-label="정렬"><button class="chip" data-nsort="d" aria-pressed="${noteSort==='d'}">최근 마신 순</button><button class="chip" data-nsort="r" aria-pressed="${noteSort==='r'}">별점 높은 순</button></div>
-    <div class="nlist">${l.map(row).join('')}</div>`:`<p class="nempty">병이나 칵테일을 열고 '마셔 봤어요'나 별점을 누르면 여기에 모입니다.</p>`}
-    <div class="sec"><h3>Backup <span>백업·다른 기기로 옮기기</span></h3>
-      <p>노트는 서버 없이 이 기기 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 파일로 저장해 두세요.</p>
-      <div class="acts"><button class="act" data-nexport ${l.length?'':'disabled'}>파일로 저장</button><button class="act" data-nimport>파일 불러오기</button><button class="act" data-nqr ${l.length?'':'disabled'}>QR·링크로 옮기기</button></div>
+    <div class="nlist">${l.map(row).join('')}</div>${nextPicks().length?`<div class="sec"><h3>Next <span>다음에 마셔 볼 병</span></h3><div class="sim">${nextPicks().map(o=>btn(o,'별점 높은 병과 비슷')).join('')}</div></div>`:''}`:`<p class="nempty">병이나 칵테일을 열고 '마셔 봤어요'나 별점을 누르면 여기에 모입니다.</p>`}
+    <div class="sec"><h3>Backup <span>백업</span></h3>
+      <p>노트는 서버 없이 이 기기 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 파일로 저장해 두세요. 저장한 파일을 다른 기기에서 불러오면 옮겨집니다.</p>
+      <div class="acts"><button class="act" data-nexport ${l.length?'':'disabled'}>파일로 저장</button><button class="act" data-nimport>파일 불러오기</button></div>
       <input type="file" id="nfile" accept=".json,application/json" hidden>
-      <p class="nmsg" id="nmsg" role="status">${esc(noteMsg)}</p><div id="nqr"></div></div>
-    <p class="foot">불러오거나 옮겨 온 노트는 지금 노트와 합칩니다. 같은 병에 두 기록이 있으면 더 나중에 고친 쪽을 남깁니다.</p>
+      <p class="nmsg" id="nmsg" role="status">${esc(noteMsg)}</p></div>
+    <p class="foot">불러온 노트는 지금 노트와 합칩니다. 같은 병에 두 기록이 있으면 더 나중에 고친 쪽을 남깁니다.</p>
   </div>`,'#notes',push);noteMsg='';
 }
 function mergeNotes(inc){inc=cleanNotes(inc);let n=0;for(const [k,v] of Object.entries(inc)){if(!notes[k]||v.u>notes[k].u){notes[k]=v;n++}}saveNotes();return n}
@@ -995,27 +1098,6 @@ function exportNotes(){const blob=new Blob([JSON.stringify({app:'whisky-backbar'
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backbar-notes-'+today().replace(/-/g,'')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);nmsg('파일을 저장했습니다. 다른 기기에서는 \'파일 불러오기\'로 여세요.')}
 function importFile(f){if(!f)return;if(f.size>2e6){nmsg('파일이 너무 큽니다.');return}
   f.text().then(t=>{const j=JSON.parse(t);if(!j||j.app!=='whisky-backbar'||typeof j.notes!=='object')throw 0;const n=mergeNotes(j.notes);noteMsg=n?`노트 ${n}개를 합쳤습니다.`:'새로 합칠 노트가 없습니다(이미 같은 기록이 있음).';openNotes(false)}).catch(()=>nmsg('이 페이지에서 저장한 노트 파일이 아닙니다.'))}
-// QR·링크: 노트를 압축해 주소 #nt= 뒤에 담는다(# 뒤는 서버로 보내지지 않음)
-const b64u={enc:u=>{let t='';for(const c of u)t+=String.fromCharCode(c);return btoa(t).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')},dec:t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0))};
-const pipeBytes=(u,ts)=>new Response(new Blob([u]).stream().pipeThrough(ts)).arrayBuffer().then(b=>new Uint8Array(b));
-async function packNotes(){const slim={};for(const [k,v] of Object.entries(notes)){const o={u:Math.round(v.u/1000)};if(v.r)o.r=v.r;if(v.d)o.d=v.d;if(v.w)o.w=v.w;if(v.m)o.m=v.m;slim[k]=o}
-  const u=new TextEncoder().encode(JSON.stringify(slim));return window.CompressionStream?'z'+b64u.enc(await pipeBytes(u,new CompressionStream('deflate-raw'))):'j'+b64u.enc(u)}
-async function unpackNotes(t){let u=b64u.dec(t.slice(1));if(t[0]==='z')u=await pipeBytes(u,new DecompressionStream('deflate-raw'));else if(t[0]!=='j')throw 0;
-  const o=JSON.parse(new TextDecoder().decode(u));for(const v of Object.values(o))v.u=(+v.u||0)*1000;return o}
-let qrLib=null;
-function loadQR(){return qrLib||(qrLib=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';sc.integrity='sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1';sc.crossOrigin='anonymous';sc.onload=()=>ok(window.qrcode);sc.onerror=()=>{qrLib=null;no()};document.head.appendChild(sc)}))}
-async function showQR(){const box=document.getElementById('nqr');if(!box)return;nmsg('');
-  const url=location.origin+location.pathname+'#nt='+await packNotes();let svg='';
-  try{const qrcode=await loadQR();const q=qrcode(0,'L');q.addData(url);q.make();svg=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){svg=null}
-  box.innerHTML=`<div class="qrbox">${svg?`<div class="qr" role="img" aria-label="노트 옮기기 QR">${svg}</div>`:''}<p>${svg?'옮길 기기의 카메라로 QR을 찍으세요. ':(qrLib===null?'QR을 그리지 못했습니다(인터넷 연결 확인). ':'노트가 많아 QR 하나에 다 담기지 않습니다. 링크나 파일로 옮겨 주세요. ')}휴대폰에서 PC로 옮길 때는 링크를 나에게 보내 PC에서 여세요. 링크에 노트 내용이 들어 있으니 다른 사람에게 보내지 마세요.</p>
-    <div class="acts"><button class="act" data-ncopy>링크 복사</button>${navigator.share?'<button class="act" data-nshare>링크 보내기</button>':''}</div></div>`;box.dataset.url=url}
-async function importLink(code){let inc;try{inc=await unpackNotes(code)}catch(_){noteMsg='옮기기 링크를 읽지 못했습니다. 링크가 잘렸는지 확인해 주세요.';openNotes(false);return}
-  const n=Object.keys(cleanNotes(inc)).length;
-  openSheet(`<div class="sheet-in">${CLOSE_BTN}<div><div class="d-kicker">My notes</div><h2 id="d-name">노트 ${n}개를 가져올까요?</h2></div>
-    <p class="mn-lede">다른 기기에서 옮겨 온 노트입니다. 이 기기의 노트와 합치고, 같은 병에 두 기록이 있으면 더 나중에 고친 쪽을 남깁니다.</p>
-    <div class="acts"><button class="act" data-nlinkok aria-pressed="true">가져오기</button><button class="act" data-nlinkno>그만두기</button></div></div>`,location.hash,false);
-  pendingLink=inc}
-let pendingLink=null;
 
 function face(o, big){
   const p=PH[o.id];
@@ -1023,9 +1105,10 @@ function face(o, big){
   if(p) return `<img src="${p.f}" alt="" width="${p.w}" height="${p.h}" loading="lazy" decoding="async">`;
   return `<span class="svgb">${bottleSVG(o,1)}</span>`;
 }
-function btn(o,extra){const f=fav.has(o.id);return `<button class="bt" data-id="${o.id}" aria-label="${esc(o.n)} 자세히 보기${f?' (관심)':''}${extra?', '+esc(extra):''}"><span class="stand">${face(o)}${f?'<span class="star" aria-hidden="true">★</span>':''}</span><span class="nm">${esc(o.n)}</span>${extra?`<small class="why">${esc(extra)}</small>`:''}</button>`}
+function btn(o,extra){const f=fav.has(o.id);return `<button class="bt${soldOut(o.id)?' out':''}" data-id="${o.id}" aria-label="${esc(o.n)} 자세히 보기${f?' (관심)':''}${extra?', '+esc(extra):''}"><span class="stand">${face(o)}${f?'<span class="star" aria-hidden="true">★</span>':''}</span><span class="nm">${esc(o.n)}</span>${extra?'':badge(o)}${extra?`<small class="why">${esc(extra)}</small>`:''}</button>`}
 
 function renderStats(){
+  if(BAR){document.getElementById('stats').innerHTML=`<div><b>${B.filter(o=>!isSpirit(o)).length}</b><span>Whisky</span></div><div><b>${B.filter(isSpirit).length}</b><span>Spirits</span></div><div><b>${CK.length}</b><span>Cocktails</span></div>`;return}
   const photo=B.filter(o=>PH[o.id]).length;
   document.getElementById('stats').innerHTML=
     `<div><b>${B.length}</b><span>Bottles</span></div><div><b>${STYLES.length}</b><span>Styles</span></div><div><b>${NATIONS.length}</b><span>Countries</span></div><div><b>${photo}</b><span>Bottles drawn</span></div>`;
@@ -1036,7 +1119,7 @@ function restoreFocus(fk){if(!fk)return;const [k,v]=fk;const sel=k==='reset'?'[d
 function renderControls(){
   const fk=focusKey();
   const cnt=id=>id==='cocktails'?CK.length:B.filter(o=>(id==='all'?!isSpirit(o):o.st===id)).length;
-  const tab=(id,n,cls)=>`<button class="tab${cls?' '+cls:''}" data-style="${id}" aria-pressed="${state.style===id}">${n}<small>${cnt(id)}</small></button>`;
+  const tab=(id,n,cls)=>BAR&&!cnt(id)?'':`<button class="tab${cls?' '+cls:''}" data-style="${id}" aria-pressed="${state.style===id}">${n}<small>${cnt(id)}</small></button>`;
   const v=viewOf(state.style);
   document.getElementById('seg').innerHTML=[['whisky','위스키'],['spirits','칵테일 술'],['cocktails','칵테일']]
     .map(([id,n])=>`<button class="segb" data-view="${id}" aria-pressed="${v===id}">${n}</button>`).join('');
@@ -1090,7 +1173,12 @@ function matches(o){
   for(const f of state.flav){if(!FLAVS.find(x=>x.id===f).f(o))return false}
   return true;
 }
-function renderShelves(){
+function renderShelves(){renderShelves0();stagger(document.getElementById('shelves'))}
+// 다시 그릴 때마다 화면 안쪽 항목부터 차례로 떠오르게(동작 줄이기 설정이면 CSS에서 끔)
+function stagger(el){el.classList.remove('enter');void el.offsetWidth;let i=0;const lim=innerHeight*1.2;
+  el.querySelectorAll('.hbtn,.plate,.bt,.ck').forEach(b=>{const t=b.getBoundingClientRect().top;b.style.setProperty('--i',t<lim?Math.min(i++,22):0)});el.classList.add('enter')}
+function helperHTML(){return `<div class="helper" role="group" aria-label="고르기 도우미"><button class="hbtn" data-quizopen><b>취향 찾기</b><small>세 가지만 고르면 세 병 추천</small></button><button class="hbtn" data-flightopen><b>비교 3잔</b><small>결이 다른 세 잔 묶음</small></button><button class="hbtn" data-mapopen><b>맛 지도</b><small>피트와 단맛으로 한눈에</small></button></div>`}
+function renderShelves0(){
   const el=document.getElementById('shelves');
   if(state.style==='cocktails'){renderCocktails(el);return}
   let html='',shown=0,no=0;
@@ -1106,14 +1194,16 @@ function renderShelves(){
       rows+=`<div class="plate" role="heading" aria-level="3"><b>${rn}</b><span>${hit.length}</span><i>${rhint}</i></div>${hit.map(o=>btn(o)).join('')}`;
     }
     if(!rows)continue;
-    html+=`<section class="style" id="s-${s.id}" aria-label="${s.n} 진열장"><div class="style-head"><div class="style-no">${String(no).padStart(2,'0')}</div><div class="style-en">${s.en}</div><h2>${s.n}</h2><p>${s.d}</p></div><div class="cabinet"><div class="track">${rows}</div></div></section>`;
+    html+=`<section class="style" id="s-${s.id}" aria-label="${s.n} 진열장" style="--k:${no%4}"><div class="style-head"><div class="style-no">${String(no).padStart(2,'0')}</div><div class="style-en">${s.en}</div><h2>${s.n}</h2><p>${s.d}</p></div><div class="cabinet"><div class="track">${rows}</div></div></section>`;
   }
-  el.innerHTML=html||emptyBox('조건에 맞는 병이 없습니다.');
+  el.innerHTML=(state.style!=='spirits'&&!state.q?helperHTML():'')+(html||emptyBox('조건에 맞는 병이 없습니다.'));
   document.getElementById('count').textContent=`${shown} / ${B.filter(o=>state.style==='spirits'?isSpirit(o):!isSpirit(o)).length}`;
 }
 function renderFoot(){
   const li=(n,p)=>`<li>${esc(n)}: ${esc(p.a)} · ${esc(p.l)} · ${p.u?`<a href="${p.u}" target="_blank" rel="noopener">원본</a>`:"원본 비공개"}${p.n?` (${esc(p.n)})`:''}</li>`;
   const cc=B.filter(o=>PH[o.id]&&PH[o.id].u).map(o=>li(o.n,PH[o.id])).concat(CK.filter(c=>CKPH[c.id]&&CKPH[c.id].u).map(c=>li(c.n+'(칵테일)',CKPH[c.id])));const list=cc.join('');
+  if(BAR){document.getElementById('site-foot').innerHTML=`<p class="warn">19세 미만 청소년의 음주는 법으로 금지되어 있습니다. 지나친 음주는 건강을 해칩니다.</p><p class="barnote">${esc(BAR.name)}의 진열 안내 페이지입니다. 가격은 이 바의 메뉴 기준이고, 병 설명과 맛 점수는 위스키 백바 자료(일반적으로 알려진 내용을 줄인 것)입니다. <a href="./">위스키 백바 전체 보기</a></p>병 이미지는 실제 병 사진을 참고해 AI로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다.
+  <details><summary>사진 출처 (${cc.length})</summary><ul>${list}</ul></details>`;return}
   document.getElementById('site-foot').innerHTML=`<p class="warn">19세 미만 청소년의 음주는 법으로 금지되어 있습니다. 지나친 음주는 건강을 해칩니다.<br>광고·협찬 없이 만든 개인 안내 페이지이고, 가격과 설명은 참고용입니다. 상표·이미지 관련 요청은 <a href="https://github.com/newhead84/whisky-backbar/issues" target="_blank" rel="noopener">GitHub 이슈</a>로 알려 주세요.</p>병 소매가는 ${esc(PRICE_ASOF)}에 국내 주류 판매처(주로 데일리샷, 일부 대형마트·주류 전문점)에 올라온 가격을 모은 범위이고, 바에서 파는 한 잔 값이 아닙니다. 판매처·환율·행사에 따라 달라집니다.<br>맛 표현과 수치는 일반적으로 알려진 내용을 줄인 것이고, 맛 점수는 병끼리 비교하려고 붙인 대략적인 값입니다. 도수와 라벨은 제품 연도·수입 판에 따라 다를 수 있습니다.<br>병 이미지는 실제 병 사진을 참고해 AI로 정면·투명 배경으로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다. 칵테일 잔 그림도 자유 라이선스 사진을 참고해 같은 방식으로 그렸고, 잔과 가니시는 바마다 다릅니다.
   <details><summary>사진 출처 (${cc.length})</summary><ul>${list}</ul></details>`;
 }
@@ -1139,7 +1229,7 @@ function renderCocktails(el){
   const gOf=c=>{const b=c.base[0]||'';if(b==='mezcal')return 'tequila';if(['gin','vodka','rum','tequila'].includes(b))return b;if(['bourbon','rye','scotch','irish','japanese-whisky','any-whisky'].includes(b))return 'whisky';return 'etc'};
   let html='';
   for(const [gn,gid] of groups){const l=hit.filter(c=>gOf(c)===gid);if(!l.length)continue;
-    html+=`<div class="ck-group"><h3 class="ck-gh">${gn} 베이스 <span>${l.length}</span></h3><div class="ckgrid">${l.map(c=>`<button class="ck" data-ck="${c.id}">${ckPic(c)}<b>${esc(c.n)}</b><small>${esc(c.e)}</small><span class="ck-taste">${esc(c.taste)}</span><span class="ck-meta">${esc(c.base.map(b=>BASE_KO[b]||b).join('·'))} · ${esc(ckAbv(c))}</span></button>`).join('')}</div></div>`}
+    html+=`<div class="ck-group"><h3 class="ck-gh">${gn} 베이스 <span>${l.length}</span></h3><div class="ckgrid">${l.map(c=>`<button class="ck" data-ck="${c.id}">${ckPic(c)}${BAR&&BAR.pick.has(c.id)?'<span class="ck-pickb">바 추천</span>':''}<b>${esc(c.n)}</b><small>${esc(c.e)}</small><span class="ck-taste">${esc(c.taste)}</span><span class="ck-meta">${esc(c.base.map(b=>BASE_KO[b]||b).join('·'))} · ${esc(ckAbv(c))}${glassOf(c.id)?' · '+esc(glassTxt(glassOf(c.id))):''}</span></button>`).join('')}</div></div>`}
   el.innerHTML=`<section class="style" id="s-cocktails" aria-label="칵테일"><div class="style-head"><div class="style-no">${String(STYLES.length+1).padStart(2,'0')}</div><div class="style-en">Cocktails</div><h2>칵테일</h2><p>바에서 자주 주문하는 칵테일입니다. 누르면 들어가는 재료와 이 선반에서 쓰는 병이 나옵니다.</p></div>${html||emptyBox('찾는 칵테일이 없습니다.')}</section>`;
   document.getElementById('count').textContent=`${hit.length} / ${CK.length}`;
 }
@@ -1151,11 +1241,12 @@ function openCocktail(id,push){
   const show=pinned.concat(byBase).slice(0,8);
   openSheet(`<div class="sheet-in">${CLOSE_BTN}
     <div class="ck-hero">${ckPic(c,true)}<div><div class="d-kicker">Cocktail</div><h2 id="d-name">${esc(c.n)}</h2><div class="d-en">${esc(c.e)}</div>
-      <div class="pills">${c.base.map(b=>`<span class="pill">${esc(BASE_KO[b]||b)} 베이스</span>`).join('')}<span class="pill" title="대표 레시피로 계산한 만든 직후 추정 도수">${esc(ckAbv(c))}</span></div>
+      <div class="pills">${c.base.map(b=>`<span class="pill">${esc(BASE_KO[b]||b)} 베이스</span>`).join('')}<span class="pill" title="대표 레시피로 계산한 만든 직후 추정 도수">${esc(ckAbv(c))}</span>${glassOf(c.id)?`<span class="pill">이 바 ${esc(glassTxt(glassOf(c.id)))}</span>`:''}${BAR&&BAR.pick.has(c.id)?'<span class="pill">바 추천</span>':''}</div>
       <div class="acts"><button class="act" data-ngo aria-pressed="${!!notes['c:'+c.id]}">${notes['c:'+c.id]?'✎ 내 노트 있음':'✎ 내 노트'}</button></div></div></div>
     <div class="d-key"><b>${esc(c.taste)}</b><span>${esc(c.method)} · ${esc(c.glass)}</span></div>
     <div class="sec"><h3>Ingredients <span>들어가는 것</span></h3><div class="ingr">${c.ing.map(i=>`<span class="pill">${esc(i)}</span>`).join('')}</div>${ckAllergy(c).length?`<p class="alg">알레르기 주의 재료: ${esc(ckAllergy(c).join(', '))}. 바에서 쓰는 재료와 제품을 확인하세요.</p>`:''}</div>
     <div class="sec"><h3>Story <span>알아 두면 좋은 이야기</span></h3><p>${esc(c.fact)}</p></div>
+    ${orderSec(c,true)}
     ${noteSec('c:'+c.id)}
     ${show.length?`<div class="sec"><h3>Bottles <span>이 선반에서 쓰는 병</span></h3><div class="sim">${show.map(o=>btn(o,c.bottles.includes(o.id)?'자주 쓰는 병':(isSpirit(o)?SP_CAT[o.cat]:'같은 갈래'))).join('')}</div></div>`:''}
     <p class="foot">재료는 대표적인 구성이고 바마다 다릅니다. 도수는 대표 레시피로 계산한 만든 직후의 추정치로, 바의 레시피·얼음·잔 크기에 따라 달라집니다.</p>
@@ -1187,14 +1278,14 @@ function openDetail(id,push){
     <button class="close" id="close" aria-label="닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
     <div class="d-hero"><div class="d-stage">${face(o,true)}</div>
       <div><div class="d-kicker">${esc(s.en)}</div><h2 id="d-name">${esc(o.n)}</h2><div class="d-en">${esc(o.e)}</div>
-      <div class="pills"><span class="pill">${esc(o.t)}</span><span class="pill">${esc(o.r)}</span>${row&&o.st==='single'?'':`<span class="pill">${esc(row?row[1]:'')}</span>`}</div>
+      <div class="pills">${soldOut(o.id)?'<span class="pill">오늘 없음</span>':''}${isNew(o.id)?'<span class="pill">새로 입고</span>':''}${BAR&&BAR.pick.has(o.id)?'<span class="pill">바 추천</span>':''}<span class="pill">${esc(o.t)}</span><span class="pill">${esc(o.r)}</span>${row&&o.st==='single'?'':`<span class="pill">${esc(row?row[1]:'')}</span>`}</div>
       <div class="acts">${actBtns(o.id)}</div></div></div>
     ${isSpirit(o)?spiritBody(o):`<div class="d-key"><b>${esc(o.nose.split(', ').slice(0,3).join(' · '))}</b><span>마시는 법 ${esc(o.drink)} · ${level(o)}(${levelWhy(o)})</span></div>
     <div class="facts">
       <div class="fact"><b class="${abvNum?'':'ko'}">${esc(abv)}</b><span>도수</span></div>
       <div class="fact"><b class="ko">${esc(o.age)}</b><span>숙성</span></div>
       <div class="fact"><b class="ko">${PEAT[o.p]}</b><span>피트</span></div>
-      <div class="fact"><b class="ko">${priceOf(o)?esc(priceText(o).replace('약 ','').replace(' 원','')):'확인 중'}</b><span>병 소매가</span></div>
+      ${priceFact(o)}
     </div>
     ${priceSec(o)}
     <div class="sec"><h3>Cask <span>숙성 통</span></h3><p>${esc(o.cask)}</p></div>
@@ -1209,6 +1300,7 @@ function openDetail(id,push){
     <div class="sec"><h3>Serve <span>이렇게 마셔 보세요</span></h3><p>${esc(o.drink)}</p></div>
     <div class="sec"><h3>Bottle <span>병 디자인</span></h3><p>${esc(o.design)}</p></div>
     <div class="sec"><h3>Story <span>알아 두면 좋은 이야기</span></h3><p>${esc(o.fact)}</p></div>`}
+    ${isSpirit(o)?'':orderSec(o)}
     ${ckSec(o)}
     ${noteSec('b:'+o.id)}
     <div class="sec"><h3>Similar <span>비슷한 맛의 병</span></h3><div class="sim">${similar(o).map(x=>btn(x,simWhy(o,x))).join('')}</div></div>
@@ -1225,7 +1317,7 @@ function spiritBody(o){
       <div class="fact"><b class="${typeof o.abv==='number'?'':'ko'}">${esc(abvText(o))}</b><span>도수</span></div>
       <div class="fact"><b class="ko">${esc(SP_CAT[o.cat]||'')}</b><span>갈래</span></div>
       <div class="fact"><b class="ko">${esc(o.base)}</b><span>원료·향</span></div>
-      <div class="fact"><b class="ko">${priceOf(o)?esc(priceText(o).replace('약 ','').replace(' 원','')):'확인 중'}</b><span>병 소매가</span></div>
+      ${priceFact(o)}
     </div>
     ${priceSec(o)}
     <div class="sec"><h3>Profile <span>맛의 결</span></h3><div class="meters">
@@ -1251,7 +1343,11 @@ function cocktailsFor(o){
 }
 function ckSec(o){const l=cocktailsFor(o);if(!l.length)return '';
   return `<div class="sec"><h3>Cocktails <span>이 술로 만드는 칵테일</span></h3><div class="ckchips">${l.slice(0,10).map(c=>`<button class="ckchip" data-ck="${c.id}">${esc(c.n)}<small>${esc(c.taste)}</small></button>`).join('')}</div></div>`}
+function priceFact(o){
+  if(BAR){const g=glassOf(o.id);return `<div class="fact"><b class="ko">${g?esc(glassTxt(g)):'메뉴판'}</b><span>${g?'한 잔'+(g[1]?' '+esc(g[1]):''):'한 잔 가격'}</span></div>`}
+  return `<div class="fact"><b class="ko">${priceOf(o)?esc(priceText(o).replace('약 ','').replace(' 원','')):'확인 중'}</b><span>병 소매가</span></div>`}
 function priceSec(o){
+  if(BAR){const g=glassOf(o.id);return g?`<div class="sec"><h3>Price <span>이 바의 한 잔</span></h3><p class="price"><b>${esc(glassTxt(g))}</b>${g[1]?` <small>${esc(g[1])}</small>`:''}</p><p class="price-note">${esc(BAR.name)} 메뉴 기준이고, 바 사정에 따라 바뀔 수 있습니다.</p></div>`:''}
   const p=priceOf(o);
   if(!p) return `<div class="sec"><h3>Price <span>국내 병 소매가</span></h3><p>아직 믿을 만한 국내 판매가를 찾지 못했습니다${PRICE[o.id]&&PRICE[o.id][5]?' ('+esc(PRICE[o.id][5])+')':''}.</p></div>`;
   const conf={h:'여러 곳에서 확인',m:'두어 곳에서 확인',l:'자료가 적어 참고용'}[p[2]]||'';
@@ -1282,6 +1378,7 @@ function openSheet(html,hash,push){
   if(!sheet.classList.contains('on')){const a=document.activeElement;lastFocus=a&&a!==document.body?a:null}
   setBackgroundInert(true);
   sheet.innerHTML=html; sheet.hidden=false; sheet.scrollTop=0;
+  sheet.classList.remove('fresh');void sheet.offsetWidth;sheet.classList.add('fresh');clearTimeout(openSheet.t);openSheet.t=setTimeout(()=>sheet.classList.remove('fresh'),1200);
   requestAnimationFrame(()=>{sheet.classList.add('on');document.getElementById('scrim').classList.add('on')});
   // 시트 기록은 한 칸만: 처음 열 때 쌓고, 시트 안에서 다른 병·칵테일로 옮길 때는 바꿔 쓴다(뒤로가기 한 번에 닫히게)
   if(push!==false && location.hash!==hash){ try{ if(history.state&&history.state.bb) history.replaceState({bb:1},'',hash); else history.pushState({bb:1},'',hash) }catch(e){} }
@@ -1300,7 +1397,7 @@ function openCompare(push){
     <div><div class="d-kicker">Compare</div><h2 id="d-name" class="cmp-title">${items.length}병 나란히 보기</h2></div>
     <div class="cmp-head">${items.map(o=>`<button class="cmp-bottle" data-open="${o.id}"><span class="cmp-img">${face(o,true)}</span><b>${esc(o.n)}</b><small>${esc(o.t)}</small></button>`).join('')}</div>
     <div class="cmp-table">
-      ${rowOf('도수',o=>esc(abvTxt(o)))}${rowOf('병 소매가',o=>priceOf(o)?esc(priceText(o)):'확인 중')}
+      ${rowOf('도수',o=>esc(abvTxt(o)))}${BAR?rowOf('한 잔',o=>glassOf(o.id)?esc(glassTxt(glassOf(o.id))):'메뉴판 참고'):rowOf('병 소매가',o=>priceOf(o)?esc(priceText(o)):'확인 중')}
       ${items.every(isSpirit)?'':rowOf('피트·연기',o=>isSpirit(o)?NA:bar(o.p,4,'peat'))}${rowOf('무게감',o=>bar(o.b,5))}${rowOf('단맛·과일',o=>bar(o.s,5))}${items.every(isSpirit)?'':rowOf('셰리 영향',o=>isSpirit(o)?NA:bar(o.sy,3))}${anySp?rowOf('쓴맛',o=>isSpirit(o)?bar(o.bitter||0,3,'peat'):NA):''}
       ${rowOf('마시는 법',o=>esc(o.drink))}
     </div>
@@ -1324,30 +1421,31 @@ function closeDetail(fromHash){
 }
 function toListTop(){const top=matchMedia('(min-width:1024px)').matches?0:document.getElementById('bar-anchor').getBoundingClientRect().top+scrollY;if(scrollY>top)scrollTo({top,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 let routed=null;
-function isSheetHash(h){return h.startsWith('#b-')||h.startsWith('#c-')||h==='#cmp'||h==='#notes'||h.startsWith('#nt=')}
+function isSheetHash(h){return h.startsWith('#b-')||h.startsWith('#c-')||h==='#cmp'||h==='#notes'||h==='#quiz'||h==='#flight'||h==='#map'}
 // 상세 주소로 바로 들어온 경우: 아래에 목록 기록을 깔아 두어 뒤로가기가 페이지를 떠나지 않고 시트를 닫게 한다
 if(isSheetHash(location.hash)&&!(history.state&&history.state.bb)){try{const h=location.hash;history.replaceState(null,'',location.pathname+location.search);history.pushState({bb:1},'',h)}catch(_){}}
 function route(){
   const sheetOn=document.getElementById('sheet').classList.contains('on');
   if(location.hash===routed&&(sheetOn||!location.hash))return; routed=location.hash;
   const h=location.hash;
-  const h2=h; if(h2.startsWith('#b-')) openDetail(h.slice(3),false); else if(h.startsWith('#c-')) openCocktail(h.slice(3),false); else if(h==='#cmp') openCompare(false); else if(h==='#notes') openNotes(false); else if(h.startsWith('#nt=')) importLink(h.slice(4)); else closeDetail(true);
+  const h2=h; if(h2.startsWith('#b-')) openDetail(h.slice(3),false); else if(h.startsWith('#c-')) openCocktail(h.slice(3),false); else if(h==='#cmp') openCompare(false); else if(h==='#notes') openNotes(false); else if(h==='#quiz') openQuiz(false); else if(h==='#flight') openFlights(false); else if(h==='#map') openMap(false); else closeDetail(true);
 }
 
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-notes]')){openNotes();return}
+  if(e.target.closest('[data-quizopen]')){openQuiz();return}
+  if(e.target.closest('[data-flightopen]')){openFlights();return}
+  if(e.target.closest('[data-mapopen]')){openMap();return}
+  const qz=e.target.closest('[data-quiz]'); if(qz){const [k,v]=qz.dataset.quiz.split(':');quiz[k]=v;openQuiz(false,QZ.every(q=>quiz[q[0]])?'done':'keep');return}
+  if(e.target.closest('[data-quizreset]')){for(const k in quiz)delete quiz[k];openQuiz(false);return}
+  const qc=e.target.closest('[data-quizcmp]'); if(qc){cmp=qc.dataset.quizcmp.split(',').filter(id=>B.some(o=>o.id===id)).slice(0,CMP_MAX);store.set('bb-cmp',cmp);refreshActs();renderTray();openCompare();return}
   const ns=e.target.closest('[data-nsort]'); if(ns){noteSort=ns.dataset.nsort;openNotes(false);return}
   if(e.target.closest('[data-ngo]')){const m=document.getElementById('mynote');if(m){m.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});m.querySelector('[data-ntried]')?.focus({preventScroll:true})}return}
   const nt=e.target.closest('[data-ntried]'); if(nt){const key=nt.closest('[data-nkey]').dataset.nkey;if(notes[key]){if(notes[key].m&&!confirm('메모가 있는 노트입니다. 지울까요?'))return;delete notes[key];saveNotes()}else setNote(key,{});refreshNote();refreshNoteActs();return}
-  const st=e.target.closest('[data-nstar]'); if(st){const key=st.closest('[data-nkey]').dataset.nkey;const v=+st.dataset.nstar;setNote(key,{r:notes[key]&&notes[key].r===v?0:v});refreshNote();refreshNoteActs();return}
+  const st=e.target.closest('[data-nstar]'); if(st){const key=st.closest('[data-nkey]').dataset.nkey;const v=+st.dataset.nstar;setNote(key,{r:notes[key]&&notes[key].r===v?0:v});refreshNote();refreshNoteActs();const ns=document.querySelector('#mynote .nstars');if(ns)ns.classList.add('pop');return}
   if(e.target.closest('[data-ndel]')){const key=e.target.closest('[data-nkey]').dataset.nkey;if(!confirm('이 노트를 지울까요? 되돌릴 수 없습니다.'))return;delete notes[key];saveNotes();refreshNote();refreshNoteActs();return}
   if(e.target.closest('[data-nexport]')){exportNotes();return}
   if(e.target.closest('[data-nimport]')){document.getElementById('nfile')?.click();return}
-  if(e.target.closest('[data-nqr]')){showQR();return}
-  if(e.target.closest('[data-ncopy]')){const u=document.getElementById('nqr').dataset.url;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>nmsg('링크를 복사했습니다.'),()=>{prompt('이 링크를 복사하세요',u)});return}
-  if(e.target.closest('[data-nshare]')){navigator.share({title:'백바 노트 옮기기',url:document.getElementById('nqr').dataset.url}).catch(()=>{});return}
-  if(e.target.closest('[data-nlinkok]')){const n=pendingLink?mergeNotes(pendingLink):0;pendingLink=null;noteMsg=n?`노트 ${n}개를 합쳤습니다.`:'새로 합칠 노트가 없습니다(이미 같은 기록이 있음).';try{history.replaceState({bb:1},'','#notes')}catch(_){}openNotes(false);return}
-  if(e.target.closest('[data-nlinkno]')){pendingLink=null;closeDetail();return}
   const ck=e.target.closest('[data-ck]'); if(ck){openCocktail(ck.dataset.ck);return}
   const vw=e.target.closest('[data-view]'); if(vw){const v=vw.dataset.view;state.style=v==='whisky'?(viewOf(state.style)==='whisky'?state.style:'all'):v;fitFiltersToView();renderControls();renderShelves();try{sessionStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
   const t=e.target.closest('[data-style]'); if(t){state.style=t.dataset.style;fitFiltersToView();renderControls();renderShelves();try{sessionStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
@@ -1385,7 +1483,19 @@ document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
 try{const s=sessionStorage.getItem('bb-style');if(s&&(s==='all'||s==='cocktails'||STYLES.some(x=>x.id===s)))state.style=s}catch(_){}
-renderStats();renderControls();renderShelves();renderFoot();renderTray();renderNoteBtn();route();
+function applyBar(b){
+  const keep=new Set(b.bottles||[]),kc=new Set(b.cocktails||[]);
+  B.splice(0,B.length,...B.filter(o=>keep.has(o.id)));CK.splice(0,CK.length,...CK.filter(c=>kc.has(c.id)));
+  NATIONS.splice(0,NATIONS.length,...nationsFor(false));SP_NATIONS.splice(0,SP_NATIONS.length,...nationsFor(true));
+  BAR={name:String(b.name||'바'),pick:new Set(b.pick||[]),out:new Set(b.soldout||[]),fresh:new Set(b.new||[]),glass:b.glass&&typeof b.glass==='object'?b.glass:{}};
+  document.documentElement.classList.add('barmode');document.title=BAR.name+' · 백바';
+  const top=document.querySelector('header.top');top.querySelector('.eyebrow').textContent='Back Bar · '+(b.area||'');top.querySelector('h1').textContent=BAR.name;top.querySelector('.lede').textContent=b.intro||'';
+  if(b.notice){const f=document.createElement('div');f.className='barflag';f.textContent=b.notice;top.querySelector('.lede').after(f)}
+  if(b.event){const e=document.createElement('div');e.className='barevent';e.innerHTML='<b>알림</b>';e.append(String(b.event));(top.querySelector('.barflag')||top.querySelector('.lede')).after(e)}
+}
+function start(){renderStats();renderControls();renderShelves();renderFoot();renderTray();renderNoteBtn();route();}
+const BAR_ID=(new URLSearchParams(location.search).get('bar')||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
+if(BAR_ID)fetch('bars/'+BAR_ID+'.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject()).then(applyBar).catch(()=>{}).finally(start);else start();
 
 // 휴대폰·태블릿: 아래로 내리면 위 막대 숨김, 위로 올리면 보임. 검색 입력 중·막대 위쪽에서는 늘 보인다
 (function(){const bar=document.querySelector('.bar'),wide=matchMedia('(min-width:1024px)');let last=scrollY;
