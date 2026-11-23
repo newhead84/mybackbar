@@ -316,6 +316,18 @@ header.top .lede,header.top .stats{display:none}
   .side{grid-row:1 / span 2}
   .foot-wrap{grid-column:2;width:100%;max-width:1760px;margin:0 auto;padding-inline:clamp(20px,3vw,44px)}
   .style{padding-top:34px}
+  /* 웹: 사이드바 제목 여유, 선반 설명은 제목 오른쪽에 크게, 병 이름 키우기 (2026-11-23) */
+  .side-head header.top{padding:32px 0 10px}
+  .side .eyebrow{font-size:10.5px;letter-spacing:.16em;white-space:nowrap}
+  header.top h1{font-size:23px;line-height:1.42;letter-spacing:-.02em;margin:14px 0 0}
+  header.top .lede{font-size:13.5px;line-height:1.75;margin-top:14px}
+  .style-head p{font-size:16.5px;line-height:1.65;max-width:72ch}
+  .bt .nm{font-size:14px;line-height:1.35;height:38px;margin-top:20px}
+  .track{--L:calc(var(--H) + 58px + var(--gy))}
+}
+@media (min-width:1280px){
+  .style-head{grid-template-columns:auto auto minmax(0,1fr);gap:4px 18px;align-items:center}
+  .style-head p{grid-column:3;grid-row:1 / span 2;align-self:center;margin:0 0 0 24px;padding-left:28px;border-left:1px solid var(--line);font-size:17px;max-width:none}
 }
 /* 칵테일 */
 .bar[data-mode="cocktails"] .chipbox,.bar[data-mode="cocktails"] .ftoggle{display:none !important}
