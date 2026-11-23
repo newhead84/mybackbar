@@ -366,6 +366,46 @@ header.top .lede,header.top .stats{display:none}
 .ckchip{display:flex;flex-direction:column;align-items:flex-start;padding:8px 12px;border-radius:12px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);font-size:14px;font-weight:600;cursor:pointer;text-align:left;word-break:keep-all}
 .ckchip small{font-weight:400;font-size:11.5px;color:var(--ink-3)}
 .ckchip:hover,.ckchip:focus-visible{border-color:var(--amber)}
+
+/* 내 노트 */
+.notesbtn b{margin-left:6px;color:var(--amber);font-weight:700}
+.notesbtn b:empty{display:none}
+@media (max-width:900px){.notesbtn{height:40px}.notesbtn .nb-w{display:none}.search{flex-basis:120px}}
+.mn-head{display:flex;align-items:center;gap:8px}
+.mn-save{margin-left:auto;font-size:12px;color:var(--amber)}
+.mn-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.nstars{display:flex}
+.nstar{width:38px;height:38px;border:0;background:none;color:var(--line-2);font-size:25px;line-height:1;cursor:pointer;padding:0}
+.nstar[aria-pressed="true"]{color:var(--amber)}
+.nstar:focus-visible{outline:2px solid var(--amber);outline-offset:-4px;border-radius:8px}
+.mn-form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:12px}
+.mn-form label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--ink-3);min-width:0}
+.mn-form input,.mn-form textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;width:100%;min-width:0;box-sizing:border-box;color-scheme:dark}
+.mn-form input:focus,.mn-form textarea:focus{outline:none;border-color:var(--amber)}
+.mn-form textarea{resize:vertical;min-height:76px;word-break:keep-all}
+.mn-memo{grid-column:1/-1}
+.mn-del{justify-self:start;background:none;border:0;padding:6px 0;color:var(--ink-3);font-size:12.5px;text-decoration:underline;cursor:pointer}
+.sec p.mn-tip{margin-top:8px;font-size:12.5px;color:var(--ink-3)}
+.nsort{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.nlist{display:grid;gap:8px;margin-top:12px}
+.nrow{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2);color:var(--ink);cursor:pointer}
+.nrow:hover,.nrow:focus-visible{border-color:var(--amber)}
+.nr-img{flex:none;width:44px;height:64px;display:flex;align-items:flex-end;justify-content:center}
+.nr-img img{max-width:100%;max-height:100%;width:auto;height:auto}
+.nr-t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.nr-t b{font-size:15px;word-break:keep-all}
+.nr-s{font-size:12.5px;color:var(--ink-3);word-break:keep-all}
+.nr-s i{font-style:normal;color:var(--amber);letter-spacing:1px}
+.nr-m{font-size:13px;color:var(--ink-2);word-break:keep-all;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.mn-lede{margin:14px 0 0;color:var(--ink-2);word-break:keep-all}
+.nempty{color:var(--ink-3);padding:24px 0;text-align:center;word-break:keep-all}
+.nmsg{margin-top:10px;font-size:13px;color:var(--amber);word-break:keep-all}
+.nmsg:empty{display:none}
+.qrbox{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center;margin-top:14px}
+.qrbox .qr{flex:none;width:200px;height:200px;background:#fff;border-radius:12px;padding:10px;box-sizing:border-box}
+.qrbox .qr svg{display:block;width:100%;height:100%}
+.qrbox p{flex:1 1 200px}
+.qrbox .acts{flex-basis:100%;margin-top:0}
 @media (prefers-reduced-motion:reduce){.bt img,.bt .svgb,.sheet,.scrim,.bt .stand::before{transition:none}}
 </style>
 </head>
@@ -397,6 +437,7 @@ if(document.documentElement.classList.contains('agegate'))y.focus()})();</script
     <div class="filters">
       <label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="이름·맛 찾기 (예: 셰리)" aria-label="위스키 찾기"></label>
       <button class="chip ftoggle" id="ftoggle" aria-expanded="false" aria-controls="chipbox">필터<b id="fcount"></b></button>
+      <button class="chip notesbtn" id="notesbtn" data-notes><span class="nb-w">내 </span>노트<b id="ncount"></b></button>
       <span class="count" id="count" role="status" aria-live="polite"></span>
       <div class="active" id="active" hidden></div>
       <div class="chipbox" id="chipbox">
@@ -908,6 +949,74 @@ const fav=new Set(valid(store.get('bb-fav',[])));
 let cmp=valid(store.get('bb-cmp',[])).slice(0,3);
 const CMP_MAX=3;
 
+// 내 노트: 이 기기 localStorage bb-note에만 저장. 열쇠는 'b:병id' 또는 'c:칵테일id', 값 {r 별점,d 날짜,w 장소,m 메모,u 고친 시각}
+let notes=(()=>{try{const v=JSON.parse(localStorage.getItem('bb-note'));return v&&typeof v==='object'&&!Array.isArray(v)?cleanNotes(v):{}}catch(_){return {}}})();
+function cleanNotes(v){const o={};for(const [k,n] of Object.entries(v||{})){if(!/^[bc]:[a-z0-9-]{1,80}$/.test(k)||!n||typeof n!=='object')continue;
+  o[k]={r:Math.max(0,Math.min(5,parseInt(n.r)||0)),d:/^\d{4}-\d{2}-\d{2}$/.test(n.d)?n.d:'',w:String(n.w||'').slice(0,40),m:String(n.m||'').slice(0,500),u:+n.u||0}}return o}
+function saveNotes(){try{localStorage.setItem('bb-note',JSON.stringify(notes))}catch(_){}renderNoteBtn()}
+function renderNoteBtn(){const n=noteItems().length;const b=document.getElementById('ncount');if(b)b.textContent=n||''}
+function noteItems(){return Object.entries(notes).map(([key,n])=>{const k=key[0],id=key.slice(2);const o=k==='b'?B.find(x=>x.id===id):CK.find(x=>x.id===id);return o?{key,k,id,o,n}:null}).filter(Boolean)}
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function setNote(key,patch){notes[key]=Object.assign({r:0,d:today(),w:'',m:''},notes[key],patch,{u:Date.now()});saveNotes()}
+const starTxt=r=>r?'<i>'+'★'.repeat(r)+'</i>':'별점 없음';
+function noteSec(key){const n=notes[key];const r=n?n.r:0;
+  return `<div class="sec mynote" id="mynote" data-nkey="${key}"><h3 class="mn-head">My note <span>내 노트</span><small class="mn-save" aria-live="polite"></small></h3>
+    <div class="mn-row"><button class="act" data-ntried aria-pressed="${!!n}">${n?'✓ 마셔 봄':'+ 마셔 봤어요'}</button>
+    <div class="nstars" role="group" aria-label="내 별점">${[1,2,3,4,5].map(i=>`<button class="nstar" data-nstar="${i}" aria-pressed="${i<=r}" aria-label="별 ${i}개">★</button>`).join('')}</div></div>
+    ${n?`<div class="mn-form">
+      <label>날짜<input type="date" data-nf="d" value="${esc(n.d)}"></label>
+      <label>장소<input type="text" data-nf="w" maxlength="40" placeholder="예: 동네 바, 집" value="${esc(n.w)}"></label>
+      <label class="mn-memo">메모<textarea data-nf="m" maxlength="500" rows="3" placeholder="향과 맛, 같이 먹은 것, 다음에 또 마실지">${esc(n.m)}</textarea></label>
+      <button class="mn-del" data-ndel>이 노트 지우기</button></div>`:''}
+    <p class="mn-tip">${n?'적는 대로 이 기기에 저장됩니다. ':''}백업과 다른 기기로 옮기기는 위쪽 '노트' 단추에서 합니다.</p></div>`}
+function refreshNote(){const el=document.getElementById('mynote');if(el){const fk=focusKey();el.outerHTML=noteSec(el.dataset.nkey);restoreFocus(fk)}}
+let noteSort='d',noteMsg='';
+function openNotes(push){
+  const l=noteItems();
+  l.sort(noteSort==='r'?(a,b)=>b.n.r-a.n.r||b.n.u-a.n.u:(a,b)=>(b.n.d||'').localeCompare(a.n.d||'')||b.n.u-a.n.u);
+  const pic=x=>{const p=x.k==='b'?PH[x.id]:CKPH[x.id];return p?`<img src="${p.f}" width="${p.w}" height="${p.h}" alt="" loading="lazy" decoding="async">`:''};
+  const row=x=>`<button class="nrow" data-${x.k==='b'?'open':'ck'}="${x.id}"><span class="nr-img">${pic(x)}</span><span class="nr-t"><b>${esc(x.o.n)}</b><span class="nr-s">${starTxt(x.n.r)}${x.n.d?' · '+esc(x.n.d.replace(/-/g,'.')):''}${x.n.w?' · '+esc(x.n.w):''}</span>${x.n.m?`<span class="nr-m">${esc(x.n.m)}</span>`:''}</span></button>`;
+  const nb=l.filter(x=>x.k==='b').length;
+  openSheet(`<div class="sheet-in">${CLOSE_BTN}
+    <div><div class="d-kicker">My notes</div><h2 id="d-name">내 노트</h2><div class="d-en">${l.length?`병 ${nb}개 · 칵테일 ${l.length-nb}잔`:'아직 적은 노트가 없습니다'}</div></div>
+    ${l.length?`<div class="nsort" role="group" aria-label="정렬"><button class="chip" data-nsort="d" aria-pressed="${noteSort==='d'}">최근 마신 순</button><button class="chip" data-nsort="r" aria-pressed="${noteSort==='r'}">별점 높은 순</button></div>
+    <div class="nlist">${l.map(row).join('')}</div>`:`<p class="nempty">병이나 칵테일을 열고 '마셔 봤어요'나 별점을 누르면 여기에 모입니다.</p>`}
+    <div class="sec"><h3>Backup <span>백업·다른 기기로 옮기기</span></h3>
+      <p>노트는 서버 없이 이 기기 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 파일로 저장해 두세요.</p>
+      <div class="acts"><button class="act" data-nexport ${l.length?'':'disabled'}>파일로 저장</button><button class="act" data-nimport>파일 불러오기</button><button class="act" data-nqr ${l.length?'':'disabled'}>QR·링크로 옮기기</button></div>
+      <input type="file" id="nfile" accept=".json,application/json" hidden>
+      <p class="nmsg" id="nmsg" role="status">${esc(noteMsg)}</p><div id="nqr"></div></div>
+    <p class="foot">불러오거나 옮겨 온 노트는 지금 노트와 합칩니다. 같은 병에 두 기록이 있으면 더 나중에 고친 쪽을 남깁니다.</p>
+  </div>`,'#notes',push);noteMsg='';
+}
+function mergeNotes(inc){inc=cleanNotes(inc);let n=0;for(const [k,v] of Object.entries(inc)){if(!notes[k]||v.u>notes[k].u){notes[k]=v;n++}}saveNotes();return n}
+function nmsg(t){const el=document.getElementById('nmsg');if(el)el.textContent=t}
+function exportNotes(){const blob=new Blob([JSON.stringify({app:'whisky-backbar',v:1,at:new Date().toISOString(),notes},null,1)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backbar-notes-'+today().replace(/-/g,'')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);nmsg('파일을 저장했습니다. 다른 기기에서는 \'파일 불러오기\'로 여세요.')}
+function importFile(f){if(!f)return;if(f.size>2e6){nmsg('파일이 너무 큽니다.');return}
+  f.text().then(t=>{const j=JSON.parse(t);if(!j||j.app!=='whisky-backbar'||typeof j.notes!=='object')throw 0;const n=mergeNotes(j.notes);noteMsg=n?`노트 ${n}개를 합쳤습니다.`:'새로 합칠 노트가 없습니다(이미 같은 기록이 있음).';openNotes(false)}).catch(()=>nmsg('이 페이지에서 저장한 노트 파일이 아닙니다.'))}
+// QR·링크: 노트를 압축해 주소 #nt= 뒤에 담는다(# 뒤는 서버로 보내지지 않음)
+const b64u={enc:u=>{let t='';for(const c of u)t+=String.fromCharCode(c);return btoa(t).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')},dec:t=>Uint8Array.from(atob(t.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0))};
+const pipeBytes=(u,ts)=>new Response(new Blob([u]).stream().pipeThrough(ts)).arrayBuffer().then(b=>new Uint8Array(b));
+async function packNotes(){const slim={};for(const [k,v] of Object.entries(notes)){const o={u:Math.round(v.u/1000)};if(v.r)o.r=v.r;if(v.d)o.d=v.d;if(v.w)o.w=v.w;if(v.m)o.m=v.m;slim[k]=o}
+  const u=new TextEncoder().encode(JSON.stringify(slim));return window.CompressionStream?'z'+b64u.enc(await pipeBytes(u,new CompressionStream('deflate-raw'))):'j'+b64u.enc(u)}
+async function unpackNotes(t){let u=b64u.dec(t.slice(1));if(t[0]==='z')u=await pipeBytes(u,new DecompressionStream('deflate-raw'));else if(t[0]!=='j')throw 0;
+  const o=JSON.parse(new TextDecoder().decode(u));for(const v of Object.values(o))v.u=(+v.u||0)*1000;return o}
+let qrLib=null;
+function loadQR(){return qrLib||(qrLib=new Promise((ok,no)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';sc.integrity='sha384-mZT2gIty7ZDdOGkxfP6joZcYdMW1Jvj9dRlfpTmaJAKKXTqzygtB22k7FLe+KZC1';sc.crossOrigin='anonymous';sc.onload=()=>ok(window.qrcode);sc.onerror=()=>{qrLib=null;no()};document.head.appendChild(sc)}))}
+async function showQR(){const box=document.getElementById('nqr');if(!box)return;nmsg('');
+  const url=location.origin+location.pathname+'#nt='+await packNotes();let svg='';
+  try{const qrcode=await loadQR();const q=qrcode(0,'L');q.addData(url);q.make();svg=q.createSvgTag({cellSize:4,margin:0,scalable:true})}catch(e){svg=null}
+  box.innerHTML=`<div class="qrbox">${svg?`<div class="qr" role="img" aria-label="노트 옮기기 QR">${svg}</div>`:''}<p>${svg?'옮길 기기의 카메라로 QR을 찍으세요. ':(qrLib===null?'QR을 그리지 못했습니다(인터넷 연결 확인). ':'노트가 많아 QR 하나에 다 담기지 않습니다. 링크나 파일로 옮겨 주세요. ')}휴대폰에서 PC로 옮길 때는 링크를 나에게 보내 PC에서 여세요. 링크에 노트 내용이 들어 있으니 다른 사람에게 보내지 마세요.</p>
+    <div class="acts"><button class="act" data-ncopy>링크 복사</button>${navigator.share?'<button class="act" data-nshare>링크 보내기</button>':''}</div></div>`;box.dataset.url=url}
+async function importLink(code){let inc;try{inc=await unpackNotes(code)}catch(_){noteMsg='옮기기 링크를 읽지 못했습니다. 링크가 잘렸는지 확인해 주세요.';openNotes(false);return}
+  const n=Object.keys(cleanNotes(inc)).length;
+  openSheet(`<div class="sheet-in">${CLOSE_BTN}<div><div class="d-kicker">My notes</div><h2 id="d-name">노트 ${n}개를 가져올까요?</h2></div>
+    <p class="mn-lede">다른 기기에서 옮겨 온 노트입니다. 이 기기의 노트와 합치고, 같은 병에 두 기록이 있으면 더 나중에 고친 쪽을 남깁니다.</p>
+    <div class="acts"><button class="act" data-nlinkok aria-pressed="true">가져오기</button><button class="act" data-nlinkno>그만두기</button></div></div>`,location.hash,false);
+  pendingLink=inc}
+let pendingLink=null;
+
 function face(o, big){
   const p=PH[o.id];
   const k = big?1:(SH_K[o.sh]||1);
@@ -1042,10 +1151,12 @@ function openCocktail(id,push){
   const show=pinned.concat(byBase).slice(0,8);
   openSheet(`<div class="sheet-in">${CLOSE_BTN}
     <div class="ck-hero">${ckPic(c,true)}<div><div class="d-kicker">Cocktail</div><h2 id="d-name">${esc(c.n)}</h2><div class="d-en">${esc(c.e)}</div>
-      <div class="pills">${c.base.map(b=>`<span class="pill">${esc(BASE_KO[b]||b)} 베이스</span>`).join('')}<span class="pill" title="대표 레시피로 계산한 만든 직후 추정 도수">${esc(ckAbv(c))}</span></div></div></div>
+      <div class="pills">${c.base.map(b=>`<span class="pill">${esc(BASE_KO[b]||b)} 베이스</span>`).join('')}<span class="pill" title="대표 레시피로 계산한 만든 직후 추정 도수">${esc(ckAbv(c))}</span></div>
+      <div class="acts"><button class="act" data-ngo aria-pressed="${!!notes['c:'+c.id]}">${notes['c:'+c.id]?'✎ 내 노트 있음':'✎ 내 노트'}</button></div></div></div>
     <div class="d-key"><b>${esc(c.taste)}</b><span>${esc(c.method)} · ${esc(c.glass)}</span></div>
     <div class="sec"><h3>Ingredients <span>들어가는 것</span></h3><div class="ingr">${c.ing.map(i=>`<span class="pill">${esc(i)}</span>`).join('')}</div>${ckAllergy(c).length?`<p class="alg">알레르기 주의 재료: ${esc(ckAllergy(c).join(', '))}. 바에서 쓰는 재료와 제품을 확인하세요.</p>`:''}</div>
     <div class="sec"><h3>Story <span>알아 두면 좋은 이야기</span></h3><p>${esc(c.fact)}</p></div>
+    ${noteSec('c:'+c.id)}
     ${show.length?`<div class="sec"><h3>Bottles <span>이 선반에서 쓰는 병</span></h3><div class="sim">${show.map(o=>btn(o,c.bottles.includes(o.id)?'자주 쓰는 병':(isSpirit(o)?SP_CAT[o.cat]:'같은 갈래'))).join('')}</div></div>`:''}
     <p class="foot">재료는 대표적인 구성이고 바마다 다릅니다. 도수는 대표 레시피로 계산한 만든 직후의 추정치로, 바의 레시피·얼음·잔 크기에 따라 달라집니다.</p>
   </div>`,'#c-'+id,push);
@@ -1099,6 +1210,7 @@ function openDetail(id,push){
     <div class="sec"><h3>Bottle <span>병 디자인</span></h3><p>${esc(o.design)}</p></div>
     <div class="sec"><h3>Story <span>알아 두면 좋은 이야기</span></h3><p>${esc(o.fact)}</p></div>`}
     ${ckSec(o)}
+    ${noteSec('b:'+o.id)}
     <div class="sec"><h3>Similar <span>비슷한 맛의 병</span></h3><div class="sim">${similar(o).map(x=>btn(x,simWhy(o,x))).join('')}</div></div>
     
     <p class="foot">${isSpirit(o)?'비슷한 병은 같은 갈래에서 단맛·무게감·쓴맛 점수가 가까운 순서입니다.':'비슷한 병은 피트·무게감·단맛·셰리 점수가 가까운 순서입니다.'} 점수는 이 페이지에서 비교하려고 붙인 대략적인 값입니다.</p>
@@ -1149,7 +1261,8 @@ function priceSec(o){
 function actBtns(id){
   const f=fav.has(id), c=cmp.includes(id), full=!c&&cmp.length>=CMP_MAX;
   return `<button class="act" data-fav="${id}" aria-pressed="${f}">${f?'★ 관심 표시함':'☆ 관심 표시'}</button>`
-    +`<button class="act" data-cmp="${id}" aria-pressed="${c}" ${full?'disabled':''}>${c?'비교에서 빼기':full?'비교는 3병까지':'+ 비교에 담기'}</button>`;
+    +`<button class="act" data-cmp="${id}" aria-pressed="${c}" ${full?'disabled':''}>${c?'비교에서 빼기':full?'비교는 3병까지':'+ 비교에 담기'}</button>`
+    +`<button class="act" data-ngo aria-pressed="${!!notes['b:'+id]}">${notes['b:'+id]?'✎ 내 노트 있음':'✎ 내 노트'}</button>`;
 }
 function refreshActs(){const fk=focusKey();document.querySelectorAll('.acts').forEach(a=>{const id=a.querySelector('[data-fav]')?.dataset.fav;if(id)a.innerHTML=actBtns(id)});restoreFocus(fk)}
 function toggleFav(id){fav.has(id)?fav.delete(id):fav.add(id);store.set('bb-fav',[...fav]);refreshActs();renderControls();renderShelves()}
@@ -1211,17 +1324,30 @@ function closeDetail(fromHash){
 }
 function toListTop(){const top=matchMedia('(min-width:1024px)').matches?0:document.getElementById('bar-anchor').getBoundingClientRect().top+scrollY;if(scrollY>top)scrollTo({top,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 let routed=null;
-function isSheetHash(h){return h.startsWith('#b-')||h.startsWith('#c-')||h==='#cmp'}
+function isSheetHash(h){return h.startsWith('#b-')||h.startsWith('#c-')||h==='#cmp'||h==='#notes'||h.startsWith('#nt=')}
 // 상세 주소로 바로 들어온 경우: 아래에 목록 기록을 깔아 두어 뒤로가기가 페이지를 떠나지 않고 시트를 닫게 한다
 if(isSheetHash(location.hash)&&!(history.state&&history.state.bb)){try{const h=location.hash;history.replaceState(null,'',location.pathname+location.search);history.pushState({bb:1},'',h)}catch(_){}}
 function route(){
   const sheetOn=document.getElementById('sheet').classList.contains('on');
   if(location.hash===routed&&(sheetOn||!location.hash))return; routed=location.hash;
   const h=location.hash;
-  const h2=h; if(h2.startsWith('#b-')) openDetail(h.slice(3),false); else if(h.startsWith('#c-')) openCocktail(h.slice(3),false); else if(h==='#cmp') openCompare(false); else closeDetail(true);
+  const h2=h; if(h2.startsWith('#b-')) openDetail(h.slice(3),false); else if(h.startsWith('#c-')) openCocktail(h.slice(3),false); else if(h==='#cmp') openCompare(false); else if(h==='#notes') openNotes(false); else if(h.startsWith('#nt=')) importLink(h.slice(4)); else closeDetail(true);
 }
 
 document.addEventListener('click',e=>{
+  if(e.target.closest('[data-notes]')){openNotes();return}
+  const ns=e.target.closest('[data-nsort]'); if(ns){noteSort=ns.dataset.nsort;openNotes(false);return}
+  if(e.target.closest('[data-ngo]')){const m=document.getElementById('mynote');if(m){m.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});m.querySelector('[data-ntried]')?.focus({preventScroll:true})}return}
+  const nt=e.target.closest('[data-ntried]'); if(nt){const key=nt.closest('[data-nkey]').dataset.nkey;if(notes[key]){if(notes[key].m&&!confirm('메모가 있는 노트입니다. 지울까요?'))return;delete notes[key];saveNotes()}else setNote(key,{});refreshNote();refreshNoteActs();return}
+  const st=e.target.closest('[data-nstar]'); if(st){const key=st.closest('[data-nkey]').dataset.nkey;const v=+st.dataset.nstar;setNote(key,{r:notes[key]&&notes[key].r===v?0:v});refreshNote();refreshNoteActs();return}
+  if(e.target.closest('[data-ndel]')){const key=e.target.closest('[data-nkey]').dataset.nkey;if(!confirm('이 노트를 지울까요? 되돌릴 수 없습니다.'))return;delete notes[key];saveNotes();refreshNote();refreshNoteActs();return}
+  if(e.target.closest('[data-nexport]')){exportNotes();return}
+  if(e.target.closest('[data-nimport]')){document.getElementById('nfile')?.click();return}
+  if(e.target.closest('[data-nqr]')){showQR();return}
+  if(e.target.closest('[data-ncopy]')){const u=document.getElementById('nqr').dataset.url;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>nmsg('링크를 복사했습니다.'),()=>{prompt('이 링크를 복사하세요',u)});return}
+  if(e.target.closest('[data-nshare]')){navigator.share({title:'백바 노트 옮기기',url:document.getElementById('nqr').dataset.url}).catch(()=>{});return}
+  if(e.target.closest('[data-nlinkok]')){const n=pendingLink?mergeNotes(pendingLink):0;pendingLink=null;noteMsg=n?`노트 ${n}개를 합쳤습니다.`:'새로 합칠 노트가 없습니다(이미 같은 기록이 있음).';try{history.replaceState({bb:1},'','#notes')}catch(_){}openNotes(false);return}
+  if(e.target.closest('[data-nlinkno]')){pendingLink=null;closeDetail();return}
   const ck=e.target.closest('[data-ck]'); if(ck){openCocktail(ck.dataset.ck);return}
   const vw=e.target.closest('[data-view]'); if(vw){const v=vw.dataset.view;state.style=v==='whisky'?(viewOf(state.style)==='whisky'?state.style:'all'):v;fitFiltersToView();renderControls();renderShelves();try{sessionStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
   const t=e.target.closest('[data-style]'); if(t){state.style=t.dataset.style;fitFiltersToView();renderControls();renderShelves();try{sessionStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
@@ -1249,11 +1375,17 @@ document.addEventListener('keydown',e=>{
     if(e.shiftKey&&(document.activeElement===first||!sheet.contains(document.activeElement))){e.preventDefault();last.focus()}
     else if(!e.shiftKey&&(document.activeElement===last||!sheet.contains(document.activeElement))){e.preventDefault();first.focus()}}
 });
+let nTimer=0;
+document.addEventListener('input',e=>{const f=e.target.closest('[data-nf]');if(!f)return;const box=f.closest('[data-nkey]');const key=box.dataset.nkey;
+  if(notes[key]){notes[key][f.dataset.nf]=f.value;notes[key].u=Date.now()}else setNote(key,{[f.dataset.nf]:f.value});
+  clearTimeout(nTimer);nTimer=setTimeout(()=>{saveNotes();const sv=box.querySelector('.mn-save');if(sv){sv.textContent='저장됨';setTimeout(()=>{sv.textContent=''},1500)}},400)});
+document.addEventListener('change',e=>{if(e.target.id==='nfile'){importFile(e.target.files[0]);e.target.value=''}});
+function refreshNoteActs(){document.querySelectorAll('[data-ngo]').forEach(b=>{const key=document.getElementById('mynote')?.dataset.nkey;if(!key)return;const has=!!notes[key];b.setAttribute('aria-pressed',has);b.textContent=has?'✎ 내 노트 있음':'✎ 내 노트'})}
 document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value.trim();renderShelves();renderActive()});
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
 try{const s=sessionStorage.getItem('bb-style');if(s&&(s==='all'||s==='cocktails'||STYLES.some(x=>x.id===s)))state.style=s}catch(_){}
-renderStats();renderControls();renderShelves();renderFoot();renderTray();route();
+renderStats();renderControls();renderShelves();renderFoot();renderTray();renderNoteBtn();route();
 
 // 휴대폰·태블릿: 아래로 내리면 위 막대 숨김, 위로 올리면 보임. 검색 입력 중·막대 위쪽에서는 늘 보인다
 (function(){const bar=document.querySelector('.bar'),wide=matchMedia('(min-width:1024px)');let last=scrollY;
