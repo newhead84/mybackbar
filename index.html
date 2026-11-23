@@ -210,6 +210,17 @@ footer.site summary{cursor:pointer;color:var(--ink-2);padding:12px 0}
 footer.site ul{margin:10px 0 0;padding-left:18px;columns:2;column-gap:28px}
 footer.site li{break-inside:avoid;margin-bottom:4px}
 footer.site a{color:var(--ink-2)}
+footer.site .warn{color:var(--ink-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:0 0 18px}
+/* 첫 방문 나이 확인(이 기기 localStorage 'bb-age'에 기억) */
+#agegate{display:none}
+html.agegate #agegate{display:flex;position:fixed;inset:0;z-index:100;align-items:center;justify-content:center;padding:16px;background:rgba(10,8,7,.94)}
+html.agegate body{overflow:hidden}
+#agegate .box{max-width:360px;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:28px 24px;text-align:center;word-break:keep-all}
+#agegate .k{color:var(--amber);font-size:11px;letter-spacing:.16em}
+#agegate h2{margin:10px 0 8px;font-size:21px}
+#agegate p{margin:0 0 20px;color:var(--ink-2);font-size:14px;line-height:1.65}
+#agegate button{display:block;width:100%;margin-top:8px;padding:13px;border-radius:10px;font:inherit;font-size:15px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--ink-2)}
+#agegate button.yes{background:var(--amber);border-color:var(--amber);color:#1a120a;font-weight:700}
 @media (max-width:640px){footer.site ul{columns:1}}
 /* 내 관심 별 */
 .bt .stand{position:relative}
@@ -359,6 +370,12 @@ header.top .lede,header.top .stats{display:none}
 </style>
 </head>
 <body>
+<script>try{if(localStorage.getItem('bb-age')!=='1')document.documentElement.classList.add('agegate')}catch(_){document.documentElement.classList.add('agegate')}</script>
+<div id="agegate" role="dialog" aria-modal="true" aria-labelledby="ag-t"><div class="box"><div class="k">BACK BAR</div><h2 id="ag-t">만 19세 이상인가요?</h2><p id="ag-p">술 정보를 담은 페이지라 성인만 볼 수 있도록 확인합니다.</p><button class="yes" id="ag-yes">네, 만 19세 이상입니다</button><button id="ag-no">아니요</button></div></div>
+<script>(function(){var y=document.getElementById('ag-yes'),n=document.getElementById('ag-no');
+y.onclick=function(){try{localStorage.setItem('bb-age','1')}catch(_){}document.documentElement.classList.remove('agegate')};
+n.onclick=function(){document.getElementById('ag-t').textContent='19세 이상이 되면 다시 찾아 주세요';document.getElementById('ag-p').textContent='청소년의 음주는 법으로 금지되어 있습니다.';y.style.display=n.style.display='none'};
+if(document.documentElement.classList.contains('agegate'))y.focus()})();</script>
 
 
 <div class="app">
@@ -988,7 +1005,7 @@ function renderShelves(){
 function renderFoot(){
   const li=(n,p)=>`<li>${esc(n)}: ${esc(p.a)} · ${esc(p.l)} · ${p.u?`<a href="${p.u}" target="_blank" rel="noopener">원본</a>`:"원본 비공개"}${p.n?` (${esc(p.n)})`:''}</li>`;
   const cc=B.filter(o=>PH[o.id]&&PH[o.id].u).map(o=>li(o.n,PH[o.id])).concat(CK.filter(c=>CKPH[c.id]&&CKPH[c.id].u).map(c=>li(c.n+'(칵테일)',CKPH[c.id])));const list=cc.join('');
-  document.getElementById('site-foot').innerHTML=`병 소매가는 ${esc(PRICE_ASOF)}에 국내 주류 판매처(주로 데일리샷, 일부 대형마트·주류 전문점)에 올라온 가격을 모은 범위이고, 바에서 파는 한 잔 값이 아닙니다. 판매처·환율·행사에 따라 달라집니다.<br>맛 표현과 수치는 일반적으로 알려진 내용을 줄인 것이고, 맛 점수는 병끼리 비교하려고 붙인 대략적인 값입니다. 도수와 라벨은 제품 연도·수입 판에 따라 다를 수 있습니다.<br>병 이미지는 실제 병 사진을 참고해 AI로 정면·투명 배경으로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다. 칵테일 잔 그림도 자유 라이선스 사진을 참고해 같은 방식으로 그렸고, 잔과 가니시는 바마다 다릅니다.
+  document.getElementById('site-foot').innerHTML=`<p class="warn">19세 미만 청소년의 음주는 법으로 금지되어 있습니다. 지나친 음주는 건강을 해칩니다.<br>광고·협찬 없이 만든 개인 안내 페이지이고, 가격과 설명은 참고용입니다. 상표·이미지 관련 요청은 <a href="https://github.com/newhead84/whisky-backbar/issues" target="_blank" rel="noopener">GitHub 이슈</a>로 알려 주세요.</p>병 소매가는 ${esc(PRICE_ASOF)}에 국내 주류 판매처(주로 데일리샷, 일부 대형마트·주류 전문점)에 올라온 가격을 모은 범위이고, 바에서 파는 한 잔 값이 아닙니다. 판매처·환율·행사에 따라 달라집니다.<br>맛 표현과 수치는 일반적으로 알려진 내용을 줄인 것이고, 맛 점수는 병끼리 비교하려고 붙인 대략적인 값입니다. 도수와 라벨은 제품 연도·수입 판에 따라 다를 수 있습니다.<br>병 이미지는 실제 병 사진을 참고해 AI로 정면·투명 배경으로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다. 칵테일 잔 그림도 자유 라이선스 사진을 참고해 같은 방식으로 그렸고, 잔과 가니시는 바마다 다릅니다.
   <details><summary>사진 출처 (${cc.length})</summary><ul>${list}</ul></details>`;
 }
 
