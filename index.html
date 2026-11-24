@@ -1135,7 +1135,7 @@ async function syncPush(){clearTimeout(SY.t);if(!SY.user||SY.last===null)return;
   const {F,db}=await syncLoad();SY.state='save';syncUI();
   try{await F.setDoc(F.doc(db,'notes',SY.user.uid),{n:JSON.parse(JSON.stringify(notes)),g:Object.assign({},gone),u:F.serverTimestamp()});SY.last=c;SY.state='ok'}catch(e){SY.state='err'}
   syncUI()}
-async function syncLogin(){nmsg('');try{const {U,auth}=await syncLoad();await U.signInWithPopup(auth,new U.GoogleAuthProvider())}
+async function syncLogin(){nmsg('');try{const {U,auth}=await syncLoad();const gp=new U.GoogleAuthProvider();gp.setCustomParameters({prompt:'select_account'});await U.signInWithPopup(auth,gp)}
   catch(e){const c=(e&&e.code)||'';if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
     nmsg(c==='auth/popup-blocked'?'팝업이 막혔습니다. 한 번 더 눌러 주세요.':c==='auth/unauthorized-domain'?'이 주소에서는 로그인할 수 없습니다.':c==='auth/network-request-failed'||!c?'연결이 불안정합니다. 잠시 뒤 다시 눌러 주세요.':'로그인하지 못했습니다. 잠시 뒤 다시 해 주세요.')}}
 async function syncLogout(){await syncPush();const {U,auth}=await syncLoad();await U.signOut(auth)}
