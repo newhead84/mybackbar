@@ -6,8 +6,8 @@
 
 ## 1. 프로젝트
 - 국내 위스키바에서 자주 보는 위스키를 종류별 선반에 진열하고, 병을 누르면 맛·도수·통·병 디자인을 보여 주는 정적 페이지.
-- 공개 주소: https://newhead84.github.io/whisky-backbar/ (GitHub Pages, main 브랜치 루트, `.nojekyll`)
-- 저장소: github.com/newhead84/whisky-backbar (공개, 브랜치는 main 하나)
+- 공개 주소: https://mybackbar.vercel.app/ (Vercel Pro 팀 프로젝트 mybackbar, main 푸시 시 자동 배포, 빌드 없음 정적). 2026-11-24 GitHub Pages에서 옮김(Pages 약관상 상업 이용 불가)
+- 저장소: github.com/newhead84/mybackbar (공개, 브랜치는 main 하나)
 - 빌드 없음. `index.html` 한 파일에 스타일·데이터·스크립트가 모두 있다.
   - 병 데이터 `const B = [...]`, 종류 분류 `STYLES`·`classify()`, 병 이미지 정보 `const PH = {...}`(파일·크기·참고 사진 작가·라이선스·메모).
   - `bottles/*.webp`: 병 이미지(높이 440px, 투명 배경). `fonts/`: 글꼴 파일과 라이선스 원문(`Pretendard-OFL.txt`).
