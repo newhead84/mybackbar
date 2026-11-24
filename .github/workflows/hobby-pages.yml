@@ -14,14 +14,11 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
-  deploy:
+  build:
     if: github.repository == 'newhead84/whisky-backbar'
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.dep.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: 사이트 파일 모으기
         run: |
           mkdir _site
@@ -30,8 +27,16 @@ jobs:
           sed -i 's#https://mybackbar.vercel.app/#https://newhead84.github.io/whisky-backbar/#g' _site/index.html
           grep -c 'newhead84.github.io/whisky-backbar/' _site/index.html
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
+  # 올리기와 배포를 나눈다(한 작업 안에서 바로 배포하면 올린 묶음을 못 찾아 실패한 적이 있음)
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.dep.outputs.page_url }}
+    steps:
       - id: dep
         uses: actions/deploy-pages@v4
