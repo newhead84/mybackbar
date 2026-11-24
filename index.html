@@ -231,6 +231,8 @@ html.agegate body{overflow:hidden}
 .act:hover{color:var(--ink);border-color:var(--ink-3)}
 .act[aria-pressed="true"]{background:var(--amber-soft);border-color:var(--amber);color:var(--ink)}
 .act:disabled{opacity:.45;cursor:default}
+a.act{display:inline-flex;align-items:center;text-decoration:none}
+.act.go{border-color:var(--amber);color:var(--amber)}
 /* 비슷한 병: 가로 스크롤 대신 접어서 */
 .sim{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--slot),1fr));justify-items:center;gap:14px 6px;overflow:visible}
 .sim .star{display:none}
@@ -1002,7 +1004,7 @@ const glassTxt=g=>Number(g[0]).toLocaleString('ko-KR')+'원';
 let notes=(()=>{try{const v=JSON.parse(localStorage.getItem('bb-note'));return v&&typeof v==='object'&&!Array.isArray(v)?cleanNotes(v):{}}catch(_){return {}}})();
 function cleanNotes(v){const o={};for(const [k,n] of Object.entries(v||{})){if(!/^[bc]:[a-z0-9-]{1,80}$/.test(k)||!n||typeof n!=='object')continue;
   o[k]={r:Math.max(0,Math.min(5,parseInt(n.r)||0)),d:/^\d{4}-\d{2}-\d{2}$/.test(n.d)?n.d:'',w:String(n.w||'').slice(0,40),m:String(n.m||'').slice(0,500),u:+n.u||0}}return o}
-function saveNotes(){try{localStorage.setItem('bb-note',JSON.stringify(notes))}catch(_){}renderNoteBtn()}
+function saveNotes(){try{localStorage.setItem('bb-note',JSON.stringify(notes))}catch(_){}renderNoteBtn();syncSoon()}
 function renderNoteBtn(){const n=noteItems().length;const b=document.getElementById('ncount');if(b)b.textContent=n||''}
 function noteItems(){return Object.entries(notes).map(([key,n])=>{const k=key[0],id=key.slice(2);const o=k==='b'?B.find(x=>x.id===id):CK.find(x=>x.id===id);return o?{key,k,id,o,n}:null}).filter(Boolean)}
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
@@ -1017,7 +1019,7 @@ function noteSec(key){const n=notes[key];const r=n?n.r:0;
       <label>장소<input type="text" data-nf="w" maxlength="40" placeholder="예: 동네 바, 집" value="${esc(n.w)}"></label>
       <label class="mn-memo">메모<textarea data-nf="m" maxlength="500" rows="3" placeholder="향과 맛, 같이 먹은 것, 다음에 또 마실지">${esc(n.m)}</textarea></label>
       <button class="mn-del" data-ndel>이 노트 지우기</button></div>`:''}
-    <p class="mn-tip">${n?'적는 대로 이 기기에 저장됩니다. ':''}백업은 위쪽 '노트' 단추에서 합니다.</p></div>`}
+    <p class="mn-tip">${SY.user?(n?'적는 대로 저장되고, 로그인한 다른 기기와 이어집니다.':'로그인되어 있어 다른 기기와 이어집니다.'):(n?'적는 대로 이 기기에 저장됩니다. ':'')+"다른 기기와 이으려면 위쪽 '노트' 단추에서 로그인하세요."}</p></div>`}
 function refreshNote(){const el=document.getElementById('mynote');if(el){const fk=focusKey();el.outerHTML=noteSec(el.dataset.nkey);restoreFocus(fk)}}
 
 // 취향 찾기: 세 문항 → 지금 선반(바 모드면 그 바)의 위스키에서 세 병
@@ -1084,20 +1086,71 @@ function openNotes(push){
     <div><div class="d-kicker">My notes</div><h2 id="d-name">내 노트</h2><div class="d-en">${l.length?`병 ${nb}개 · 칵테일 ${l.length-nb}잔`:'아직 적은 노트가 없습니다'}</div></div>
     ${l.length?`<div class="nsort" role="group" aria-label="정렬"><button class="chip" data-nsort="d" aria-pressed="${noteSort==='d'}">최근 마신 순</button><button class="chip" data-nsort="r" aria-pressed="${noteSort==='r'}">별점 높은 순</button></div>
     <div class="nlist">${l.map(row).join('')}</div>${nextPicks().length?`<div class="sec"><h3>Next <span>다음에 마셔 볼 병</span></h3><div class="sim">${nextPicks().map(o=>btn(o,'별점 높은 병과 비슷')).join('')}</div></div>`:''}`:`<p class="nempty">병이나 칵테일을 열고 '마셔 봤어요'나 별점을 누르면 여기에 모입니다.</p>`}
+    ${syncSec()}
     <div class="sec"><h3>Backup <span>백업</span></h3>
-      <p>노트는 서버 없이 이 기기 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 파일로 저장해 두세요. 저장한 파일을 다른 기기에서 불러오면 옮겨집니다.</p>
+      <p>로그인하지 않으면 노트는 이 기기 브라우저에만 저장됩니다. 브라우저 데이터를 지우면 사라지니 가끔 파일로 저장해 두세요. 저장한 파일을 다른 기기에서 불러오면 옮겨집니다.</p>
       <div class="acts"><button class="act" data-nexport ${l.length?'':'disabled'}>파일로 저장</button><button class="act" data-nimport>파일 불러오기</button></div>
       <input type="file" id="nfile" accept=".json,application/json" hidden>
       <p class="nmsg" id="nmsg" role="status">${esc(noteMsg)}</p></div>
     <p class="foot">불러온 노트는 지금 노트와 합칩니다. 같은 병에 두 기록이 있으면 더 나중에 고친 쪽을 남깁니다.</p>
-  </div>`,'#notes',push);noteMsg='';
+  </div>`,'#notes',push);noteMsg='';syncLoad().catch(()=>{});
 }
-function mergeNotes(inc){inc=cleanNotes(inc);let n=0;for(const [k,v] of Object.entries(inc)){if(!notes[k]||v.u>notes[k].u){notes[k]=v;n++}}saveNotes();return n}
+function mergeNotes(inc){inc=cleanNotes(inc);let n=0;for(const [k,v] of Object.entries(inc)){if(gone[k]>=v.u)continue;if(!notes[k]||v.u>notes[k].u){notes[k]=v;n++}}saveNotes();return n}
 function nmsg(t){const el=document.getElementById('nmsg');if(el)el.textContent=t}
 function exportNotes(){const blob=new Blob([JSON.stringify({app:'whisky-backbar',v:1,at:new Date().toISOString(),notes},null,1)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='backbar-notes-'+today().replace(/-/g,'')+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);nmsg('파일을 저장했습니다. 다른 기기에서는 \'파일 불러오기\'로 여세요.')}
 function importFile(f){if(!f)return;if(f.size>2e6){nmsg('파일이 너무 큽니다.');return}
   f.text().then(t=>{const j=JSON.parse(t);if(!j||j.app!=='whisky-backbar'||typeof j.notes!=='object')throw 0;const n=mergeNotes(j.notes);noteMsg=n?`노트 ${n}개를 합쳤습니다.`:'새로 합칠 노트가 없습니다(이미 같은 기록이 있음).';openNotes(false)}).catch(()=>nmsg('이 페이지에서 저장한 노트 파일이 아닙니다.'))}
+// 구글 로그인 동기화(Firebase). 로그인한 적 있는 기기나 노트 목록을 연 때만 SDK를 읽는다.
+// 서버에는 notes/{uid} 문서 하나(n 노트, g 지운 기록 {열쇠:지운 시각}, u 저장 시각)만 둔다. 같은 열쇠는 더 나중 시각이 이긴다.
+const FB_CFG={apiKey:"AIzaSyAZcIq7S2dk2XQAEkxv8RrlnngOX6mhMS8",authDomain:"mybackbar-ace1b.firebaseapp.com",projectId:"mybackbar-ace1b",storageBucket:"mybackbar-ace1b.firebasestorage.app",messagingSenderId:"180230490503",appId:"1:180230490503:web:f70b613a95365a09606b22"};
+const FB_URL=m=>'https://www.gstatic.com/firebasejs/12.4.0/firebase-'+m+'.js';
+function cleanGone(v){const o={};if(v&&typeof v==='object')for(const [k,t] of Object.entries(v))if(/^[bc]:[a-z0-9-]{1,80}$/.test(k)&&+t>0)o[k]=+t;return o}
+let gone=(()=>{try{return cleanGone(JSON.parse(localStorage.getItem('bb-note-del')))}catch(_){return {}}})();
+function saveGone(){try{localStorage.setItem('bb-note-del',JSON.stringify(gone))}catch(_){}}
+function deleteNote(key){delete notes[key];gone[key]=Date.now();saveGone();saveNotes()}
+const SY={fb:null,user:null,ready:false,state:'',t:0,last:null};
+const UA=navigator.userAgent,inApp=/KAKAOTALK|NAVER\(inapp|Instagram|FBAN|FBAV|Line\/|; wv\)/i.test(UA);
+const hadSync=()=>{try{return !!localStorage.getItem('bb-sync')}catch(_){return false}};
+const canon=()=>JSON.stringify([Object.keys(notes).sort().map(k=>[k,notes[k]]),Object.keys(gone).sort().map(k=>[k,gone[k]])]);
+function syncLoad(){if(SY.fb)return SY.fb;
+  SY.fb=Promise.all(['app','auth','firestore'].map(m=>import(FB_URL(m)))).then(([A,U,Fs])=>{const app=A.initializeApp(FB_CFG);const api={U,F:Fs,auth:U.getAuth(app),db:Fs.getFirestore(app)};
+    U.onAuthStateChanged(api.auth,u=>{SY.user=u;SY.ready=true;SY.last=null;try{u?localStorage.setItem('bb-sync','1'):localStorage.removeItem('bb-sync')}catch(_){}
+      if(u)syncPull();else{SY.state='';syncUI();refreshNote()}});return api}).catch(e=>{SY.fb=null;throw e});
+  return SY.fb}
+async function syncPull(){if(!SY.user)return;const {F,db}=await syncLoad();SY.state='load';syncUI();
+  try{const snap=await F.getDoc(F.doc(db,'notes',SY.user.uid));const r=snap.exists()?snap.data():{};const rn=cleanNotes(r.n),rg=cleanGone(r.g);
+    const before=canon();
+    for(const [k,t] of Object.entries(rg))if(!(gone[k]>=t))gone[k]=t;
+    for(const [k,v] of Object.entries(rn))if(!notes[k]||v.u>notes[k].u)notes[k]=v;
+    const old=Date.now()-180*864e5;
+    for(const [k,t] of Object.entries(gone)){if(notes[k]&&notes[k].u<=t)delete notes[k];else if(notes[k]||t<old)delete gone[k]}
+    const sn=notes,sg=gone;notes=rn;gone=rg;SY.last=canon();notes=sn;gone=sg;
+    saveGone();try{localStorage.setItem('bb-note',JSON.stringify(notes))}catch(_){}renderNoteBtn();
+    if(canon()!==before){if(location.hash==='#notes')openNotes(false);else{refreshNote();refreshNoteActs()}}
+    if(canon()!==SY.last)await syncPush();else{SY.state='ok';syncUI()}
+  }catch(e){SY.state='err';syncUI()}}
+function syncSoon(){if(!SY.user)return;clearTimeout(SY.t);SY.state='wait';syncUI();SY.t=setTimeout(syncPush,1200)}
+async function syncPush(){clearTimeout(SY.t);if(!SY.user||SY.last===null)return;const c=canon();if(c===SY.last){SY.state='ok';syncUI();return}
+  const {F,db}=await syncLoad();SY.state='save';syncUI();
+  try{await F.setDoc(F.doc(db,'notes',SY.user.uid),{n:JSON.parse(JSON.stringify(notes)),g:Object.assign({},gone),u:F.serverTimestamp()});SY.last=c;SY.state='ok'}catch(e){SY.state='err'}
+  syncUI()}
+async function syncLogin(){nmsg('');try{const {U,auth}=await syncLoad();await U.signInWithPopup(auth,new U.GoogleAuthProvider())}
+  catch(e){const c=(e&&e.code)||'';if(c==='auth/popup-closed-by-user'||c==='auth/cancelled-popup-request')return;
+    nmsg(c==='auth/popup-blocked'?'팝업이 막혔습니다. 한 번 더 눌러 주세요.':c==='auth/unauthorized-domain'?'이 주소에서는 로그인할 수 없습니다.':c==='auth/network-request-failed'||!c?'연결이 불안정합니다. 잠시 뒤 다시 눌러 주세요.':'로그인하지 못했습니다. 잠시 뒤 다시 해 주세요.')}}
+async function syncLogout(){await syncPush();const {U,auth}=await syncLoad();await U.signOut(auth)}
+async function syncWipe(){if(!SY.user||!confirm('서버에 저장된 내 노트와 로그인 기록을 지울까요? 이 기기의 노트는 그대로 남습니다.'))return;
+  const {U,F,auth,db}=await syncLoad();
+  try{await F.deleteDoc(F.doc(db,'notes',SY.user.uid));try{await U.deleteUser(SY.user)}catch(_){await U.signOut(auth)}noteMsg='서버의 노트를 지웠습니다.';openNotes(false)}
+  catch(e){nmsg('지우지 못했습니다. 잠시 뒤 다시 해 주세요.')}}
+function syncSec(){const u=SY.user;const H='<div class="sec" id="nsync"><h3>Sync <span>기기 동기화</span></h3>';
+  if(u){const st={load:'서버의 노트를 불러오는 중…',wait:'저장 대기 중…',save:'저장 중…',ok:'다른 기기와 맞춰져 있습니다.',err:'서버에 저장하지 못했습니다. 연결을 확인해 주세요.'}[SY.state]||'';
+    return H+`<p>${esc(u.email||'구글 계정')}로 로그인되어 있습니다. 노트를 적으면 이 계정에 저장되고, 다른 기기에서 같은 계정으로 로그인하면 이어집니다.</p><p class="nmsg" role="status">${st}</p><div class="acts"><button class="act" data-nout>로그아웃</button><button class="act" data-nwipe>서버 노트 지우기</button></div></div>`}
+  if(!SY.ready&&hadSync())return H+'<p>로그인 확인 중…</p></div>';
+  if(inApp)return H+`<p>이 앱 안의 브라우저에서는 구글 로그인이 막혀 있습니다. 크롬이나 사파리로 열면 로그인할 수 있습니다.</p>${/KAKAOTALK/i.test(UA)?`<div class="acts"><a class="act go" href="kakaotalk://web/openExternal?url=${encodeURIComponent(location.href)}">다른 브라우저로 열기</a></div>`:''}</div>`;
+  return H+'<p>구글로 로그인하면 휴대폰과 컴퓨터에서 같은 노트를 봅니다. 서버에는 노트만 저장하고, 다른 사람(바 사장 포함)에게는 보이지 않습니다.</p><div class="acts"><button class="act go" data-nlogin>구글로 로그인</button></div></div>'}
+function syncUI(){const el=document.getElementById('nsync');if(el)el.outerHTML=syncSec()}
+document.addEventListener('visibilitychange',()=>{if(!SY.user)return;if(document.visibilityState==='hidden')syncPush();else syncPull()});
 
 function face(o, big){
   const p=PH[o.id];
@@ -1441,10 +1494,13 @@ document.addEventListener('click',e=>{
   const qc=e.target.closest('[data-quizcmp]'); if(qc){cmp=qc.dataset.quizcmp.split(',').filter(id=>B.some(o=>o.id===id)).slice(0,CMP_MAX);store.set('bb-cmp',cmp);refreshActs();renderTray();openCompare();return}
   const ns=e.target.closest('[data-nsort]'); if(ns){noteSort=ns.dataset.nsort;openNotes(false);return}
   if(e.target.closest('[data-ngo]')){const m=document.getElementById('mynote');if(m){m.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});m.querySelector('[data-ntried]')?.focus({preventScroll:true})}return}
-  const nt=e.target.closest('[data-ntried]'); if(nt){const key=nt.closest('[data-nkey]').dataset.nkey;if(notes[key]){if(notes[key].m&&!confirm('메모가 있는 노트입니다. 지울까요?'))return;delete notes[key];saveNotes()}else setNote(key,{});refreshNote();refreshNoteActs();return}
+  const nt=e.target.closest('[data-ntried]'); if(nt){const key=nt.closest('[data-nkey]').dataset.nkey;if(notes[key]){if(notes[key].m&&!confirm('메모가 있는 노트입니다. 지울까요?'))return;deleteNote(key)}else setNote(key,{});refreshNote();refreshNoteActs();return}
   const st=e.target.closest('[data-nstar]'); if(st){const key=st.closest('[data-nkey]').dataset.nkey;const v=+st.dataset.nstar;setNote(key,{r:notes[key]&&notes[key].r===v?0:v});refreshNote();refreshNoteActs();const ns=document.querySelector('#mynote .nstars');if(ns)ns.classList.add('pop');return}
-  if(e.target.closest('[data-ndel]')){const key=e.target.closest('[data-nkey]').dataset.nkey;if(!confirm('이 노트를 지울까요? 되돌릴 수 없습니다.'))return;delete notes[key];saveNotes();refreshNote();refreshNoteActs();return}
+  if(e.target.closest('[data-ndel]')){const key=e.target.closest('[data-nkey]').dataset.nkey;if(!confirm('이 노트를 지울까요? 되돌릴 수 없습니다.'))return;deleteNote(key);refreshNote();refreshNoteActs();return}
   if(e.target.closest('[data-nexport]')){exportNotes();return}
+  if(e.target.closest('[data-nlogin]')){syncLogin();return}
+  if(e.target.closest('[data-nout]')){syncLogout().catch(()=>nmsg('로그아웃하지 못했습니다.'));return}
+  if(e.target.closest('[data-nwipe]')){syncWipe();return}
   if(e.target.closest('[data-nimport]')){document.getElementById('nfile')?.click();return}
   const ck=e.target.closest('[data-ck]'); if(ck){openCocktail(ck.dataset.ck);return}
   const vw=e.target.closest('[data-view]'); if(vw){const v=vw.dataset.view;state.style=v==='whisky'?(viewOf(state.style)==='whisky'?state.style:'all'):v;fitFiltersToView();renderControls();renderShelves();try{sessionStorage.setItem('bb-style',state.style)}catch(_){};toListTop();return}
@@ -1493,7 +1549,7 @@ function applyBar(b){
   if(b.notice){const f=document.createElement('div');f.className='barflag';f.textContent=b.notice;top.querySelector('.lede').after(f)}
   if(b.event){const e=document.createElement('div');e.className='barevent';e.innerHTML='<b>알림</b>';e.append(String(b.event));(top.querySelector('.barflag')||top.querySelector('.lede')).after(e)}
 }
-function start(){renderStats();renderControls();renderShelves();renderFoot();renderTray();renderNoteBtn();route();}
+function start(){renderStats();renderControls();renderShelves();renderFoot();renderTray();renderNoteBtn();route();if(hadSync())syncLoad().catch(()=>{});}
 const BAR_ID=(new URLSearchParams(location.search).get('bar')||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
 if(BAR_ID)fetch('bars/'+BAR_ID+'.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject()).then(applyBar).catch(()=>{}).finally(start);else start();
 

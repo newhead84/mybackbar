@@ -1,0 +1,17 @@
+rules_version = '2';
+// 위스키 백바 Firestore 규칙. 콘솔 Firestore Database > 규칙에 그대로 붙여 넣고 게시한다.
+// 여기에 적지 않은 곳은 모두 막힌다(기본 거부).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 내 노트: notes/{uid} 문서 하나. 로그인한 본인만 읽고 쓰고 지운다.
+    // n 노트 {열쇠: {r,d,w,m,u}}, g 지운 기록 {열쇠: 지운 시각}, u 서버 저장 시각
+    match /notes/{uid} {
+      allow read, delete: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['n', 'g', 'u'])
+        && request.resource.data.n is map
+        && request.resource.data.g is map
+        && request.resource.data.u == request.time;
+    }
+  }
+}
