@@ -462,7 +462,19 @@ html.barmode #bands{display:none}
 @media (max-width:560px){.drow{grid-template-columns:40px minmax(0,1fr) minmax(0,1fr);grid-template-areas:"img n n" "img p v" "img t t"}}
 .dq{max-width:none;margin-top:4px}
 .dq input{flex:1;min-width:0;background:transparent;border:0;color:var(--ink);font:inherit;font-size:16px;outline:none}
-.dfound{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.dtabs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 10px}
+.dtabs .chip small{margin-left:5px;color:var(--ink-3);font-size:11px}
+.dtabs .chip[aria-pressed="true"] small{color:inherit;opacity:.8}
+.dshelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px;margin-top:10px}
+.dpick{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px 6px;border:1px solid var(--line);border-radius:12px;background:transparent;color:var(--ink-3);font:inherit;font-size:11.5px;line-height:1.3;cursor:pointer;min-width:0}
+.dpick img{height:84px;width:auto;max-width:100%;object-fit:contain;opacity:.45;filter:grayscale(.6);transition:opacity .15s,filter .15s}
+.dpick span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-align:center;word-break:keep-all}
+.dpick[aria-pressed="true"]{border-color:var(--amber);color:var(--ink);background:var(--panel-2)}
+.dpick[aria-pressed="true"] img{opacity:1;filter:none}
+.dpick[aria-pressed="true"]::after{content:'✓';position:absolute;top:5px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--amber);color:#120d09;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.dsub{grid-column:1/-1;margin:10px 0 0;font-size:12.5px;font-weight:700;color:var(--ink-2);border-bottom:1px solid var(--line);padding-bottom:4px}
+.dshelf-acts{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;color:var(--ink-3)}
+.dshelf-acts .act{height:30px;font-size:12.5px}
 .durl{margin-top:8px!important;font-size:13px;word-break:break-all}
 .dsave{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;background:var(--panel);border-top:1px solid var(--line);font-size:13px;color:var(--ink-3);z-index:2}
 .dsave .act{height:38px;padding:0 20px}
@@ -1577,7 +1589,29 @@ const HOBBY=/\.github\.io$/.test(location.hostname);
 const FULL_B=B.slice(),FULL_CK=CK.slice();
 // 바 사장님 관리(#dash). 바 자료는 Firestore bars/{slug}(누구나 읽기), 사장 연결은 owners/{uid}.bars,
 // 운영자는 admins/{uid}(콘솔에서만 만듦). 손님 노트(notes/{uid})는 사장도 운영자도 읽을 수 없다.
-const DASH={who:null,admin:false,bars:[],all:null,slug:'',d:null,dirty:false,loading:false,msg:''};
+const DASH={who:null,admin:false,bars:[],all:null,slug:'',d:null,dirty:false,loading:false,msg:'',tab:'single',q:''};
+const DTABS=STYLES.map(x=>({id:x.id,n:x.n})).concat([{id:'ck',n:'칵테일'}]);
+const tabOf=id=>{const it=itemOf(id);return !it?'':it.k==='c'?'ck':classify(it.o)[0]};
+const fullOrder=new Map(FULL_B.map((o,i)=>[o.id,i]).concat(FULL_CK.map((c,i)=>[c.id,10000+i])));
+function tabItems(t){if(t==='ck')return FULL_CK;const st=STYLES.find(x=>x.id===t);const rows=st?st.rows.map(r=>r[0]):[];
+  return FULL_B.filter(o=>classify(o)[0]===t).sort((a,b)=>rows.indexOf(classify(a)[1])-rows.indexOf(classify(b)[1]))}
+function dashShelf(){const d=DASH.d,has=new Set(d.bottles.concat(d.cocktails));const q=norm(DASH.q||'');
+  const list=q?FULL_B.filter(o=>hayOf(o).includes(q)).concat(FULL_CK.filter(c=>norm(c.n+' '+c.e).includes(q))).slice(0,60):tabItems(DASH.tab);
+  if(!list.length)return '<p class="dsmall">찾는 이름이 없습니다. 다른 이름이나 영문으로 찾아 보세요.</p>';
+  const inN=list.filter(o=>has.has(o.id)).length;
+  return `<div class="dshelf-acts"><span>${q?'찾은 병 ':'이 선반 '}${list.length}개 중 ${inN}개 진열 중</span><button class="act" data-dall="1">모두 넣기</button><button class="act" data-dall="0">모두 빼기</button></div>`+
+    list.map((o,i)=>{const ck=!FULL_B.includes(o);let sub='';if(!q&&!ck){const st=STYLES.find(x=>x.id===DASH.tab),r=classify(o)[1];if(st&&st.rows.length>1&&(i===0||classify(list[i-1])[1]!==r)){const row=st.rows.find(x=>x[0]===r);sub=row?`<p class="dsub">${esc(row[1])}</p>`:''}}return sub+(()=>{const p=ck?CKPH[o.id]:PH[o.id];return `<button class="dpick" data-dpick="${o.id}" aria-pressed="${has.has(o.id)}">${p?`<img src="${p.f}" alt="" loading="lazy" decoding="async">`:''}<span>${esc(o.n)}</span></button>`})()}).join('')}
+function dashTabs(){const d=DASH.d,has=new Set(d.bottles.concat(d.cocktails));const cnt={};for(const id of has){const t=tabOf(id);cnt[t]=(cnt[t]||0)+1}
+  return DTABS.map(t=>`<button class="chip" data-dtab="${t.id}" aria-pressed="${!DASH.q&&DASH.tab===t.id}">${esc(t.n)}<small>${cnt[t.id]||0}</small></button>`).join('')}
+function dashRefresh(){const d=DASH.d;const set=(id,h)=>{const el=document.getElementById(id);if(el)el.innerHTML=h};
+  set('dshelf',dashShelf());set('dtabs',dashTabs());set('dmenu',dashMenu());set('dcount',`병 ${d.bottles.length}개 · 칵테일 ${d.cocktails.length}잔`)}
+function dashToggle(id,on){const it=itemOf(id);if(!it)return;const d=DASH.d,arr=it.k==='b'?d.bottles:d.cocktails,i=arr.indexOf(id);
+  if(on&&i<0)arr.push(id);if(!on&&i>=0){arr.splice(i,1);for(const k of ['pick','soldout','new']){const j=d[k].indexOf(id);if(j>=0)d[k].splice(j,1)}}}
+let BASE_SET=null;
+async function dashBase(){const d=DASH.d;try{BASE_SET=BASE_SET||await fetch('bars/demo.json',{cache:'no-cache'}).then(r=>r.json())}catch(_){return dmsg('기본 세트를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.')}
+  const ids=(BASE_SET.bottles||[]).concat(BASE_SET.cocktails||[]).filter(id=>itemOf(id));
+  if(d.bottles.length+d.cocktails.length&&!confirm(`지금 진열에 기본 세트(병 ${(BASE_SET.bottles||[]).length}개, 칵테일 ${(BASE_SET.cocktails||[]).length}잔)를 더할까요? 이미 있는 병은 그대로 둡니다.`))return;
+  ids.forEach(id=>dashToggle(id,true));dirty();dashRefresh();dmsg('기본 세트를 넣었습니다. 이 바에 없는 병을 눌러 빼 주세요.')}
 const SLUG_RE=/^[a-z0-9-]{2,40}$/,CODE_RE=/^[A-Za-z0-9]{20,40}$/;
 const emptyBar=name=>({name,area:'',intro:'',notice:'',event:'',pick:[],soldout:[],new:[],bottles:[],cocktails:[],glass:{}});
 function barData(r){const d=emptyBar(String(r.name||'').slice(0,30));for(const k of ['area','intro','notice','event'])d[k]=String(r[k]||'');
@@ -1629,8 +1663,12 @@ function dashPaint(){const el=document.getElementById('dashbody');if(!el)return;
         <label class="mn-memo">소개<textarea data-dinfo="intro" maxlength="300" rows="3" placeholder="어떤 술을 주로 내는 바인지 두세 문장으로 적어 주세요.">${esc(d.intro)}</textarea></label>
         <label class="mn-memo">맨 위 안내 한 줄<input data-dinfo="notice" maxlength="80" placeholder="예: 오늘은 새벽 2시까지 엽니다." value="${esc(d.notice)}"></label>
         <label class="mn-memo">알림<input data-dinfo="event" maxlength="80" placeholder="예: 금요일 밤 9시, 셰리 통 위스키 세 잔 비교 시음" value="${esc(d.event)}"></label></div></div>
-      <div class="sec"><h3>Menu <span>진열과 한 잔 가격</span></h3><p>병 ${nb}개 · 칵테일 ${nc}잔. 가격을 비워 두면 손님 화면에 '메뉴판 참고'로 나옵니다.</p><div class="dmenu" id="dmenu">${dashMenu()}</div></div>
-      <div class="sec"><h3>Add <span>병·칵테일 더하기</span></h3><div class="search dq"><input type="search" data-dq placeholder="이름으로 찾기 (예: 맥캘란, 네그로니)" autocomplete="off"></div><div class="dfound" id="dfound"></div></div>
+      <div class="sec"><h3>Shelf <span>진열 고르기</span></h3><p>병을 누르면 진열에 들어가고, 한 번 더 누르면 빠집니다. 처음이라면 기본 세트로 채운 뒤 이 바에 없는 병만 빼면 빠릅니다.</p>
+        <div class="acts"><button class="act go" data-dbase>기본 세트로 채우기</button><button class="act" data-dclear>모두 비우기</button></div>
+        <div class="dtabs" id="dtabs" role="group" aria-label="선반 고르기">${dashTabs()}</div>
+        <div class="search dq"><input type="search" data-dq placeholder="이름으로 찾기 (예: 맥캘란, 네그로니)" autocomplete="off" value="${esc(DASH.q)}"></div>
+        <div class="dshelf" id="dshelf">${dashShelf()}</div></div>
+      <div class="sec"><h3>Menu <span>진열 중인 술과 한 잔 가격</span></h3><p><span id="dcount">병 ${nb}개 · 칵테일 ${nc}잔</span>. 가격을 비워 두면 손님 화면에 '메뉴판 참고'로 나옵니다.</p><div class="dmenu" id="dmenu">${dashMenu()}</div></div>
       <div class="sec"><h3>Share <span>손님에게 보여 주기</span></h3><p>손님 화면 주소입니다. 테이블 QR 카드를 내려받아 인쇄해 두면 손님이 휴대폰 카메라로 바로 들어옵니다.</p>
         <p class="durl"><a href="${barURL(DASH.slug)}" target="_blank" rel="noopener">${barURL(DASH.slug)}</a></p>
         <div class="acts"><button class="act" data-dcopy="${barURL(DASH.slug)}">주소 복사</button><button class="act go" data-dqr>QR 카드 내려받기</button></div></div>
@@ -1643,7 +1681,7 @@ function dashPaint(){const el=document.getElementById('dashbody');if(!el)return;
       <p class="dsmall">'연결'과 '연결 끊기'는 위 주소 이름과 연결 코드를 씁니다.</p></div>`;
   h+=`<p class="nmsg" id="dmsg" role="status">${esc(DASH.msg)}</p>`;
   el.innerHTML=h;dstate()}
-function dashMenu(){const d=DASH.d;const ids=d.bottles.concat(d.cocktails);if(!ids.length)return '<p class="nempty">아직 진열한 병이 없습니다. 아래에서 이름으로 찾아 더해 주세요.</p>';
+function dashMenu(){const d=DASH.d;const ids=d.bottles.concat(d.cocktails).sort((a,b)=>(fullOrder.get(a)??1e9)-(fullOrder.get(b)??1e9));if(!ids.length)return '<p class="nempty">아직 진열한 병이 없습니다. 위 선반에서 병을 눌러 넣어 주세요.</p>';
   return ids.map(id=>{const it=itemOf(id);if(!it)return '';const o=it.o,g=d.glass[id]||[0,''];const p=it.k==='b'?PH[id]:CKPH[id];
     const kind=it.k==='c'?'칵테일':isSpirit(o)?'칵테일 술':'위스키';const on=k=>d[k].includes(id);
     return `<div class="drow" data-did="${id}"><span class="dr-img">${p?`<img src="${p.f}" alt="" loading="lazy" decoding="async">`:''}</span>
@@ -1651,9 +1689,6 @@ function dashMenu(){const d=DASH.d;const ids=d.bottles.concat(d.cocktails);if(!i
       <label class="dr-p"><input inputmode="numeric" data-dprice maxlength="7" value="${g[0]||''}" placeholder="한 잔 가격" aria-label="${esc(o.n)} 한 잔 가격"><span>원</span></label>
       <input class="dr-v" data-dvol maxlength="12" value="${esc(g[1])}" placeholder="${it.k==='c'?'1잔':'30ml'}" aria-label="${esc(o.n)} 용량">
       <span class="dr-t"><button class="tg" data-dtog="pick" aria-pressed="${on('pick')}">추천</button><button class="tg" data-dtog="soldout" aria-pressed="${on('soldout')}">오늘 없음</button><button class="tg" data-dtog="new" aria-pressed="${on('new')}">새로 입고</button><button class="tg dr-x" data-ddel>빼기</button></span></div>`}).join('')}
-function dashFind(q){const el=document.getElementById('dfound');if(!el)return;q=norm(q||'');if(!q){el.innerHTML='';return}const d=DASH.d,has=new Set(d.bottles.concat(d.cocktails));
-  const r=FULL_B.filter(o=>!has.has(o.id)&&hayOf(o).includes(q)).slice(0,10).concat(FULL_CK.filter(c=>!has.has(c.id)&&norm(c.n+' '+c.e).includes(q)).slice(0,5));
-  el.innerHTML=r.length?r.map(o=>`<button class="chip" data-dadd="${o.id}">+ ${esc(o.n)}</button>`).join(''):'<p class="dsmall">찾는 이름이 없습니다. 다른 이름이나 영문으로 찾아 보세요.</p>'}
 async function dashSave(){const d=DASH.d;if(!d)return;if(!d.name.trim())return dmsg('바 이름을 적어 주세요.');
   const ids=new Set(d.bottles.concat(d.cocktails));const keep=a=>a.filter(x=>ids.has(x));const glass={};for(const [k,v] of Object.entries(d.glass))if(ids.has(k)&&v[0]>0)glass[k]=[v[0],v[1]];
   if(keep(d.pick).length>20)return dmsg('추천은 20개까지 고를 수 있습니다.');
@@ -1699,13 +1734,17 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest||!t.closest
   if(b=by('[data-dnew]')){dashNew();return}
   if(b=by('[data-dlink]')){dashLink(false);return}
   if(b=by('[data-dunlink]')){dashLink(true);return}
-  if(b=by('[data-dadd]')){const id=b.dataset.dadd,it=itemOf(id);if(!it)return;(it.k==='b'?DASH.d.bottles:DASH.d.cocktails).push(id);dirty();document.getElementById('dmenu').innerHTML=dashMenu();dashFind(document.querySelector('[data-dq]').value);return}
+  if(b=by('[data-dpick]')){const id=b.dataset.dpick,on=b.getAttribute('aria-pressed')!=='true';dashToggle(id,on);dirty();dashRefresh();return}
+  if(b=by('[data-dtab]')){DASH.tab=b.dataset.dtab;DASH.q='';const q=document.querySelector('[data-dq]');if(q)q.value='';dashRefresh();return}
+  if(b=by('[data-dall]')){const on=b.dataset.dall==='1';[...document.querySelectorAll('#dshelf [data-dpick]')].forEach(x=>dashToggle(x.dataset.dpick,on));dirty();dashRefresh();return}
+  if(b=by('[data-dbase]')){dashBase();return}
+  if(b=by('[data-dclear]')){const d=DASH.d;if(!(d.bottles.length+d.cocktails.length)||!confirm('진열한 병과 칵테일을 모두 뺄까요? 저장하기 전까지는 손님 화면에 반영되지 않습니다.'))return;d.bottles=[];d.cocktails=[];d.pick=[];d.soldout=[];d.new=[];dirty();dashRefresh();return}
   const row=by('[data-did]');if(!row)return;const id=row.dataset.did,d=DASH.d;
   if(b=by('[data-dtog]')){const k=b.dataset.dtog,a=d[k],i=a.indexOf(id);if(i<0)a.push(id);else a.splice(i,1);b.setAttribute('aria-pressed',i<0);dirty();return}
-  if(by('[data-ddel]')){for(const k of ['bottles','cocktails','pick','soldout','new']){const i=d[k].indexOf(id);if(i>=0)d[k].splice(i,1)}delete d.glass[id];row.remove();dirty();return}});
+  if(by('[data-ddel]')){dashToggle(id,false);delete d.glass[id];dirty();dashRefresh();return}});
 document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest('#dashbody')||!DASH.d)return;const d=DASH.d;
   if(t.dataset.dinfo){d[t.dataset.dinfo]=t.value;dirty();return}
-  if('dq' in t.dataset){dashFind(t.value);return}
+  if('dq' in t.dataset){DASH.q=t.value;const el=document.getElementById('dshelf');if(el)el.innerHTML=dashShelf();const tb=document.getElementById('dtabs');if(tb)tb.innerHTML=dashTabs();return}
   const row=t.closest('[data-did]');if(!row)return;const id=row.dataset.did,g=d.glass[id]||[0,''];
   if('dprice' in t.dataset){const v=t.value.replace(/[^0-9]/g,'').slice(0,7);if(v!==t.value)t.value=v;g[0]=+v||0}
   if('dvol' in t.dataset)g[1]=t.value.slice(0,12);
