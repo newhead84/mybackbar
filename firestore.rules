@@ -3,15 +3,63 @@ rules_version = '2';
 // 여기에 적지 않은 곳은 모두 막힌다(기본 거부).
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 내 노트: notes/{uid} 문서 하나. 로그인한 본인만 읽고 쓰고 지운다.
+    function signedIn() { return request.auth != null; }
+    // 운영자: admins/{uid} 문서가 있는 사람. 이 문서는 콘솔에서만 만든다(앱에서는 못 씀).
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    // 사장: owners/{uid}.bars 목록에 그 바 주소 이름이 있는 사람
+    function isOwner(slug) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/owners/$(request.auth.uid))
+        && slug in get(/databases/$(database)/documents/owners/$(request.auth.uid)).data.bars;
+    }
+    function okBar(d) {
+      return d.keys().hasOnly(['name', 'area', 'intro', 'notice', 'event', 'pick', 'soldout', 'new', 'bottles', 'cocktails', 'glass', 'u'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 30
+        && d.area is string && d.area.size() <= 30
+        && d.intro is string && d.intro.size() <= 300
+        && d.notice is string && d.notice.size() <= 80
+        && d.event is string && d.event.size() <= 80
+        && d.pick is list && d.pick.size() <= 20
+        && d.soldout is list && d.soldout.size() <= 600
+        && d.new is list && d.new.size() <= 100
+        && d.bottles is list && d.bottles.size() <= 500
+        && d.cocktails is list && d.cocktails.size() <= 200
+        && d.glass is map && d.glass.size() <= 700
+        && d.u == request.time;
+    }
+
+    // 내 노트: notes/{uid} 문서 하나. 로그인한 본인만 읽고 쓰고 지운다(사장·운영자도 못 읽음).
     // n 노트 {열쇠: {r,d,w,m,u}}, g 지운 기록 {열쇠: 지운 시각}, u 서버 저장 시각
     match /notes/{uid} {
-      allow read, delete: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null && request.auth.uid == uid
+      allow read, delete: if signedIn() && request.auth.uid == uid;
+      allow create, update: if signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['n', 'g', 'u'])
         && request.resource.data.n is map
         && request.resource.data.g is map
         && request.resource.data.u == request.time;
+    }
+
+    // 바 페이지 자료: 손님 화면이 읽으므로 누구나 읽기. 만들기·지우기는 운영자, 고치기는 운영자와 그 바 사장.
+    match /bars/{slug} {
+      allow read: if true;
+      allow create: if isAdmin() && slug.matches('^[a-z0-9-]{2,40}$') && okBar(request.resource.data);
+      allow update: if (isAdmin() || isOwner(slug)) && okBar(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // 사장 연결: owners/{uid} = {bars: [바 주소 이름]}. 본인과 운영자만 읽고, 운영자만 쓴다.
+    match /owners/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create, update: if isAdmin()
+        && request.resource.data.keys().hasOnly(['bars'])
+        && request.resource.data.bars is list
+        && request.resource.data.bars.size() <= 10;
+      allow delete: if isAdmin();
+    }
+
+    // 운영자 표시: 본인 것만 읽을 수 있고, 앱에서는 쓰지 못한다.
+    match /admins/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
     }
   }
 }

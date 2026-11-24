@@ -433,6 +433,40 @@ html.barmode #bands{display:none}
 .bt .pickb.newb{background:transparent;color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
 .barevent{margin-top:8px;font-size:13px;color:var(--ink-2);word-break:keep-all}
 .barevent b{color:var(--amber);margin-right:6px}
+.barcta{margin-top:14px;display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--panel-2);max-width:640px}
+.barcta p{margin:0;flex:1 1 260px;font-size:13.5px;color:var(--ink-2);word-break:keep-all}
+.barcta b{color:var(--ink)}
+.dash .dwho{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;font-size:13px;color:var(--ink-3)}
+.dash .dstep{margin-top:10px}
+.dsmall{margin-top:10px;font-size:12.5px;color:var(--ink-3);word-break:keep-all}
+.dsmall a,.durl a{color:var(--ink-2)}
+.dcode{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.dcode code{font-size:13px;padding:6px 10px;border-radius:8px;background:var(--panel-2);border:1px solid var(--line);color:var(--ink);word-break:break-all}
+.dbars{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 6px}
+.dform .mn-memo{grid-column:1/-1}
+.dmenu{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.drow{display:grid;grid-template-columns:40px minmax(0,1fr) 128px 84px;grid-template-areas:"img n p v" "img t t t";gap:6px 10px;align-items:center;padding:8px 10px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2)}
+.dr-img{grid-area:img;height:56px;display:flex;align-items:center;justify-content:center}
+.dr-img img{max-height:56px;max-width:40px;width:auto;height:auto}
+.dr-n{grid-area:n;min-width:0;display:flex;flex-direction:column}
+.dr-n b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dr-n small{font-size:11.5px;color:var(--ink-3)}
+.dr-p{grid-area:p;display:flex;align-items:center;gap:4px;font-size:12.5px;color:var(--ink-3)}
+.dr-p input,.dr-v{font:inherit;font-size:16px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:8px;padding:5px 8px;width:100%;min-width:0;box-sizing:border-box}
+.dr-v{grid-area:v}
+.dr-p input:focus,.dr-v:focus{outline:none;border-color:var(--amber)}
+.dr-t{grid-area:t;display:flex;flex-wrap:wrap;gap:6px}
+.tg{height:28px;padding:0 10px;border-radius:999px;border:1px solid var(--line-2);background:transparent;color:var(--ink-3);font:inherit;font-size:12px;cursor:pointer}
+.tg[aria-pressed="true"]{background:var(--amber);border-color:var(--amber);color:#120d09;font-weight:700}
+.tg.dr-x{margin-left:auto}
+@media (max-width:560px){.drow{grid-template-columns:40px minmax(0,1fr) minmax(0,1fr);grid-template-areas:"img n n" "img p v" "img t t"}}
+.dq{max-width:none;margin-top:4px}
+.dq input{flex:1;min-width:0;background:transparent;border:0;color:var(--ink);font:inherit;font-size:16px;outline:none}
+.dfound{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.durl{margin-top:8px!important;font-size:13px;word-break:break-all}
+.dsave{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;background:var(--panel);border-top:1px solid var(--line);font-size:13px;color:var(--ink-3);z-index:2}
+.dsave .act{height:38px;padding:0 20px}
+.dadmin{border-top:1px dashed var(--line-2);padding-top:16px}
 /* 모션 */
 @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes fill{from{transform:scaleX(0)}to{transform:none}}
@@ -1008,7 +1042,7 @@ function saveNotes(){try{localStorage.setItem('bb-note',JSON.stringify(notes))}c
 function renderNoteBtn(){const n=noteItems().length;const b=document.getElementById('ncount');if(b)b.textContent=n||''}
 function noteItems(){return Object.entries(notes).map(([key,n])=>{const k=key[0],id=key.slice(2);const o=k==='b'?B.find(x=>x.id===id):CK.find(x=>x.id===id);return o?{key,k,id,o,n}:null}).filter(Boolean)}
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-function setNote(key,patch){notes[key]=Object.assign({r:0,d:today(),w:'',m:''},notes[key],patch,{u:Date.now()});saveNotes()}
+function setNote(key,patch){notes[key]=Object.assign({r:0,d:today(),w:BAR?BAR.name.slice(0,40):'',m:''},notes[key],patch,{u:Date.now()});saveNotes()}
 const starTxt=r=>r?'<i>'+'★'.repeat(r)+'</i>':'별점 없음';
 function noteSec(key){const n=notes[key];const r=n?n.r:0;
   return `<div class="sec mynote" id="mynote" data-nkey="${key}"><h3 class="mn-head">My note <span>내 노트</span><small class="mn-save" aria-live="polite"></small></h3>
@@ -1116,7 +1150,7 @@ const canon=()=>JSON.stringify([Object.keys(notes).sort().map(k=>[k,notes[k]]),O
 function syncLoad(){if(SY.fb)return SY.fb;
   SY.fb=Promise.all(['app','auth','firestore'].map(m=>import(FB_URL(m)))).then(([A,U,Fs])=>{const app=A.initializeApp(FB_CFG);const api={U,F:Fs,auth:U.getAuth(app),db:Fs.getFirestore(app)};
     U.onAuthStateChanged(api.auth,u=>{SY.user=u;SY.ready=true;SY.last=null;try{u?localStorage.setItem('bb-sync','1'):localStorage.removeItem('bb-sync')}catch(_){}
-      if(u)syncPull();else{SY.state='';syncUI();refreshNote()}});return api}).catch(e=>{SY.fb=null;throw e});
+      if(u)syncPull();else{SY.state='';syncUI();refreshNote()}dashOnAuth()});return api}).catch(e=>{SY.fb=null;throw e});
   return SY.fb}
 async function syncPull(){if(!SY.user)return;const {F,db}=await syncLoad();SY.state='load';syncUI();
   try{const snap=await F.getDoc(F.doc(db,'notes',SY.user.uid));const r=snap.exists()?snap.data():{};const rn=cleanNotes(r.n),rg=cleanGone(r.g);
@@ -1148,7 +1182,7 @@ function syncSec(){const u=SY.user;const H='<div class="sec" id="nsync"><h3>Sync
     return H+`<p>${esc(u.email||'구글 계정')}로 로그인되어 있습니다. 노트를 적으면 이 계정에 저장되고, 다른 기기에서 같은 계정으로 로그인하면 이어집니다.</p><p class="nmsg" role="status">${st}</p><div class="acts"><button class="act" data-nout>로그아웃</button><button class="act" data-nwipe>서버 노트 지우기</button></div></div>`}
   if(!SY.ready&&hadSync())return H+'<p>로그인 확인 중…</p></div>';
   if(inApp)return H+`<p>이 앱 안의 브라우저에서는 구글 로그인이 막혀 있습니다. 크롬이나 사파리로 열면 로그인할 수 있습니다.</p>${/KAKAOTALK/i.test(UA)?`<div class="acts"><a class="act go" href="kakaotalk://web/openExternal?url=${encodeURIComponent(location.href)}">다른 브라우저로 열기</a></div>`:''}</div>`;
-  return H+'<p>구글로 로그인하면 휴대폰과 컴퓨터에서 같은 노트를 봅니다. 서버에는 노트만 저장하고, 다른 사람(바 사장 포함)에게는 보이지 않습니다.</p><div class="acts"><button class="act go" data-nlogin>구글로 로그인</button></div></div>'}
+  return H+'<p>구글로 로그인하면 휴대폰과 컴퓨터에서 같은 노트를 봅니다. 서버에는 노트만 저장하고, 바 사장님을 포함해 다른 사람에게는 보이지 않습니다. <a href="privacy.html">개인정보 처리방침</a></p><div class="acts"><button class="act go" data-nlogin>구글로 로그인</button></div></div>'}
 function syncUI(){const el=document.getElementById('nsync');if(el)el.outerHTML=syncSec()}
 document.addEventListener('visibilitychange',()=>{if(!SY.user)return;if(document.visibilityState==='hidden')syncPush();else syncPull()});
 
@@ -1255,9 +1289,9 @@ function renderShelves0(){
 function renderFoot(){
   const li=(n,p)=>`<li>${esc(n)}: ${esc(p.a)} · ${esc(p.l)} · ${p.u?`<a href="${p.u}" target="_blank" rel="noopener">원본</a>`:"원본 비공개"}${p.n?` (${esc(p.n)})`:''}</li>`;
   const cc=B.filter(o=>PH[o.id]&&PH[o.id].u).map(o=>li(o.n,PH[o.id])).concat(CK.filter(c=>CKPH[c.id]&&CKPH[c.id].u).map(c=>li(c.n+'(칵테일)',CKPH[c.id])));const list=cc.join('');
-  if(BAR){document.getElementById('site-foot').innerHTML=`<p class="warn">19세 미만 청소년의 음주는 법으로 금지되어 있습니다. 지나친 음주는 건강을 해칩니다.</p><p class="barnote">${esc(BAR.name)}의 진열 안내 페이지입니다. 가격은 이 바의 메뉴 기준이고, 병 설명과 맛 점수는 위스키 백바 자료(일반적으로 알려진 내용을 줄인 것)입니다. <a href="./">위스키 백바 전체 보기</a></p>병 이미지는 실제 병 사진을 참고해 AI로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다.
+  if(BAR){document.getElementById('site-foot').innerHTML=`<p class="warn">19세 미만 청소년의 음주는 법으로 금지되어 있습니다. 지나친 음주는 건강을 해칩니다.</p><p class="barnote">${esc(BAR.name)}의 진열 안내 페이지입니다. 가격은 이 바의 메뉴 기준이고, 병 설명과 맛 점수는 위스키 백바 자료(일반적으로 알려진 내용을 줄인 것)입니다. <a href="./">위스키 백바 전체 보기</a> · <a href="privacy.html">개인정보 처리방침</a></p>병 이미지는 실제 병 사진을 참고해 AI로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다.
   <details><summary>사진 출처 (${cc.length})</summary><ul>${list}</ul></details>`;return}
-  document.getElementById('site-foot').innerHTML=`<p class="warn">19세 미만 청소년의 음주는 법으로 금지되어 있습니다. 지나친 음주는 건강을 해칩니다.<br>광고·협찬 없이 만든 개인 안내 페이지이고, 가격과 설명은 참고용입니다. 상표·이미지 관련 요청은 <a href="https://github.com/newhead84/mybackbar/issues" target="_blank" rel="noopener">GitHub 이슈</a>로 알려 주세요.</p>병 소매가는 ${esc(PRICE_ASOF)}에 국내 주류 판매처(주로 데일리샷, 일부 대형마트·주류 전문점)에 올라온 가격을 모은 범위이고, 바에서 파는 한 잔 값이 아닙니다. 판매처·환율·행사에 따라 달라집니다.<br>맛 표현과 수치는 일반적으로 알려진 내용을 줄인 것이고, 맛 점수는 병끼리 비교하려고 붙인 대략적인 값입니다. 도수와 라벨은 제품 연도·수입 판에 따라 다를 수 있습니다.<br>병 이미지는 실제 병 사진을 참고해 AI로 정면·투명 배경으로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다. 칵테일 잔 그림도 자유 라이선스 사진을 참고해 같은 방식으로 그렸고, 잔과 가니시는 바마다 다릅니다.
+  document.getElementById('site-foot').innerHTML=`<p class="warn">19세 미만 청소년의 음주는 법으로 금지되어 있습니다. 지나친 음주는 건강을 해칩니다.<br>광고·협찬 없이 만든 개인 안내 페이지이고, 가격과 설명은 참고용입니다. 상표·이미지 관련 요청은 <a href="https://github.com/newhead84/mybackbar/issues" target="_blank" rel="noopener">GitHub 이슈</a>로 알려 주세요.<br><a href="privacy.html">개인정보 처리방침</a>${HOBBY?'':' · <a href="#dash">바 사장님 관리</a>'}</p>병 소매가는 ${esc(PRICE_ASOF)}에 국내 주류 판매처(주로 데일리샷, 일부 대형마트·주류 전문점)에 올라온 가격을 모은 범위이고, 바에서 파는 한 잔 값이 아닙니다. 판매처·환율·행사에 따라 달라집니다.<br>맛 표현과 수치는 일반적으로 알려진 내용을 줄인 것이고, 맛 점수는 병끼리 비교하려고 붙인 대략적인 값입니다. 도수와 라벨은 제품 연도·수입 판에 따라 다를 수 있습니다.<br>병 이미지는 실제 병 사진을 참고해 AI로 정면·투명 배경으로 다시 그린 것이라 라벨 글자가 실제와 조금 다를 수 있습니다. 칵테일 잔 그림도 자유 라이선스 사진을 참고해 같은 방식으로 그렸고, 잔과 가니시는 바마다 다릅니다.
   <details><summary>사진 출처 (${cc.length})</summary><ul>${list}</ul></details>`;
 }
 
@@ -1474,14 +1508,14 @@ function closeDetail(fromHash){
 }
 function toListTop(){const top=matchMedia('(min-width:1024px)').matches?0:document.getElementById('bar-anchor').getBoundingClientRect().top+scrollY;if(scrollY>top)scrollTo({top,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'})}
 let routed=null;
-function isSheetHash(h){return h.startsWith('#b-')||h.startsWith('#c-')||h==='#cmp'||h==='#notes'||h==='#quiz'||h==='#flight'||h==='#map'}
+function isSheetHash(h){return h.startsWith('#b-')||h.startsWith('#c-')||h==='#cmp'||h==='#notes'||h==='#quiz'||h==='#flight'||h==='#map'||h==='#dash'}
 // 상세 주소로 바로 들어온 경우: 아래에 목록 기록을 깔아 두어 뒤로가기가 페이지를 떠나지 않고 시트를 닫게 한다
 if(isSheetHash(location.hash)&&!(history.state&&history.state.bb)){try{const h=location.hash;history.replaceState(null,'',location.pathname+location.search);history.pushState({bb:1},'',h)}catch(_){}}
 function route(){
   const sheetOn=document.getElementById('sheet').classList.contains('on');
   if(location.hash===routed&&(sheetOn||!location.hash))return; routed=location.hash;
   const h=location.hash;
-  const h2=h; if(h2.startsWith('#b-')) openDetail(h.slice(3),false); else if(h.startsWith('#c-')) openCocktail(h.slice(3),false); else if(h==='#cmp') openCompare(false); else if(h==='#notes') openNotes(false); else if(h==='#quiz') openQuiz(false); else if(h==='#flight') openFlights(false); else if(h==='#map') openMap(false); else closeDetail(true);
+  const h2=h; if(h2.startsWith('#b-')) openDetail(h.slice(3),false); else if(h.startsWith('#c-')) openCocktail(h.slice(3),false); else if(h==='#cmp') openCompare(false); else if(h==='#notes') openNotes(false); else if(h==='#quiz') openQuiz(false); else if(h==='#flight') openFlights(false); else if(h==='#map') openMap(false); else if(h==='#dash') openDash(false); else closeDetail(true);
 }
 
 document.addEventListener('click',e=>{
@@ -1539,6 +1573,144 @@ document.getElementById('q').addEventListener('input',e=>{state.q=e.target.value
 window.addEventListener('hashchange',route);
 window.addEventListener('popstate',route);
 try{const s=sessionStorage.getItem('bb-style');if(s&&(s==='all'||s==='cocktails'||STYLES.some(x=>x.id===s)))state.style=s}catch(_){}
+const HOBBY=/\.github\.io$/.test(location.hostname);
+const FULL_B=B.slice(),FULL_CK=CK.slice();
+// 바 사장님 관리(#dash). 바 자료는 Firestore bars/{slug}(누구나 읽기), 사장 연결은 owners/{uid}.bars,
+// 운영자는 admins/{uid}(콘솔에서만 만듦). 손님 노트(notes/{uid})는 사장도 운영자도 읽을 수 없다.
+const DASH={who:null,admin:false,bars:[],all:null,slug:'',d:null,dirty:false,loading:false,msg:''};
+const SLUG_RE=/^[a-z0-9-]{2,40}$/,CODE_RE=/^[A-Za-z0-9]{20,40}$/;
+const emptyBar=name=>({name,area:'',intro:'',notice:'',event:'',pick:[],soldout:[],new:[],bottles:[],cocktails:[],glass:{}});
+function barData(r){const d=emptyBar(String(r.name||'').slice(0,30));for(const k of ['area','intro','notice','event'])d[k]=String(r[k]||'');
+  for(const k of ['pick','soldout','new','bottles','cocktails'])d[k]=Array.isArray(r[k])?r[k].filter(x=>typeof x==='string'):[];
+  if(r.glass&&typeof r.glass==='object')for(const [k,v] of Object.entries(r.glass))if(Array.isArray(v)&&+v[0]>0)d.glass[k]=[Math.round(+v[0]),String(v[1]||'').slice(0,12)];return d}
+const itemOf=id=>{const o=FULL_B.find(x=>x.id===id);if(o)return {k:'b',o};const c=FULL_CK.find(x=>x.id===id);return c?{k:'c',o:c}:null};
+function dmsg(t){DASH.msg=t;const el=document.getElementById('dmsg');if(el)el.textContent=t}
+function dstate(){const el=document.getElementById('dstate');if(el)el.textContent=DASH.dirty?'저장하지 않은 변경이 있습니다.':'저장된 상태입니다.';const b=document.querySelector('[data-dsave]');if(b)b.disabled=!DASH.dirty}
+function dirty(){DASH.dirty=true;dstate()}
+function dashReset(){Object.assign(DASH,{who:null,admin:false,bars:[],all:null,slug:'',d:null,dirty:false,loading:false,msg:''})}
+function openDash(push){
+  const head=`<div class="sheet-in dash">${CLOSE_BTN}<div><div class="d-kicker">For bars</div><h2 id="d-name">바 사장님 관리</h2><div class="d-en">손님이 보는 진열과 한 잔 가격을 직접 고칩니다</div></div>`;
+  if(HOBBY){openSheet(head+`<div class="sec"><p>이 주소는 개인 학습용 페이지라 바 관리를 쓸 수 없습니다. 바 관리는 <a href="https://mybackbar.vercel.app/#dash">mybackbar.vercel.app</a>에서 열어 주세요.</p></div></div>`,'#dash',push);return}
+  openSheet(head+`<div id="dashbody"></div></div>`,'#dash',push);dashPaint();
+  syncLoad().then(()=>{if(SY.user&&DASH.who!==SY.user.uid)dashUser()}).catch(()=>dmsg('로그인 기능을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.'))}
+function dashOnAuth(){if(!document.getElementById('dashbody'))return;if(!SY.user){dashReset();dashPaint();return}if(DASH.who!==SY.user.uid)dashUser()}
+async function dashUser(){const {F,db}=await syncLoad();const uid=SY.user.uid;dashReset();DASH.who=uid;DASH.loading=true;dashPaint();
+  try{const [a,o]=await Promise.all([F.getDoc(F.doc(db,'admins',uid)),F.getDoc(F.doc(db,'owners',uid))]);
+    DASH.admin=a.exists();DASH.bars=o.exists()&&Array.isArray(o.data().bars)?o.data().bars.filter(x=>typeof x==='string'):[];
+    if(DASH.admin){const qs=await F.getDocs(F.collection(db,'bars'));DASH.all=qs.docs.map(x=>({slug:x.id,name:String(x.data().name||x.id)}))}
+    const first=DASH.bars[0]||(DASH.all&&DASH.all[0]?DASH.all[0].slug:'');if(first)await dashOpenBar(first,true)}
+  catch(e){DASH.msg='관리 정보를 불러오지 못했습니다. 잠시 뒤 다시 열어 주세요.'}
+  DASH.loading=false;dashPaint()}
+async function dashOpenBar(slug,quiet){if(DASH.dirty&&!quiet&&!confirm('저장하지 않은 변경이 있습니다. 저장하지 않고 다른 바로 넘어갈까요?'))return;
+  const {F,db}=await syncLoad();
+  try{const s=await F.getDoc(F.doc(db,'bars',slug));DASH.slug=slug;DASH.d=barData(s.exists()?s.data():{name:slug});DASH.dirty=false;DASH.msg=''}
+  catch(e){DASH.msg='바 정보를 불러오지 못했습니다.'}
+  if(!quiet)dashPaint()}
+const barURL=slug=>'https://mybackbar.vercel.app/?bar='+slug;
+function dashPaint(){const el=document.getElementById('dashbody');if(!el)return;const u=SY.user,d=DASH.d;let h='';
+  if(!u){
+    if(!SY.ready&&hadSync())h=`<div class="sec"><p>로그인 상태를 확인하고 있습니다…</p></div>`;
+    else h=`<div class="sec"><p>손님이 테이블의 QR 코드로 들어오면, 여기서 고른 병과 칵테일만 선반에 보입니다. 한 잔 가격, 추천, 오늘 없는 병도 여기서 바로 바꿀 수 있습니다.</p>
+      <p class="dstep">처음이라면 구글로 로그인해 주세요. 화면에 나오는 연결 코드를 운영자에게 보내면, 운영자가 바를 만들어 연결해 드립니다.</p>
+      ${inApp?'<p class="dstep">이 앱 안의 브라우저에서는 구글 로그인이 막혀 있습니다. 크롬이나 사파리로 열어 주세요.</p>':'<div class="acts"><button class="act go" data-nlogin>구글로 로그인</button></div>'}
+      <p class="nmsg" id="nmsg" role="status"></p><p class="dsmall">로그인 정보는 <a href="privacy.html">개인정보 처리방침</a>에 따라 다룹니다.</p></div>`;
+    el.innerHTML=h;return}
+  h+=`<div class="dwho"><span>${esc(u.email||'구글 계정')}로 로그인되어 있습니다.</span><button class="act" data-nout>로그아웃</button></div>`;
+  if(DASH.loading){el.innerHTML=h+'<div class="sec"><p>바 정보를 불러오고 있습니다…</p></div>';return}
+  const list=[...new Set(DASH.bars.concat(DASH.all?DASH.all.map(x=>x.slug):[]))];
+  if(!list.length&&!DASH.admin){
+    h+=`<div class="sec"><h3>Connect <span>바 연결하기</span></h3><p>아직 연결된 바가 없습니다. 아래 연결 코드를 운영자에게 보내 주세요. 연결이 끝난 뒤 이 화면을 다시 열면 바를 고칠 수 있습니다.</p>
+      <div class="dcode"><code>${esc(u.uid)}</code><button class="act" data-dcopy="${esc(u.uid)}">코드 복사</button></div></div>`}
+  if(list.length>1)h+=`<div class="dbars" role="group" aria-label="바 고르기">${list.map(s=>{const nm=(DASH.all||[]).find(x=>x.slug===s);return `<button class="chip" data-dbar="${esc(s)}" aria-pressed="${s===DASH.slug}">${esc(nm?nm.name:s)}</button>`}).join('')}</div>`;
+  if(d){const nb=d.bottles.length,nc=d.cocktails.length;
+    h+=`<div class="sec"><h3>Bar <span>바 정보</span></h3><div class="mn-form dform">
+        <label>바 이름<input data-dinfo="name" maxlength="30" value="${esc(d.name)}"></label>
+        <label>동네<input data-dinfo="area" maxlength="30" placeholder="예: 서울 성수동" value="${esc(d.area)}"></label>
+        <label class="mn-memo">소개<textarea data-dinfo="intro" maxlength="300" rows="3" placeholder="어떤 술을 주로 내는 바인지 두세 문장으로 적어 주세요.">${esc(d.intro)}</textarea></label>
+        <label class="mn-memo">맨 위 안내 한 줄<input data-dinfo="notice" maxlength="80" placeholder="예: 오늘은 새벽 2시까지 엽니다." value="${esc(d.notice)}"></label>
+        <label class="mn-memo">알림<input data-dinfo="event" maxlength="80" placeholder="예: 금요일 밤 9시, 셰리 통 위스키 세 잔 비교 시음" value="${esc(d.event)}"></label></div></div>
+      <div class="sec"><h3>Menu <span>진열과 한 잔 가격</span></h3><p>병 ${nb}개 · 칵테일 ${nc}잔. 가격을 비워 두면 손님 화면에 '메뉴판 참고'로 나옵니다.</p><div class="dmenu" id="dmenu">${dashMenu()}</div></div>
+      <div class="sec"><h3>Add <span>병·칵테일 더하기</span></h3><div class="search dq"><input type="search" data-dq placeholder="이름으로 찾기 (예: 맥캘란, 네그로니)" autocomplete="off"></div><div class="dfound" id="dfound"></div></div>
+      <div class="sec"><h3>Share <span>손님에게 보여 주기</span></h3><p>손님 화면 주소입니다. 테이블 QR 카드를 내려받아 인쇄해 두면 손님이 휴대폰 카메라로 바로 들어옵니다.</p>
+        <p class="durl"><a href="${barURL(DASH.slug)}" target="_blank" rel="noopener">${barURL(DASH.slug)}</a></p>
+        <div class="acts"><button class="act" data-dcopy="${barURL(DASH.slug)}">주소 복사</button><button class="act go" data-dqr>QR 카드 내려받기</button></div></div>
+      <div class="dsave"><span id="dstate"></span><button class="act go" data-dsave>저장</button></div>`}
+  if(DASH.admin)h+=`<div class="sec dadmin"><h3>Operator <span>운영자</span></h3>
+      <p>새 바를 만들고 사장님을 연결합니다. 주소 이름은 손님 화면 주소 끝에 붙는 영문 이름입니다(영문 소문자, 숫자, 하이픈).</p>
+      <div class="mn-form dform"><label>주소 이름<input id="dn-slug" maxlength="40" placeholder="예: seongsu-oak" autocapitalize="off"></label><label>바 이름<input id="dn-name" maxlength="30" placeholder="예: 오크 바"></label>
+        <label class="mn-memo">사장님 연결 코드<input id="dn-code" maxlength="40" placeholder="사장님이 보내 준 코드 (나중에 넣어도 됩니다)" autocapitalize="off"></label></div>
+      <div class="acts"><button class="act go" data-dnew>새 바 만들기</button><button class="act" data-dlink>이 바에 사장님 연결</button><button class="act" data-dunlink>연결 끊기</button></div>
+      <p class="dsmall">'연결'과 '연결 끊기'는 위 주소 이름과 연결 코드를 씁니다.</p></div>`;
+  h+=`<p class="nmsg" id="dmsg" role="status">${esc(DASH.msg)}</p>`;
+  el.innerHTML=h;dstate()}
+function dashMenu(){const d=DASH.d;const ids=d.bottles.concat(d.cocktails);if(!ids.length)return '<p class="nempty">아직 진열한 병이 없습니다. 아래에서 이름으로 찾아 더해 주세요.</p>';
+  return ids.map(id=>{const it=itemOf(id);if(!it)return '';const o=it.o,g=d.glass[id]||[0,''];const p=it.k==='b'?PH[id]:CKPH[id];
+    const kind=it.k==='c'?'칵테일':isSpirit(o)?'칵테일 술':'위스키';const on=k=>d[k].includes(id);
+    return `<div class="drow" data-did="${id}"><span class="dr-img">${p?`<img src="${p.f}" alt="" loading="lazy" decoding="async">`:''}</span>
+      <span class="dr-n"><b>${esc(o.n)}</b><small>${kind}</small></span>
+      <label class="dr-p"><input inputmode="numeric" data-dprice maxlength="7" value="${g[0]||''}" placeholder="한 잔 가격" aria-label="${esc(o.n)} 한 잔 가격"><span>원</span></label>
+      <input class="dr-v" data-dvol maxlength="12" value="${esc(g[1])}" placeholder="${it.k==='c'?'1잔':'30ml'}" aria-label="${esc(o.n)} 용량">
+      <span class="dr-t"><button class="tg" data-dtog="pick" aria-pressed="${on('pick')}">추천</button><button class="tg" data-dtog="soldout" aria-pressed="${on('soldout')}">오늘 없음</button><button class="tg" data-dtog="new" aria-pressed="${on('new')}">새로 입고</button><button class="tg dr-x" data-ddel>빼기</button></span></div>`}).join('')}
+function dashFind(q){const el=document.getElementById('dfound');if(!el)return;q=norm(q||'');if(!q){el.innerHTML='';return}const d=DASH.d,has=new Set(d.bottles.concat(d.cocktails));
+  const r=FULL_B.filter(o=>!has.has(o.id)&&hayOf(o).includes(q)).slice(0,10).concat(FULL_CK.filter(c=>!has.has(c.id)&&norm(c.n+' '+c.e).includes(q)).slice(0,5));
+  el.innerHTML=r.length?r.map(o=>`<button class="chip" data-dadd="${o.id}">+ ${esc(o.n)}</button>`).join(''):'<p class="dsmall">찾는 이름이 없습니다. 다른 이름이나 영문으로 찾아 보세요.</p>'}
+async function dashSave(){const d=DASH.d;if(!d)return;if(!d.name.trim())return dmsg('바 이름을 적어 주세요.');
+  const ids=new Set(d.bottles.concat(d.cocktails));const keep=a=>a.filter(x=>ids.has(x));const glass={};for(const [k,v] of Object.entries(d.glass))if(ids.has(k)&&v[0]>0)glass[k]=[v[0],v[1]];
+  if(keep(d.pick).length>20)return dmsg('추천은 20개까지 고를 수 있습니다.');
+  const {F,db}=await syncLoad();const b=document.querySelector('[data-dsave]');if(b)b.disabled=true;dmsg('저장하고 있습니다…');
+  try{await F.setDoc(F.doc(db,'bars',DASH.slug),{name:d.name.trim(),area:d.area.trim(),intro:d.intro.trim(),notice:d.notice.trim(),event:d.event.trim(),pick:keep(d.pick),soldout:keep(d.soldout),new:keep(d.new),bottles:d.bottles,cocktails:d.cocktails,glass,u:F.serverTimestamp()});
+    DASH.dirty=false;dmsg('저장했습니다. 손님 화면에 바로 반영됩니다.')}
+  catch(e){dmsg('저장하지 못했습니다. 이 바를 고칠 권한이 있는지, 인터넷 연결이 되는지 확인해 주세요.')}dstate()}
+async function dashNew(){const slug=(document.getElementById('dn-slug').value||'').trim().toLowerCase(),name=(document.getElementById('dn-name').value||'').trim(),code=(document.getElementById('dn-code').value||'').trim();
+  if(!SLUG_RE.test(slug)||slug==='demo')return dmsg('주소 이름은 영문 소문자, 숫자, 하이픈(-)으로 2~40자를 써 주세요. demo는 쓸 수 없습니다.');
+  if(!name)return dmsg('바 이름을 적어 주세요.');if(code&&!CODE_RE.test(code))return dmsg('연결 코드가 올바르지 않습니다. 사장님 화면의 코드를 그대로 복사해 주세요.');
+  const {F,db}=await syncLoad();const ref=F.doc(db,'bars',slug);
+  try{if((await F.getDoc(ref)).exists())return dmsg('이미 있는 주소 이름입니다. 다른 이름을 써 주세요.');
+    await F.setDoc(ref,Object.assign(emptyBar(name.slice(0,30)),{u:F.serverTimestamp()}));if(code)await F.setDoc(F.doc(db,'owners',code),{bars:F.arrayUnion(slug)},{merge:true});
+    (DASH.all=DASH.all||[]).push({slug,name});await dashOpenBar(slug,true);DASH.msg=`'${name}'을(를) 만들었습니다.${code?' 사장님 연결도 마쳤습니다.':''}`;dashPaint()}
+  catch(e){dmsg('만들지 못했습니다. 운영자 권한과 인터넷 연결을 확인해 주세요.')}}
+async function dashLink(remove){const slug=(document.getElementById('dn-slug').value||'').trim().toLowerCase(),code=(document.getElementById('dn-code').value||'').trim();
+  if(!SLUG_RE.test(slug)||!CODE_RE.test(code))return dmsg('주소 이름과 사장님 연결 코드를 함께 적어 주세요.');
+  const {F,db}=await syncLoad();
+  try{await F.setDoc(F.doc(db,'owners',code),{bars:remove?F.arrayRemove(slug):F.arrayUnion(slug)},{merge:true});dmsg(remove?'연결을 끊었습니다.':'연결했습니다. 사장님이 이 화면을 다시 열면 바를 고칠 수 있습니다.')}
+  catch(e){dmsg('처리하지 못했습니다. 운영자 권한과 인터넷 연결을 확인해 주세요.')}}
+function copyText(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>dmsg('복사했습니다.'),()=>{prompt('아래 내용을 복사해 주세요.',t)})}
+function loadQR(){return window.qrcode?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js';s.onload=ok;s.onerror=no;document.head.appendChild(s)})}
+async function dashQR(){const d=DASH.d;if(!d)return;try{await loadQR();await document.fonts.load('700 40px Pretendard')}catch(_){return dmsg('QR 만들기 도구를 불러오지 못했습니다. 인터넷 연결을 확인해 주세요.')}
+  const url=barURL(DASH.slug),q=qrcode(0,'M');q.addData(url);q.make();const n=q.getModuleCount();
+  const W=1240,H=1754,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  x.fillStyle='#0a0807';x.fillRect(0,0,W,H);x.fillStyle='#f2aa4c';x.fillRect(0,0,W,14);x.textAlign='center';
+  x.font='500 34px Pretendard';x.fillStyle='#f2aa4c';x.fillText('B A C K   B A R',W/2,170);
+  let fs=96;x.font=`800 ${fs}px Pretendard`;while(x.measureText(d.name).width>W-160&&fs>48){fs-=4;x.font=`800 ${fs}px Pretendard`}x.fillStyle='#f5eee5';x.fillText(d.name,W/2,300);
+  x.font='500 40px Pretendard';x.fillStyle='#c8bdb0';x.fillText('휴대폰 카메라로 찍으면',W/2,410);x.fillText('이 바의 술과 한 잔 가격이 나옵니다',W/2,465);
+  const S=760,X=(W-S)/2,Y=560;x.fillStyle='#ffffff';x.fillRect(X-40,Y-40,S+80,S+80);const m=S/n;x.fillStyle='#0a0807';
+  for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect(Math.floor(X+k*m),Math.floor(Y+r*m),Math.ceil(m),Math.ceil(m));
+  x.font='500 30px Pretendard';x.fillStyle='#8c8277';x.fillText(url.replace('https://',''),W/2,Y+S+130);
+  x.font='500 30px Pretendard';x.fillText('마음에 드는 잔은 별점과 메모로 내 노트에 남겨 두세요',W/2,Y+S+220);
+  x.font='500 26px Pretendard';x.fillText('19세 미만 청소년에게는 술을 팔지 않습니다. 지나친 음주는 건강을 해칩니다.',W/2,H-90);
+  const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download=DASH.slug+'-table-qr.png';document.body.appendChild(a);a.click();a.remove();dmsg('QR 카드를 내려받았습니다. A6 크기로 인쇄하면 알맞습니다.')}
+addEventListener('beforeunload',e=>{if(DASH.dirty){e.preventDefault();e.returnValue=''}});
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest||!t.closest('#dashbody'))return;
+  const by=s=>t.closest(s);let b;
+  if(b=by('[data-dsave]')){dashSave();return}
+  if(b=by('[data-dqr]')){dashQR();return}
+  if(b=by('[data-dcopy]')){copyText(b.dataset.dcopy);return}
+  if(b=by('[data-dbar]')){dashOpenBar(b.dataset.dbar);return}
+  if(b=by('[data-dnew]')){dashNew();return}
+  if(b=by('[data-dlink]')){dashLink(false);return}
+  if(b=by('[data-dunlink]')){dashLink(true);return}
+  if(b=by('[data-dadd]')){const id=b.dataset.dadd,it=itemOf(id);if(!it)return;(it.k==='b'?DASH.d.bottles:DASH.d.cocktails).push(id);dirty();document.getElementById('dmenu').innerHTML=dashMenu();dashFind(document.querySelector('[data-dq]').value);return}
+  const row=by('[data-did]');if(!row)return;const id=row.dataset.did,d=DASH.d;
+  if(b=by('[data-dtog]')){const k=b.dataset.dtog,a=d[k],i=a.indexOf(id);if(i<0)a.push(id);else a.splice(i,1);b.setAttribute('aria-pressed',i<0);dirty();return}
+  if(by('[data-ddel]')){for(const k of ['bottles','cocktails','pick','soldout','new']){const i=d[k].indexOf(id);if(i>=0)d[k].splice(i,1)}delete d.glass[id];row.remove();dirty();return}});
+document.addEventListener('input',e=>{const t=e.target;if(!t.closest||!t.closest('#dashbody')||!DASH.d)return;const d=DASH.d;
+  if(t.dataset.dinfo){d[t.dataset.dinfo]=t.value;dirty();return}
+  if('dq' in t.dataset){dashFind(t.value);return}
+  const row=t.closest('[data-did]');if(!row)return;const id=row.dataset.did,g=d.glass[id]||[0,''];
+  if('dprice' in t.dataset){const v=t.value.replace(/[^0-9]/g,'').slice(0,7);if(v!==t.value)t.value=v;g[0]=+v||0}
+  if('dvol' in t.dataset)g[1]=t.value.slice(0,12);
+  d.glass[id]=g;dirty()});
+
 function applyBar(b){
   const keep=new Set(b.bottles||[]),kc=new Set(b.cocktails||[]);
   B.splice(0,B.length,...B.filter(o=>keep.has(o.id)));CK.splice(0,CK.length,...CK.filter(c=>kc.has(c.id)));
@@ -1548,10 +1720,16 @@ function applyBar(b){
   const top=document.querySelector('header.top');top.querySelector('.eyebrow').textContent='Back Bar · '+(b.area||'');top.querySelector('h1').textContent=BAR.name;top.querySelector('.lede').textContent=b.intro||'';
   if(b.notice){const f=document.createElement('div');f.className='barflag';f.textContent=b.notice;top.querySelector('.lede').after(f)}
   if(b.event){const e=document.createElement('div');e.className='barevent';e.innerHTML='<b>알림</b>';e.append(String(b.event));(top.querySelector('.barflag')||top.querySelector('.lede')).after(e)}
+  const cta=document.createElement('div');cta.className='barcta';cta.innerHTML='<p><b>오늘 마신 잔을 기록해 두세요.</b> 병을 눌러 별점이나 메모를 남기면 장소에 이 바 이름이 들어갑니다. 구글로 로그인해 두면 나중에 다른 기기에서도 볼 수 있고, 노트는 나만 봅니다.</p><button class="act go" data-notes>내 노트</button>';
+  (top.querySelector('.barevent')||top.querySelector('.barflag')||top.querySelector('.lede')).after(cta);
 }
 function start(){renderStats();renderControls();renderShelves();renderFoot();renderTray();renderNoteBtn();route();if(hadSync())syncLoad().catch(()=>{});}
-const BAR_ID=(new URLSearchParams(location.search).get('bar')||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
-if(BAR_ID)fetch('bars/'+BAR_ID+'.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject()).then(applyBar).catch(()=>{}).finally(start);else start();
+function fsVal(v){if(!v||typeof v!=='object')return null;if('stringValue' in v)return v.stringValue;if('integerValue' in v)return +v.integerValue;if('doubleValue' in v)return v.doubleValue;if('booleanValue' in v)return v.booleanValue;
+  if('arrayValue' in v)return (v.arrayValue.values||[]).map(fsVal);if('mapValue' in v){const o={};for(const [k,x] of Object.entries(v.mapValue.fields||{}))o[k]=fsVal(x);return o}return null}
+function loadBar(id){if(id==='demo')return fetch('bars/demo.json',{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject());
+  return fetch('https://firestore.googleapis.com/v1/projects/'+FB_CFG.projectId+'/databases/(default)/documents/bars/'+id+'?key='+FB_CFG.apiKey,{cache:'no-cache'}).then(r=>r.ok?r.json():Promise.reject()).then(d=>fsVal({mapValue:d}))}
+const BAR_ID=HOBBY?'':(new URLSearchParams(location.search).get('bar')||'').toLowerCase().replace(/[^a-z0-9-]/g,'').slice(0,40);
+if(BAR_ID)loadBar(BAR_ID).then(applyBar).catch(()=>{}).finally(start);else start();
 
 // 휴대폰·태블릿: 아래로 내리면 위 막대 숨김, 위로 올리면 보임. 검색 입력 중·막대 위쪽에서는 늘 보인다
 (function(){const bar=document.querySelector('.bar'),wide=matchMedia('(min-width:1024px)');let last=scrollY;
